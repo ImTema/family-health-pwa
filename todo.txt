@@ -1,0 +1,11 @@
+1. required to display advisory schedule and real schedule
+2. change pdf file name to famili-hea;th-vax-track
+3. add export options for sorting and grouping by vaccines, or deseases
+4. card details change to grid-view - too many space from the right - lets use it.
+5. deseases search
+6. when i choose vaccine i want buble (lables) appear under the vaccine / brand.
+7. add validation before kids borth date
+8. change font for date picker.
+9. lets add kids photo to the children details. possible?
+10. settings feature: backup handling to export and import databases, dark/light theme
+11.

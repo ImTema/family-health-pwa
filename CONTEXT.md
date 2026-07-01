@@ -4,11 +4,13 @@
 Vaccination-only tracker for parents relocating between countries. No sleep, weight, growth — vaccines only.
 
 ## Stack
-- Kotlin Multiplatform, `js { browser() }` target
-- Compose HTML (DOM-based, not Canvas)
+- SvelteKit + `@sveltejs/adapter-static` (fully static PWA, no server)
+- TypeScript
 - Tailwind CSS + DaisyUI (CSS-only components, zero JS framework)
-- SQLite WASM (OPFS backend) for local persistence
+- `idb` (1.5kb IDB wrapper) for local persistence — versioned migrations via `openDB` upgrade callback
 - Export via print CSS → browser-native PDF
+
+> **Previous stack (Kotlin KMP + Compose HTML)** was replaced for development speed. See ADR 0002.
 
 ## Ubiquitous Language
 
