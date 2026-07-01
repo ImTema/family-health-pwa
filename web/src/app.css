@@ -2,3 +2,4 @@
 @plugin "daisyui";
 
 body { font-variant-numeric: tabular-nums; }
+input, select, textarea { font-size: max(16px, 1em); }

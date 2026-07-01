@@ -84,7 +84,7 @@
     <div class="flex flex-col gap-4">
       <div class="form-control">
         <label class="label"><span class="label-text">Vaccine / Brand</span></label>
-        <div class="relative">
+        <div class="relative w-full">
           <input
             type="text"
             class="input input-bordered w-full"
@@ -117,7 +117,7 @@
 
       <div class="form-control">
         <label class="label"><span class="label-text">Add disease</span></label>
-        <div class="relative">
+        <div class="relative w-full">
           <input
             type="text"
             class="input input-bordered w-full"
