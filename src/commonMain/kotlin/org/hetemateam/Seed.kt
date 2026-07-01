@@ -1,5 +1,21 @@
 package org.hetemateam
 
+/**
+ * Schedule data sources (verify against current official publications before clinical use):
+ *
+ * Russia — Приказ Минздрава России от 06.12.2021 № 1122н «Об утверждении национального
+ *   календаря профилактических прививок...»
+ *   https://minzdrav.gov.ru/documents/8559
+ *
+ * Serbia — Правилник о програму обавезних имунизација (2023)
+ *   https://www.batut.org.rs/index.php?content=1539
+ *
+ * EU / ECDC — Vaccine Schedules in All Countries of the European Union
+ *   https://vaccine-schedule.ecdc.europa.eu/
+ *
+ * Brand coverage data compiled from EMA/WHO product information sheets.
+ * All age milestones are in weeks (nominal calendar weeks, not corrected age).
+ */
 object Seed {
 
     val diseases = listOf(
@@ -89,7 +105,8 @@ object Seed {
     // Schedule entries: (country, diseaseId, ageWeeks nominal, doseNumber)
     val scheduleEntries: List<ScheduleEntry> = buildList {
 
-        // ── RUSSIA (National Immunisation Calendar) ───────────────────────
+        // ── RUSSIA — Приказ № 1122н от 06.12.2021 (Минздрав России) ─────────
+        // Source: https://minzdrav.gov.ru/documents/8559
         fun ru(id: String, disease: String, ageWeeks: Int, dose: Int) =
             add(ScheduleEntry("ru_${disease}_$dose", Country.RUSSIA, disease, ageWeeks, dose))
 
@@ -129,7 +146,8 @@ object Seed {
         ru("", "rubella",   312, 2)
         ru("", "varicella",  52, 1)
 
-        // ── SERBIA (National Immunisation Calendar) ───────────────────────
+        // ── SERBIA — Правилник о програму обавезних имунизација (2023) ───────
+        // Source: https://www.batut.org.rs/index.php?content=1539
         fun rs(id: String, disease: String, ageWeeks: Int, dose: Int) =
             add(ScheduleEntry("rs_${disease}_$dose", Country.SERBIA, disease, ageWeeks, dose))
 
@@ -167,7 +185,8 @@ object Seed {
         rs("", "rubella",    52, 1)
         rs("", "rubella",   260, 2)
 
-        // ── EU (ECDC generalised schedule) ───────────────────────────────
+        // ── EU — ECDC Vaccine Scheduler (generalised European schedule) ──────
+        // Source: https://vaccine-schedule.ecdc.europa.eu/
         fun eu(id: String, disease: String, ageWeeks: Int, dose: Int) =
             add(ScheduleEntry("eu_${disease}_$dose", Country.EU, disease, ageWeeks, dose))
 
