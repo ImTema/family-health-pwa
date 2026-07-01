@@ -108,4 +108,8 @@ class IdbRepository : Repository {
     override suspend fun saveCustomBrand(brand: Brand) {
         put("custom_brands", toJs(Json.encodeToString(brand)))
     }
+
+    suspend fun deleteAll() {
+        getChildren().forEach { deleteChild(it.id) }
+    }
 }

@@ -1,7 +1,9 @@
 package org.hetemateam
 
 import androidx.compose.runtime.*
+import kotlinx.browser.document
 import kotlinx.browser.localStorage
+import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -10,9 +12,14 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.todayIn
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.hetemateam.db.IdbRepository
 import org.jetbrains.compose.web.attributes.*
 import org.jetbrains.compose.web.dom.*
+import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSelectElement
 
@@ -29,6 +36,30 @@ private fun weeksToLabel(w: Int) = when (w) {
 private enum class Screen { CHILDREN, CHILD_FORM, CHILD_DETAIL, RECORD_FORM }
 private enum class DetailTab { RECORDS, SCHEDULE }
 
+// ── Export / import (issue 008) ───────────────────────────────────────────────
+
+@Serializable private data class Backup(val version: Int = 1, val exportedAt: String, val children: List<BackupChild>)
+@Serializable private data class BackupChild(val id: String, val name: String, val birthDate: String, val country: String, val records: List<BackupRecord>)
+@Serializable private data class BackupRecord(val id: String, val date: String, val brandId: String? = null, val customBrandName: String? = null, val diseaseIds: List<String> = emptyList(), val serialNumber: String? = null, val notes: String? = null)
+
+private fun triggerDownload(content: String, filename: String) {
+    val a = document.createElement("a").unsafeCast<HTMLAnchorElement>()
+    val blob = js("new Blob([content], {type: 'application/json'})").unsafeCast<dynamic>()
+    val url = js("URL.createObjectURL(blob)") as String
+    a.href = url
+    a.setAttribute("download", filename)
+    document.body!!.appendChild(a)
+    a.click()
+    document.body!!.removeChild(a)
+    js("URL.revokeObjectURL(url)")
+}
+
+private fun readFileContent(file: dynamic, onRead: (String) -> Unit) {
+    val reader = js("new FileReader()").unsafeCast<dynamic>()
+    reader.addEventListener("load", { e: dynamic -> onRead(e.target.result.unsafeCast<String>()) })
+    reader.readAsText(file)
+}
+
 // ── App root ──────────────────────────────────────────────────────────────────
 
 @Composable
@@ -42,6 +73,7 @@ fun App(repo: IdbRepository) {
     var records by remember { mutableStateOf<List<VaccinationRecord>>(emptyList()) }
     var confirmDeleteChild by remember { mutableStateOf<Child?>(null) }
     var confirmDeleteRecord by remember { mutableStateOf<VaccinationRecord?>(null) }
+    var importError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         repo.init()
@@ -62,6 +94,44 @@ fun App(repo: IdbRepository) {
     fun refreshChildren() = scope.launch { children = repo.getChildren() }
     fun refreshRecords(childId: String) = scope.launch { records = repo.getRecords(childId) }
 
+    fun doExport() = scope.launch {
+        val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+        val chs = repo.getChildren()
+        val backup = Backup(exportedAt = today.toString(), children = chs.map { child ->
+            BackupChild(id = child.id, name = child.name, birthDate = child.birthDate.toString(), country = child.country.name,
+                records = repo.getRecords(child.id).map { r ->
+                    BackupRecord(id = r.id, date = r.date.toString(), brandId = r.brandId, customBrandName = r.customBrandName,
+                        diseaseIds = r.diseaseIds, serialNumber = r.serialNumber, notes = r.notes)
+                })
+        })
+        triggerDownload(Json { prettyPrint = true }.encodeToString(backup), "vaccinations-$today.json")
+    }
+
+    fun doImport(json: String) {
+        if (!window.confirm("This will replace all existing data with the backup. Continue?")) return
+        scope.launch {
+            try {
+                val backup = Json { ignoreUnknownKeys = true }.decodeFromString<Backup>(json)
+                repo.deleteAll()
+                backup.children.forEach { bc ->
+                    repo.saveChild(Child(bc.id, bc.name, LocalDate.parse(bc.birthDate),
+                        Country.entries.firstOrNull { it.name == bc.country } ?: Country.RUSSIA))
+                    bc.records.forEach { br ->
+                        repo.saveRecord(VaccinationRecord(id = br.id, childId = bc.id, date = LocalDate.parse(br.date),
+                            brandId = br.brandId, customBrandName = br.customBrandName, diseaseIds = br.diseaseIds,
+                            serialNumber = br.serialNumber, notes = br.notes))
+                    }
+                }
+                children = repo.getChildren()
+                activeId = children.firstOrNull()?.id?.also { localStorage.setItem("activeChildId", it) }
+                    ?: run { localStorage.removeItem("activeChildId"); null }
+                activeId?.let { records = repo.getRecords(it) } ?: run { records = emptyList() }
+            } catch (e: Exception) {
+                importError = "Import failed: ${e.message ?: "Invalid file"}"
+            }
+        }
+    }
+
     when (screen) {
         Screen.CHILDREN -> ChildrenScreen(
             children = children,
@@ -76,7 +146,9 @@ fun App(repo: IdbRepository) {
             },
             onAdd = { editingChild = null; screen = Screen.CHILD_FORM },
             onEdit = { editingChild = it; screen = Screen.CHILD_FORM },
-            onDelete = { confirmDeleteChild = it }
+            onDelete = { confirmDeleteChild = it },
+            onExport = { doExport() },
+            onImport = { json -> doImport(json) }
         )
         Screen.CHILD_FORM -> ChildFormScreen(
             initial = editingChild,
@@ -152,6 +224,11 @@ fun App(repo: IdbRepository) {
             onDismiss = { confirmDeleteRecord = null }
         )
     }
+
+    // Import error modal
+    importError?.let { msg ->
+        DeleteModal(title = "Import failed", body = msg, onConfirm = { importError = null }, onDismiss = { importError = null })
+    }
 }
 
 // ── Children list (issue 004) ─────────────────────────────────────────────────
@@ -165,12 +242,41 @@ private fun ChildrenScreen(
     onAdd: () -> Unit,
     onEdit: (Child) -> Unit,
     onDelete: (Child) -> Unit,
+    onExport: () -> Unit,
+    onImport: (String) -> Unit,
 ) {
     Div({ classes("min-h-screen", "bg-base-100", "p-4") }) {
         Div({ classes("max-w-lg", "mx-auto") }) {
+            // Hidden file input for import
+            Input(InputType.File) {
+                id("import-file-input")
+                attr("accept", ".json")
+                attr("style", "display:none")
+                onChange { e ->
+                    val files = e.nativeEvent.target.asDynamic().files
+                    if (files.length > 0) readFileContent(files[0]) { onImport(it) }
+                }
+            }
+
             Div({ classes("flex", "justify-between", "items-center", "mb-6") }) {
                 H1({ classes("text-2xl", "font-bold") }) { Text("VaxTrack") }
-                Button({ classes("btn", "btn-primary", "btn-sm"); onClick { onAdd() } }) { Text("+ Add child") }
+                Div({ classes("flex", "gap-2") }) {
+                    // Import/export overflow menu
+                    Div({ classes("dropdown", "dropdown-end") }) {
+                        Button({
+                            attr("tabindex", "0")
+                            classes("btn", "btn-ghost", "btn-sm")
+                        }) { Text("⋮") }
+                        Ul({
+                            attr("tabindex", "0")
+                            classes("dropdown-content", "menu", "p-2", "shadow", "bg-base-100", "rounded-box", "w-44", "z-10")
+                        }) {
+                            Li { A(href = "#", { onClick { it.preventDefault(); onExport() } }) { Text("Export backup") } }
+                            Li { A(href = "#", { onClick { it.preventDefault(); document.getElementById("import-file-input")?.asDynamic()?.click() } }) { Text("Import backup") } }
+                        }
+                    }
+                    Button({ classes("btn", "btn-primary", "btn-sm"); onClick { onAdd() } }) { Text("+ Add child") }
+                }
             }
 
             if (children.isEmpty()) {
@@ -294,8 +400,8 @@ private fun ChildDetailScreen(
     var tab by remember { mutableStateOf(DetailTab.RECORDS) }
 
     Div({ classes("min-h-screen", "bg-base-100") }) {
-        // Header
-        Div({ classes("bg-base-200", "p-4", "shadow-sm") }) {
+        // Screen header — hidden in print
+        Div({ classes("bg-base-200", "p-4", "shadow-sm", "print:hidden") }) {
             Div({ classes("max-w-2xl", "mx-auto") }) {
                 Button({ classes("btn", "btn-ghost", "btn-xs", "mb-2"); onClick { onBack() } }) { Text("← All children") }
                 Div({ classes("flex", "justify-between", "items-start") }) {
@@ -314,8 +420,8 @@ private fun ChildDetailScreen(
         }
 
         Div({ classes("max-w-2xl", "mx-auto", "p-4") }) {
-            // Tabs
-            Div({ attr("role", "tablist"); classes("tabs", "tabs-bordered", "mb-4") }) {
+            // Tabs — hidden in print
+            Div({ attr("role", "tablist"); classes("tabs", "tabs-bordered", "mb-4", "print:hidden") }) {
                 Button({
                     attr("role", "tab")
                     classes("tab", if (tab == DetailTab.RECORDS) "tab-active" else "")
@@ -328,10 +434,26 @@ private fun ChildDetailScreen(
                 }) { Text("Schedule") }
             }
 
-            when (tab) {
-                DetailTab.RECORDS -> RecordsList(records, onEditRecord, onDeleteRecord)
-                DetailTab.SCHEDULE -> ScheduleView(child, records, today)
+            // Export PDF button — visible on records tab, hidden in print
+            if (tab == DetailTab.RECORDS) {
+                Div({ classes("flex", "justify-end", "mb-3", "print:hidden") }) {
+                    Button({
+                        classes("btn", "btn-outline", "btn-sm")
+                        onClick { window.print() }
+                    }) { Text("Export PDF") }
+                }
             }
+
+            // Tab content — hidden in print
+            Div({ classes("print:hidden") }) {
+                when (tab) {
+                    DetailTab.RECORDS -> RecordsList(records, onEditRecord, onDeleteRecord)
+                    DetailTab.SCHEDULE -> ScheduleView(child, records, today)
+                }
+            }
+
+            // Print-only vaccination table
+            PrintView(child, records)
         }
     }
 }
@@ -562,6 +684,41 @@ private fun ScheduleView(child: Child, records: List<VaccinationRecord>, today: 
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ── Print view (issue 007) ────────────────────────────────────────────────────
+
+@Composable
+private fun PrintView(child: Child, records: List<VaccinationRecord>) {
+    Div({ classes("hidden", "print:block") }) {
+        Div({ classes("mb-4") }) {
+            H1({ classes("text-2xl", "font-bold") }) { Text(child.name) }
+            P({ classes("text-sm") }) { Text("Date of birth: ${child.birthDate} · ${child.country.displayName}") }
+        }
+        Table({ classes("w-full", "border-collapse", "text-sm") }) {
+            Thead {
+                Tr {
+                    listOf("Date", "Vaccine / Brand", "Diseases", "Serial / Lot", "Notes").forEach { h ->
+                        Th({ classes("border", "border-gray-400", "p-2", "text-left", "bg-gray-100") }) { Text(h) }
+                    }
+                }
+            }
+            Tbody {
+                records.sortedBy { it.date }.forEach { rec ->
+                    val brand = rec.brandId?.let { id -> Seed.brands.find { it.id == id }?.name } ?: rec.customBrandName ?: ""
+                    val diseases = rec.diseaseIds.mapNotNull { Seed.diseaseById[it]?.name }
+                        .ifEmpty { rec.brandId?.let { Seed.brandCoverage[it]?.mapNotNull { d -> Seed.diseaseById[d]?.name } } ?: emptyList() }
+                    Tr {
+                        Td({ classes("border", "border-gray-400", "p-2") }) { Text(rec.date.toString()) }
+                        Td({ classes("border", "border-gray-400", "p-2") }) { Text(brand) }
+                        Td({ classes("border", "border-gray-400", "p-2") }) { Text(diseases.joinToString(", ")) }
+                        Td({ classes("border", "border-gray-400", "p-2") }) { Text(rec.serialNumber ?: "") }
+                        Td({ classes("border", "border-gray-400", "p-2") }) { Text(rec.notes ?: "") }
                     }
                 }
             }

@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@media print {
+    body { background: white !important; }
+    @page { margin: 20mm; }
+}
