@@ -341,14 +341,13 @@
           <h2 class="text-lg font-semibold mt-4 mb-1">{disease}</h2>
           <table class="w-full border-collapse text-sm mb-4">
             <thead>
-              <tr>{#each ['Date', 'Vaccine / Brand', 'Diseases', 'Serial / Lot', 'Notes'] as h}<th class="border border-gray-400 p-2 text-left bg-gray-100">{h}</th>{/each}</tr>
+              <tr>{#each ['Date', 'Vaccine / Brand', 'Serial / Lot', 'Notes'] as h}<th class="border border-gray-400 p-2 text-left bg-gray-100">{h}</th>{/each}</tr>
             </thead>
             <tbody>
               {#each recs as r}
                 <tr>
                   <td class="border border-gray-400 p-2">{formatDate(r.date)}</td>
                   <td class="border border-gray-400 p-2">{brandName(r)}</td>
-                  <td class="border border-gray-400 p-2">{diseaseNames(r).join(', ')}</td>
                   <td class="border border-gray-400 p-2">{r.serialNumber ?? ''}</td>
                   <td class="border border-gray-400 p-2">{r.notes ?? ''}</td>
                 </tr>
@@ -385,14 +384,14 @@
       <div class="flex justify-between items-start">
         <div class="flex-1 min-w-0">
           <div class="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-sm">
-            <span class="font-semibold">{formatDate(record.date)}</span>
-            {#if brandName(record)}<span>{brandName(record)}</span>{/if}
+            <span>{formatDate(record.date)}</span>
+            {#if brandName(record)}<span class="font-semibold">{brandName(record)}</span>{/if}
             {#if record.serialNumber}<span class="text-base-content/50 text-xs">{record.serialNumber}</span>{/if}
           </div>
           {#if diseaseNames(record).length > 0}
             <div class="flex flex-wrap gap-1 mt-1.5">
               {#each diseaseNames(record) as name}
-                <span class="badge badge-outline badge-xs">{name}</span>
+                <span class="badge badge-xs border border-base-300 bg-transparent text-base-content/60">{name}</span>
               {/each}
             </div>
           {/if}
