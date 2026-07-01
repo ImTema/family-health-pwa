@@ -3,6 +3,7 @@
   import { page } from '$app/state'
   import { goto } from '$app/navigation'
   import { db } from '$lib/db'
+  import { uuid } from '$lib/utils'
   import { brands, brandCoverage, diseases, diseaseById } from '$lib/seed'
 
   const childId = page.params.id
@@ -49,7 +50,7 @@
     if (!date) { error = 'Date is required.'; return }
     if (childBirthDate && date < childBirthDate) { error = 'Vaccination date cannot be before birth date.'; return }
     await db.saveRecord({
-      id: crypto.randomUUID(),
+      id: uuid(),
       childId,
       date,
       brandId: selectedBrandId,
@@ -105,8 +106,11 @@
           class="input input-bordered w-full"
           placeholder="Search disease…"
           value={diseaseInput}
-          oninput={e => { diseaseInput = (e.target as HTMLInputElement).value }}
-          onchange={e => addDiseaseByName((e.target as HTMLInputElement).value)}
+          oninput={e => {
+            const val = (e.target as HTMLInputElement).value
+            diseaseInput = val
+            if (diseases.find(d => d.name === val)) addDiseaseByName(val)
+          }}
           onkeydown={e => { if (e.key === 'Enter') { e.preventDefault(); addDiseaseByName(diseaseInput) } }}
         />
       </div>

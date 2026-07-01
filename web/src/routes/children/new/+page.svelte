@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { db } from '$lib/db'
+  import { uuid } from '$lib/utils'
   import { COUNTRY_LABELS, type Country } from '$lib/types'
 
   const today = new Date().toISOString().split('T')[0]
@@ -26,7 +27,7 @@
     if (!birthDate) { error = 'Birth date is required.'; return }
     if (birthDate > today) { error = 'Birth date cannot be in the future.'; return }
     if (!sex) { error = 'Sex is required.'; return }
-    const id = crypto.randomUUID()
+    const id = uuid()
     await db.saveChild({ id, name: name.trim(), birthDate, country, sex, photo })
     localStorage.setItem('activeChildId', id)
     goto('/')

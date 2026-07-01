@@ -118,8 +118,11 @@
           class="input input-bordered w-full"
           placeholder="Search disease…"
           value={diseaseInput}
-          oninput={e => { diseaseInput = (e.target as HTMLInputElement).value }}
-          onchange={e => addDiseaseByName((e.target as HTMLInputElement).value)}
+          oninput={e => {
+            const val = (e.target as HTMLInputElement).value
+            diseaseInput = val
+            if (diseases.find(d => d.name === val)) addDiseaseByName(val)
+          }}
           onkeydown={e => { if (e.key === 'Enter') { e.preventDefault(); addDiseaseByName(diseaseInput) } }}
         />
       </div>
