@@ -64,7 +64,7 @@
     return [...records].sort((a, b) =>
       sortBy === 'date'
         ? b.date.localeCompare(a.date)
-        : (brandName(a) || '').localeCompare(brandName(b) || '')
+        : (brandName(a) || '').localeCompare(brandName(b) || '') || b.date.localeCompare(a.date)
     )
   }
 
@@ -105,8 +105,8 @@
 
 {#if child}
 <div class="min-h-screen bg-base-100">
-  <div class="bg-base-200 p-4 shadow-sm print:hidden">
-    <div class="max-w-2xl mx-auto">
+  <div class="sticky top-0 z-20 bg-base-200 shadow-sm print:hidden">
+    <div class="max-w-2xl mx-auto p-4 pb-0">
       <a href="/" class="btn btn-ghost btn-xs mb-2">← All children</a>
       <div class="flex justify-between items-start gap-3">
         <div class="flex items-center gap-3">
@@ -125,26 +125,26 @@
           <a href="/children/{id}/record/new" class="btn btn-primary btn-md">+ Record</a>
         </div>
       </div>
+
+      <div role="tablist" class="tabs tabs-bordered mt-3">
+        <button role="tab" class="tab {tab === 'records' ? 'tab-active' : ''}" onclick={() => tab = 'records'}>
+          Records ({records.length})
+        </button>
+        <button role="tab" class="tab {tab === 'schedule' ? 'tab-active' : ''}" onclick={() => tab = 'schedule'}>
+          Schedule
+        </button>
+        <button role="tab" class="tab {tab === 'timeline' ? 'tab-active' : ''}" onclick={() => tab = 'timeline'}>
+          Timeline
+        </button>
+      </div>
     </div>
   </div>
 
   <div class="max-w-2xl mx-auto p-4">
-    <div role="tablist" class="tabs tabs-bordered mb-4 print:hidden">
-      <button role="tab" class="tab {tab === 'records' ? 'tab-active' : ''}" onclick={() => tab = 'records'}>
-        Records ({records.length})
-      </button>
-      <button role="tab" class="tab {tab === 'schedule' ? 'tab-active' : ''}" onclick={() => tab = 'schedule'}>
-        Schedule
-      </button>
-      <button role="tab" class="tab {tab === 'timeline' ? 'tab-active' : ''}" onclick={() => tab = 'timeline'}>
-        Timeline
-      </button>
-    </div>
-
     <div class="print:hidden">
       {#if tab === 'records'}
         <div class="flex items-center gap-3 mb-3">
-          <select class="select select-bordered select-xs w-auto" bind:value={sortBy}>
+          <select class="select select-ghost select-sm w-auto font-medium focus:outline-none" bind:value={sortBy}>
             <option value="date">Sort by date</option>
             <option value="brand">Sort by brand</option>
           </select>
@@ -153,7 +153,7 @@
               class="btn btn-ghost btn-sm {groupByDisease ? 'btn-active' : ''}"
               title="Group by disease"
               onclick={() => groupByDisease = !groupByDisease}
-            ><Icon name="virus" /></button>
+            ><Icon name="virus" size={20} strokeWidth={1.5} /></button>
             <button class="btn btn-ghost btn-sm" title="Export PDF" onclick={doPrint}><Icon name="printer" /></button>
           </div>
         </div>

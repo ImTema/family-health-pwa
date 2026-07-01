@@ -80,9 +80,8 @@
       {:else}
         <div class="flex flex-col gap-3">
           {#each children as child}
-            {@const isActive = child.id === activeId}
             <div
-              class="card bg-base-200 cursor-pointer hover:bg-base-300 transition-colors {isActive ? 'ring-2 ring-primary' : ''}"
+              class="card bg-base-200 cursor-pointer hover:bg-base-300 transition-colors"
               onclick={() => { activate(child.id); goto(`/children/${child.id}`) }}
               role="button"
               tabindex="0"
@@ -101,7 +100,6 @@
                     </div>
                   </div>
                   <div class="flex items-center gap-2 flex-shrink-0">
-                    {#if isActive}<span class="badge badge-primary badge-sm">Active</span>{/if}
                     <a
                       href="/children/{child.id}/edit"
                       class="btn btn-ghost btn-sm"

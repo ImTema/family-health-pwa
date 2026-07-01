@@ -4,6 +4,7 @@
 
   let theme = $state('light')
   let importError = $state<string | null>(null)
+  let exportDone = $state(false)
   let importInput: HTMLInputElement
 
   onMount(() => {
@@ -31,6 +32,8 @@
     a.download = `vaccinations-${today}.json`
     a.click()
     URL.revokeObjectURL(url)
+    exportDone = true
+    setTimeout(() => exportDone = false, 3000)
   }
 
   async function doImport(json: string) {
@@ -101,6 +104,14 @@
     </div>
   </div>
 </div>
+
+{#if exportDone}
+  <div class="toast toast-top toast-center z-50">
+    <div class="alert alert-success">
+      <span>Backup exported</span>
+    </div>
+  </div>
+{/if}
 
 {#if importError}
   <div class="modal modal-open">
