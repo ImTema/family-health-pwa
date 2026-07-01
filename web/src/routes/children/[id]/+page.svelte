@@ -148,7 +148,7 @@
                       <div class="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-sm">
                         <span class="font-semibold">{record.date}</span>
                         {#if brandName(record)}<span>{brandName(record)}</span>{/if}
-                        {#if record.serialNumber}<span class="text-base-content/50 text-xs">S/N: {record.serialNumber}</span>{/if}
+                        {#if record.serialNumber}<span class="text-base-content/50 text-xs">{record.serialNumber}</span>{/if}
                       </div>
                       {#if diseaseNames(record).length > 0}
                         <div class="flex flex-wrap gap-1 mt-1.5">

@@ -12,29 +12,32 @@
   let brandInput = $state('')
   let selectedBrandId = $state<string | undefined>(undefined)
   let selectedDiseases = $state<Set<string>>(new Set())
-  let diseaseInput = $state('')
+  let diseaseQuery = $state('')
   let date = $state(today)
   let serial = $state('')
   let notes = $state('')
   let error = $state('')
   let childBirthDate = $state('')
+  let showBrandList = $state(false)
+  let showDiseaseList = $state(false)
 
   onMount(async () => {
     const children = await db.getChildren()
     childBirthDate = children.find(c => c.id === childId)?.birthDate ?? ''
   })
 
-  function onBrandChange(value: string) {
-    brandInput = value
-    const matched = brands.find(b => b.name === value)
+  function selectBrand(name: string) {
+    brandInput = name
+    const matched = brands.find(b => b.name === name)
     selectedBrandId = matched?.id
     if (matched) selectedDiseases = new Set(brandCoverage[matched.id] ?? [])
+    showBrandList = false
   }
 
-  function addDiseaseByName(name: string) {
-    const d = diseases.find(d => d.name === name)
-    if (d) selectedDiseases = new Set([...selectedDiseases, d.id])
-    diseaseInput = ''
+  function addDisease(diseaseId: string) {
+    selectedDiseases = new Set([...selectedDiseases, diseaseId])
+    diseaseQuery = ''
+    showDiseaseList = false
   }
 
   function removeDisease(id: string) {
@@ -43,7 +46,18 @@
     selectedDiseases = next
   }
 
-  const availableDiseases = $derived(diseases.filter(d => !selectedDiseases.has(d.id)))
+  const brandSuggestions = $derived(
+    brandInput.length > 0
+      ? brands.filter(b => b.name.toLowerCase().includes(brandInput.toLowerCase())).slice(0, 8)
+      : brands.slice(0, 8)
+  )
+
+  const diseaseSuggestions = $derived(
+    diseases.filter(d =>
+      !selectedDiseases.has(d.id) &&
+      (diseaseQuery.length === 0 || d.name.toLowerCase().includes(diseaseQuery.toLowerCase()))
+    ).slice(0, 8)
+  )
 
   async function save() {
     error = ''
@@ -67,24 +81,27 @@
   <div class="max-w-lg mx-auto">
     <h1 class="text-2xl font-bold mb-6">Add record</h1>
 
-    <datalist id="brands-list">
-      {#each brands as brand}<option value={brand.name}></option>{/each}
-    </datalist>
-    <datalist id="diseases-list">
-      {#each availableDiseases as d}<option value={d.name}></option>{/each}
-    </datalist>
-
     <div class="flex flex-col gap-4">
       <div class="form-control">
         <label class="label"><span class="label-text">Vaccine / Brand</span></label>
-        <input
-          type="text"
-          list="brands-list"
-          class="input input-bordered w-full"
-          placeholder="Search or type brand name"
-          value={brandInput}
-          oninput={e => onBrandChange((e.target as HTMLInputElement).value)}
-        />
+        <div class="relative">
+          <input
+            type="text"
+            class="input input-bordered w-full"
+            placeholder="Search or type brand name"
+            bind:value={brandInput}
+            oninput={() => { selectedBrandId = undefined }}
+            onfocus={() => showBrandList = true}
+            onblur={() => setTimeout(() => showBrandList = false, 150)}
+          />
+          {#if showBrandList && brandSuggestions.length > 0}
+            <div class="absolute z-20 bg-base-100 border border-base-300 rounded-lg shadow-lg w-full mt-1 max-h-48 overflow-y-auto">
+              {#each brandSuggestions as b}
+                <button class="w-full text-left px-3 py-2 hover:bg-base-200 text-sm" onpointerdown={() => selectBrand(b.name)}>{b.name}</button>
+              {/each}
+            </div>
+          {/if}
+        </div>
       </div>
 
       {#if selectedDiseases.size > 0}
@@ -100,19 +117,23 @@
 
       <div class="form-control">
         <label class="label"><span class="label-text">Add disease</span></label>
-        <input
-          type="text"
-          list="diseases-list"
-          class="input input-bordered w-full"
-          placeholder="Search disease…"
-          value={diseaseInput}
-          oninput={e => {
-            const val = (e.target as HTMLInputElement).value
-            diseaseInput = val
-            if (diseases.find(d => d.name === val)) addDiseaseByName(val)
-          }}
-          onkeydown={e => { if (e.key === 'Enter') { e.preventDefault(); addDiseaseByName(diseaseInput) } }}
-        />
+        <div class="relative">
+          <input
+            type="text"
+            class="input input-bordered w-full"
+            placeholder="Search disease…"
+            bind:value={diseaseQuery}
+            onfocus={() => showDiseaseList = true}
+            onblur={() => setTimeout(() => showDiseaseList = false, 150)}
+          />
+          {#if showDiseaseList && diseaseSuggestions.length > 0}
+            <div class="absolute z-20 bg-base-100 border border-base-300 rounded-lg shadow-lg w-full mt-1 max-h-48 overflow-y-auto">
+              {#each diseaseSuggestions as d}
+                <button class="w-full text-left px-3 py-2 hover:bg-base-200 text-sm" onpointerdown={() => addDisease(d.id)}>{d.name}</button>
+              {/each}
+            </div>
+          {/if}
+        </div>
       </div>
 
       <div class="form-control">
