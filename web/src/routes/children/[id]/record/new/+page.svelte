@@ -48,15 +48,15 @@
 
   const brandSuggestions = $derived(
     brandInput.length > 0
-      ? brands.filter(b => b.name.toLowerCase().includes(brandInput.toLowerCase())).slice(0, 8)
-      : brands.slice(0, 8)
+      ? brands.filter(b => b.name.toLowerCase().includes(brandInput.toLowerCase()))
+      : brands
   )
 
   const diseaseSuggestions = $derived(
     diseases.filter(d =>
       !selectedDiseases.has(d.id) &&
       (diseaseQuery.length === 0 || d.name.toLowerCase().includes(diseaseQuery.toLowerCase()))
-    ).slice(0, 8)
+    )
   )
 
   async function save() {
