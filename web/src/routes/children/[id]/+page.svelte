@@ -77,7 +77,13 @@
     const today = new Date().toISOString().split('T')[0]
     const prev = document.title
     document.title = `${child!.name}-vaccinations-${formatDate(today)}`
-    window.onafterprint = () => { document.title = prev; window.onafterprint = null }
+    // ponytail: force light theme for print so dark-mode gray text doesn't wash out on paper
+    document.documentElement.setAttribute('data-theme', 'light')
+    window.onafterprint = () => {
+      document.title = prev
+      document.documentElement.removeAttribute('data-theme')
+      window.onafterprint = null
+    }
     window.print()
   }
 

@@ -19,6 +19,7 @@ export interface Brand {
   id: string
   name: string
   description?: string
+  country?: string  // manufacturer country
 }
 
 export interface Child {

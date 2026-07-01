@@ -18,6 +18,9 @@
           <div class="card-body">
             <h2 class="card-title text-base">About</h2>
             <p class="text-sm">{brand.description ?? 'Description coming soon.'}</p>
+            {#if brand.country}
+              <p class="text-sm text-base-content/60 mt-1">Manufactured in: {brand.country}</p>
+            {/if}
           </div>
         </div>
 

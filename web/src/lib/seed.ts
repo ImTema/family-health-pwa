@@ -34,61 +34,61 @@ export const diseaseById: Record<string, Disease> = Object.fromEntries(diseases.
 // of Medicines (grls.rosminzdrav.ru) for RU-only entries. See per-entry comment for the specific page.
 export const brands: Brand[] = [
   // Sanofi Pasteur SmPC — campus.sanofi/dam/jcr:acf325db-1836-4520-8eac-4e26f280cda8/Pentaxim-API.pdf
-  { id: 'pentaxim',      name: 'Pentaxim',      description: 'Sanofi combination vaccine protecting against diphtheria, tetanus, pertussis, polio, and Hib disease.' },
+  { id: 'pentaxim',      name: 'Pentaxim',      description: 'Sanofi combination vaccine protecting against diphtheria, tetanus, pertussis, polio, and Hib disease.', country: 'France' },
   // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/infanrix-hexa
-  { id: 'infanrix_hexa', name: 'Infanrix Hexa', description: 'GSK combination vaccine protecting against diphtheria, tetanus, pertussis, hepatitis B, polio, and Hib disease.' },
+  { id: 'infanrix_hexa', name: 'Infanrix Hexa', description: 'GSK combination vaccine protecting against diphtheria, tetanus, pertussis, hepatitis B, polio, and Hib disease.', country: 'Belgium' },
   // FDA — fda.gov/vaccines-blood-biologics/vaccines/infanrix
-  { id: 'infanrix',      name: 'Infanrix',       description: 'GSK combination vaccine protecting against diphtheria, tetanus, and pertussis.' },
+  { id: 'infanrix',      name: 'Infanrix',       description: 'GSK combination vaccine protecting against diphtheria, tetanus, and pertussis.', country: 'Belgium' },
   // EMA national-procedure listing — ema.europa.eu
-  { id: 'infanrix_ipv',  name: 'Infanrix IPV',  description: 'GSK combination vaccine protecting against diphtheria, tetanus, pertussis, and polio.' },
+  { id: 'infanrix_ipv',  name: 'Infanrix IPV',  description: 'GSK combination vaccine protecting against diphtheria, tetanus, pertussis, and polio.', country: 'Belgium' },
   // EMA EPAR (as Hexacima) — ema.europa.eu/en/medicines/human/EPAR/hexacima
-  { id: 'hexaxim',       name: 'Hexaxim',        description: 'Sanofi fully-liquid combination vaccine protecting against diphtheria, tetanus, pertussis, hepatitis B, polio, and Hib disease.' },
+  { id: 'hexaxim',       name: 'Hexaxim',        description: 'Sanofi fully-liquid combination vaccine protecting against diphtheria, tetanus, pertussis, hepatitis B, polio, and Hib disease.', country: 'France' },
   // Microgen — microgen.ru/en/products/vaktsiny/
-  { id: 'bcg',           name: 'BCG',            description: 'Microgen live attenuated vaccine protecting against tuberculosis.' },
+  { id: 'bcg',           name: 'BCG',            description: 'Microgen live attenuated vaccine protecting against tuberculosis.', country: 'Russia' },
   // Microgen — microgen.ru/en/products/vaktsiny/vaktsina-tuberkuleznaya-dlya-shchadyashchey-pervichnoy-immunizatsii-btszh-m/
-  { id: 'bcg_m',         name: 'BCG-M',          description: 'Microgen reduced-antigen tuberculosis vaccine for gentle primary immunization of premature or weaker infants.' },
+  { id: 'bcg_m',         name: 'BCG-M',          description: 'Microgen reduced-antigen tuberculosis vaccine for gentle primary immunization of premature or weaker infants.', country: 'Russia' },
   // EMA EPAR / FDA package insert
-  { id: 'engerix_b',     name: 'Engerix-B',      description: 'GSK recombinant vaccine protecting against hepatitis B.' },
+  { id: 'engerix_b',     name: 'Engerix-B',      description: 'GSK recombinant vaccine protecting against hepatitis B.', country: 'Belgium' },
   // Russian State Register of Medicines — grls.rosminzdrav.ru
-  { id: 'euvax_b',       name: 'Euvax-B',        description: 'LG Chem/Sanofi recombinant vaccine protecting against hepatitis B.' },
+  { id: 'euvax_b',       name: 'Euvax-B',        description: 'LG Chem/Sanofi recombinant vaccine protecting against hepatitis B.', country: 'South Korea' },
   // Russian State Register of Medicines — grls.rosminzdrav.ru
-  { id: 'regevar',       name: 'Regevak B',      description: 'Russian (Binnofarm Group/Nacimbio) recombinant vaccine protecting against hepatitis B.' },
+  { id: 'regevar',       name: 'Regevak B',      description: 'Russian (Binnofarm Group/Nacimbio) recombinant vaccine protecting against hepatitis B.', country: 'Russia' },
   // GSK press release — gsk.com/en-gb/media/press-releases/gsk-announces-us-fda-approval-of-priorix
-  { id: 'priorix',       name: 'Priorix',        description: 'GSK live attenuated vaccine protecting against measles, mumps, and rubella.' },
+  { id: 'priorix',       name: 'Priorix',        description: 'GSK live attenuated vaccine protecting against measles, mumps, and rubella.', country: 'Belgium' },
   // FDA — fda.gov/vaccines-blood-biologics/vaccines/measles-mumps-and-rubella-virus-vaccine-live
-  { id: 'mmr_ii',        name: 'M-M-R II',       description: 'Merck live attenuated vaccine protecting against measles, mumps, and rubella.' },
+  { id: 'mmr_ii',        name: 'M-M-R II',       description: 'Merck live attenuated vaccine protecting against measles, mumps, and rubella.', country: 'United States' },
   // FDA — fda.gov/vaccines-blood-biologics/vaccines/varivax-refrigerated-and-frozen-formulations
-  { id: 'varivax',       name: 'Varivax',        description: 'Merck live attenuated vaccine protecting against varicella (chickenpox).' },
+  { id: 'varivax',       name: 'Varivax',        description: 'Merck live attenuated vaccine protecting against varicella (chickenpox).', country: 'United States' },
   // EMA referral — ema.europa.eu/en/medicines/human/referrals/varilrix
-  { id: 'varilrix',      name: 'Varilrix',       description: 'GSK live attenuated vaccine protecting against varicella (chickenpox).' },
+  { id: 'varilrix',      name: 'Varilrix',       description: 'GSK live attenuated vaccine protecting against varicella (chickenpox).', country: 'Belgium' },
   // Pfizer press release — pfizer.com (Prevnar 13 FDA approval)
-  { id: 'prevenar_13',   name: 'Prevenar 13',    description: 'Pfizer conjugate vaccine protecting against 13 serotypes of pneumococcal disease.' },
+  { id: 'prevenar_13',   name: 'Prevenar 13',    description: 'Pfizer conjugate vaccine protecting against 13 serotypes of pneumococcal disease.', country: 'United States' },
   // GSK press release — gsk.com/en-gb/media/press-releases/synflorix-glaxosmithkline-s-pneumococcal-vaccine-receives-european-authorisation/
-  { id: 'synflorix',     name: 'Synflorix',      description: 'GSK conjugate vaccine protecting against 10 serotypes of pneumococcal disease.' },
+  { id: 'synflorix',     name: 'Synflorix',      description: 'GSK conjugate vaccine protecting against 10 serotypes of pneumococcal disease.', country: 'Belgium' },
   // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/rotateq
-  { id: 'rotateq',       name: 'RotaTeq',        description: 'Merck oral pentavalent vaccine protecting against rotavirus gastroenteritis.' },
+  { id: 'rotateq',       name: 'RotaTeq',        description: 'Merck oral pentavalent vaccine protecting against rotavirus gastroenteritis.', country: 'United States' },
   // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/rotarix
-  { id: 'rotarix',       name: 'Rotarix',        description: 'GSK oral vaccine protecting against rotavirus gastroenteritis.' },
+  { id: 'rotarix',       name: 'Rotarix',        description: 'GSK oral vaccine protecting against rotavirus gastroenteritis.', country: 'Belgium' },
   // EMA national-procedure listing — ema.europa.eu
-  { id: 'menjugate',     name: 'Menjugate',      description: 'GSK conjugate vaccine protecting against meningococcal group C disease.' },
+  { id: 'menjugate',     name: 'Menjugate',      description: 'GSK conjugate vaccine protecting against meningococcal group C disease.', country: 'Italy' },
   // EMA national-procedure listing — ema.europa.eu
-  { id: 'neisvac_c',     name: 'NeisVac-C',      description: 'Pfizer conjugate vaccine protecting against meningococcal group C disease.' },
+  { id: 'neisvac_c',     name: 'NeisVac-C',      description: 'Pfizer conjugate vaccine protecting against meningococcal group C disease.', country: 'United States' },
   // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/nimenrix
-  { id: 'nimenrix',      name: 'Nimenrix',       description: 'Pfizer conjugate vaccine protecting against meningococcal groups A, C, W-135, and Y.' },
+  { id: 'nimenrix',      name: 'Nimenrix',       description: 'Pfizer conjugate vaccine protecting against meningococcal groups A, C, W-135, and Y.', country: 'United States' },
   // FDA — fda.gov/vaccines-blood-biologics/vaccines/gardasil-9
-  { id: 'gardasil_9',    name: 'Gardasil 9',     description: 'Merck recombinant vaccine protecting against 9 HPV types linked to cervical and other cancers.' },
+  { id: 'gardasil_9',    name: 'Gardasil 9',     description: 'Merck recombinant vaccine protecting against 9 HPV types linked to cervical and other cancers.', country: 'United States' },
   // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/cervarix
-  { id: 'cervarix',      name: 'Cervarix',       description: 'GSK bivalent vaccine protecting against HPV types 16 and 18 linked to cervical cancer.' },
+  { id: 'cervarix',      name: 'Cervarix',       description: 'GSK bivalent vaccine protecting against HPV types 16 and 18 linked to cervical cancer.', country: 'Belgium' },
   // EMA referral — ema.europa.eu/en/medicines/human/referrals/havrix
-  { id: 'havrix',        name: 'Havrix',         description: 'GSK inactivated vaccine protecting against hepatitis A.' },
+  { id: 'havrix',        name: 'Havrix',         description: 'GSK inactivated vaccine protecting against hepatitis A.', country: 'Belgium' },
   // Manufacturer SmPC — medicines.org.uk/emc/product/1394/smpc
-  { id: 'avaxim',        name: 'Avaxim',         description: 'Sanofi inactivated vaccine protecting against hepatitis A.' },
+  { id: 'avaxim',        name: 'Avaxim',         description: 'Sanofi inactivated vaccine protecting against hepatitis A.', country: 'France' },
   // Russian State Register of Medicines — grls.rosminzdrav.ru
-  { id: 'akds',          name: 'АКДС (DTP)',     description: 'Microgen whole-cell vaccine protecting against diphtheria, tetanus, and pertussis.' },
+  { id: 'akds',          name: 'АКДС (DTP)',     description: 'Microgen whole-cell vaccine protecting against diphtheria, tetanus, and pertussis.', country: 'Russia' },
   // Russian State Register of Medicines — grls.rosminzdrav.ru
-  { id: 'ads_m',         name: 'АДС-М (ADS-M)', description: 'Microgen reduced-dose diphtheria-tetanus toxoid booster vaccine for older children and adults.' },
+  { id: 'ads_m',         name: 'АДС-М (ADS-M)', description: 'Microgen reduced-dose diphtheria-tetanus toxoid booster vaccine for older children and adults.', country: 'Russia' },
   // Russian State Register of Medicines — grls.rosminzdrav.ru
-  { id: 'opv',           name: 'ОПВ (OPV)',      description: 'Russian-manufactured oral live-attenuated vaccine protecting against poliomyelitis types 1–3.' },
+  { id: 'opv',           name: 'ОПВ (OPV)',      description: 'Russian-manufactured oral live-attenuated vaccine protecting against poliomyelitis types 1–3.', country: 'Russia' },
 ]
 
 export const brandCoverage: Record<string, string[]> = {
