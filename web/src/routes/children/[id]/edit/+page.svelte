@@ -15,6 +15,7 @@
   let sex = $state<'MALE' | 'FEMALE' | ''>('')
   let photo = $state<string | undefined>(undefined)
   let error = $state('')
+  let confirmDelete = $state(false)
 
   onMount(async () => {
     const child = (await db.getChildren()).find(c => c.id === id)
@@ -40,6 +41,12 @@
     if (!sex) { error = 'Sex is required.'; return }
     await db.saveChild({ id, name: name.trim(), birthDate, country, sex, photo })
     goto(`/children/${id}`)
+  }
+
+  async function doDelete() {
+    await db.deleteChild(id)
+    if (localStorage.getItem('activeChildId') === id) localStorage.removeItem('activeChildId')
+    goto('/')
   }
 </script>
 
@@ -95,6 +102,21 @@
     <div class="flex gap-3 mt-8">
       <a href="/children/{id}" class="btn btn-ghost">Cancel</a>
       <button class="btn btn-primary" onclick={save}>Save</button>
+      <button class="btn btn-ghost text-error ml-auto" onclick={() => confirmDelete = true}>Delete</button>
     </div>
   </div>
 </div>
+
+{#if confirmDelete}
+  <div class="modal modal-open">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg">Delete {name}?</h3>
+      <p class="py-4">All vaccination records for {name} will be deleted.</p>
+      <div class="modal-action">
+        <button class="btn" onclick={() => confirmDelete = false}>Cancel</button>
+        <button class="btn btn-error" onclick={doDelete}>Delete</button>
+      </div>
+    </div>
+    <div class="modal-backdrop" onclick={() => confirmDelete = false}></div>
+  </div>
+{/if}

@@ -5,7 +5,8 @@
   import { db } from '$lib/db'
   import { brands, brandCoverage, diseaseById } from '$lib/seed'
   import { computeSchedule, childAgeWeeks, weeksToLabel } from '$lib/schedule'
-  import { formatDate, childAge } from '$lib/utils'
+  import { formatDate, childAge, swipeTabs } from '$lib/utils'
+  import { fade } from 'svelte/transition'
   import { COUNTRY_LABELS, type Child, type VaccinationRecord } from '$lib/types'
   import Icon from '$lib/Icon.svelte'
 
@@ -104,7 +105,7 @@
 </script>
 
 {#if child}
-<div class="min-h-screen bg-base-100">
+<div class="min-h-screen bg-base-100" use:swipeTabs={{ values: ['records', 'schedule', 'timeline'], get: () => tab, set: v => tab = v }}>
   <div class="sticky top-0 z-20 bg-base-200 shadow-sm print:hidden">
     <div class="max-w-2xl mx-auto p-4 pb-0">
       <a href="/" class="btn btn-ghost btn-xs mb-2">← All children</a>
@@ -142,6 +143,8 @@
 
   <div class="max-w-2xl mx-auto p-4">
     <div class="print:hidden">
+      {#key tab}
+      <div in:fade={{ duration: 150, delay: 100 }} out:fade={{ duration: 100 }}>
       {#if tab === 'records'}
         <div class="flex items-center gap-3 mb-3">
           <select class="select select-ghost select-sm w-auto font-medium focus:outline-none" bind:value={sortBy}>
@@ -328,6 +331,8 @@
           </div>
         {/if}
       {/if}
+      </div>
+      {/key}
     </div>
 
     <!-- Print view -->

@@ -25,6 +25,22 @@ export function uuid(): string {
   })
 }
 
+export function swipeTabs<T extends string>(node: HTMLElement, opts: { values: readonly T[]; get: () => T; set: (v: T) => void }) {
+  let x = 0, y = 0
+  const onStart = (e: TouchEvent) => { x = e.touches[0].clientX; y = e.touches[0].clientY }
+  const onEnd = (e: TouchEvent) => {
+    const dx = e.changedTouches[0].clientX - x
+    const dy = e.changedTouches[0].clientY - y
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return
+    const { values, get, set } = opts
+    const i = values.indexOf(get()) + (dx < 0 ? 1 : -1)
+    if (i >= 0 && i < values.length) set(values[i])
+  }
+  node.addEventListener('touchstart', onStart, { passive: true })
+  node.addEventListener('touchend', onEnd, { passive: true })
+  return { destroy() { node.removeEventListener('touchstart', onStart); node.removeEventListener('touchend', onEnd) } }
+}
+
 export function formatDate(iso: string): string {
   return iso.replace(/-/g, '.')
 }

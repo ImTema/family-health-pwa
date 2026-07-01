@@ -3,16 +3,23 @@
   import { goto } from '$app/navigation'
   import { db } from '$lib/db'
   import { brands, brandCoverage, diseases } from '$lib/seed'
-  import { formatDate, childAge } from '$lib/utils'
+  import { formatDate, childAge, swipeTabs } from '$lib/utils'
+  import { fade } from 'svelte/transition'
   import { COUNTRY_LABELS, type Child } from '$lib/types'
   import Icon from '$lib/Icon.svelte'
 
   let children = $state<Child[]>([])
   let activeId = $state<string | null>(null)
-  let confirmDelete = $state<Child | null>(null)
   let tab = $state<'children' | 'dictionary'>('children')
   let dictView = $state<'brands' | 'diseases'>('brands')
   let dictSearch = $state('')
+
+  export const snapshot = {
+    capture: () => ({ tab, dictView, dictSearch }),
+    restore: (v: { tab: typeof tab; dictView: typeof dictView; dictSearch: string }) => {
+      tab = v.tab; dictView = v.dictView; dictSearch = v.dictSearch
+    }
+  }
 
   onMount(async () => {
     activeId = localStorage.getItem('activeChildId')
@@ -28,16 +35,6 @@
     localStorage.setItem('activeChildId', id)
   }
 
-  async function doDelete(child: Child) {
-    await db.deleteChild(child.id)
-    if (activeId === child.id) {
-      activeId = null
-      localStorage.removeItem('activeChildId')
-    }
-    children = await db.getChildren()
-    confirmDelete = null
-  }
-
   const filteredBrands = $derived(
     brands.filter(b => b.name.toLowerCase().includes(dictSearch.toLowerCase()))
   )
@@ -46,7 +43,7 @@
   )
 </script>
 
-<div class="min-h-screen bg-base-100 p-4">
+<div class="min-h-screen bg-base-100 p-4" use:swipeTabs={{ values: ['children', 'dictionary'], get: () => tab, set: v => tab = v }}>
   <div class="max-w-lg mx-auto">
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-bold">VaxTrack</h1>
@@ -67,6 +64,8 @@
       </button>
     </div>
 
+    {#key tab}
+    <div in:fade={{ duration: 150, delay: 100 }} out:fade={{ duration: 100 }}>
     {#if tab === 'children'}
       {#if children.length === 0}
         <div class="hero min-h-64">
@@ -106,11 +105,6 @@
                       title="Edit"
                       onclick={e => e.stopPropagation()}
                     ><Icon name="pencil" /></a>
-                    <button
-                      class="btn btn-ghost btn-sm text-error"
-                      title="Delete"
-                      onclick={e => { e.stopPropagation(); confirmDelete = child }}
-                    ><Icon name="trash" /></button>
                   </div>
                 </div>
               </div>
@@ -137,6 +131,9 @@
           </button>
         </div>
 
+        <div use:swipeTabs={{ values: ['brands', 'diseases'], get: () => dictView, set: v => dictView = v }}>
+        {#key dictView}
+        <div in:fade={{ duration: 150, delay: 100 }} out:fade={{ duration: 100 }}>
         {#if dictView === 'brands'}
           <div class="flex flex-col gap-2">
             {#each filteredBrands as brand}
@@ -169,21 +166,12 @@
             {/each}
           </div>
         {/if}
+        </div>
+        {/key}
+        </div>
       </div>
     {/if}
+    </div>
+    {/key}
   </div>
 </div>
-
-{#if confirmDelete}
-  <div class="modal modal-open">
-    <div class="modal-box">
-      <h3 class="font-bold text-lg">Delete {confirmDelete.name}?</h3>
-      <p class="py-4">All vaccination records for {confirmDelete.name} will be deleted.</p>
-      <div class="modal-action">
-        <button class="btn" onclick={() => confirmDelete = null}>Cancel</button>
-        <button class="btn btn-error" onclick={() => doDelete(confirmDelete!)}>Delete</button>
-      </div>
-    </div>
-    <div class="modal-backdrop" onclick={() => confirmDelete = null}></div>
-  </div>
-{/if}
