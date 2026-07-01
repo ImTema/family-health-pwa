@@ -8,58 +8,87 @@
 
 import type { Brand, Disease, ScheduleEntry } from './types'
 
-// ponytail: descriptions/symptoms are placeholders — see issue 012 for seeding real content
+// Sources: WHO fact sheets (who.int/news-room/fact-sheets) and CDC disease pages (cdc.gov/vaccines/pubs/pinkbook), public domain.
 export const diseases: Disease[] = [
-  { id: 'bcg',        name: 'BCG (Tuberculosis)',                    description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'hepb',       name: 'Hepatitis B',                           description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'diphtheria', name: 'Diphtheria',                            description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'tetanus',    name: 'Tetanus',                               description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'pertussis',  name: 'Pertussis (Whooping Cough)',            description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'ipv',        name: 'Polio (IPV/OPV)',                       description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'hib',        name: 'Haemophilus influenzae type b (Hib)',   description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'pcv',        name: 'Pneumococcal disease',                  description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'rotavirus',  name: 'Rotavirus',                             description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'measles',    name: 'Measles',                               description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'mumps',      name: 'Mumps',                                 description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'rubella',    name: 'Rubella',                               description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'varicella',  name: 'Varicella (Chickenpox)',                description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'menc',       name: 'Meningococcal C',                       description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'hepa',       name: 'Hepatitis A',                           description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
-  { id: 'hpv',        name: 'Human Papillomavirus (HPV)',            description: 'Description coming soon.', symptoms: 'Symptoms coming soon.' },
+  { id: 'bcg',        name: 'BCG (Tuberculosis)',                    description: 'Tuberculosis is a bacterial infection caused by Mycobacterium tuberculosis that mainly affects the lungs. It spreads through the air when infected people cough, sneeze, or speak.', symptoms: 'Persistent cough, chest pain, fatigue, fever, night sweats, and weight loss; in children it can also cause severe disseminated or meningeal disease.' },
+  { id: 'hepb',       name: 'Hepatitis B',                           description: 'Hepatitis B is a liver infection caused by the hepatitis B virus (HBV), spread through contact with infected blood or body fluids, including from mother to child at birth.', symptoms: 'Often no symptoms, especially in young children; when present, includes jaundice, dark urine, fatigue, and abdominal pain. Chronic infection can lead to cirrhosis or liver cancer.' },
+  { id: 'diphtheria', name: 'Diphtheria',                            description: 'Diphtheria is a bacterial infection caused by toxin-producing Corynebacterium diphtheriae, spread through respiratory droplets or close contact.', symptoms: 'Sore throat, fever, and a thick gray coating in the throat that can block breathing; the toxin can also damage the heart and nerves.' },
+  { id: 'tetanus',    name: 'Tetanus',                               description: 'Tetanus is caused by toxin from Clostridium tetani bacteria, which enter the body through cuts or wounds contaminated with soil or dust; it does not spread person to person.', symptoms: 'Painful muscle stiffness and spasms, typically starting in the jaw ("lockjaw"), which can progress to affect breathing.' },
+  { id: 'pertussis',  name: 'Pertussis (Whooping Cough)',            description: 'Pertussis is a highly contagious respiratory infection caused by Bordetella pertussis bacteria, spread through coughing and sneezing.', symptoms: 'Severe coughing fits often followed by a high-pitched "whoop," which can be life-threatening in young infants.' },
+  { id: 'ipv',        name: 'Polio (IPV/OPV)',                       description: 'Poliomyelitis is caused by poliovirus, which spreads mainly through the fecal-oral route and can invade the nervous system.', symptoms: 'Most infections are asymptomatic; a small proportion cause fever, fatigue, and irreversible paralysis, usually of the legs.' },
+  { id: 'hib',        name: 'Haemophilus influenzae type b (Hib)',   description: 'Hib is a bacterial infection caused by Haemophilus influenzae type b, spread through respiratory droplets, that mainly affects young children.', symptoms: 'Can cause meningitis, pneumonia, and epiglottitis, with symptoms including fever, stiff neck, and difficulty breathing.' },
+  { id: 'pcv',        name: 'Pneumococcal disease',                  description: 'Pneumococcal disease is caused by Streptococcus pneumoniae bacteria, spread through respiratory droplets, and is a leading cause of severe illness in young children.', symptoms: 'Ranges from ear infections and sinusitis to pneumonia, bloodstream infection, and meningitis, with fever and cough among common signs.' },
+  { id: 'rotavirus',  name: 'Rotavirus',                             description: 'Rotavirus is a highly contagious virus spread through the fecal-oral route and is the leading cause of severe diarrheal disease in infants and young children worldwide.', symptoms: 'Severe watery diarrhea, vomiting, and fever, which can quickly lead to dehydration.' },
+  { id: 'measles',    name: 'Measles',                               description: 'Measles is caused by a highly contagious morbillivirus that spreads through the air via coughing and sneezing.', symptoms: 'High fever, cough, runny nose, red watery eyes, and a characteristic full-body rash; can lead to pneumonia or encephalitis.' },
+  { id: 'mumps',      name: 'Mumps',                                 description: 'Mumps is a contagious viral infection spread through saliva and respiratory droplets, mainly affecting the salivary glands.', symptoms: 'Fever, headache, and painful swelling of the salivary glands under the ears; can rarely cause meningitis or orchitis.' },
+  { id: 'rubella',    name: 'Rubella',                               description: 'Rubella (German measles) is caused by the rubella virus, spread through respiratory droplets; infection during early pregnancy can cause severe birth defects.', symptoms: 'Usually mild — low fever, rash, and swollen lymph nodes — but can cause congenital rubella syndrome in a developing fetus.' },
+  { id: 'varicella',  name: 'Varicella (Chickenpox)',                description: 'Varicella is caused by the varicella-zoster virus and spreads easily through respiratory droplets or contact with fluid from the rash.', symptoms: 'Itchy, blister-like rash along with fever and fatigue; can lead to skin infection or, rarely, pneumonia and encephalitis.' },
+  { id: 'menc',       name: 'Meningococcal C',                       description: 'Meningococcal disease is caused by Neisseria meningitidis serogroup C bacteria, spread through respiratory or throat secretions during close contact.', symptoms: 'Sudden fever, headache, stiff neck, and rash; can progress rapidly to life-threatening meningitis or bloodstream infection.' },
+  { id: 'hepa',       name: 'Hepatitis A',                           description: 'Hepatitis A is a liver infection caused by the hepatitis A virus, spread mainly through contaminated food or water and close contact.', symptoms: 'Fever, fatigue, nausea, abdominal pain, and jaundice; usually self-limiting without chronic infection.' },
+  { id: 'hpv',        name: 'Human Papillomavirus (HPV)',            description: 'HPV is a very common sexually transmitted virus; certain high-risk types cause most cervical cancers and other genital and throat cancers.', symptoms: 'Most infections cause no symptoms and clear on their own; persistent high-risk infection can lead to precancerous changes and cancer years later.' },
 ]
 
 export const diseaseById: Record<string, Disease> = Object.fromEntries(diseases.map(d => [d.id, d]))
 
-// ponytail: description/approvedIn are placeholders — see issue 012 for seeding real content
+// Sources: EMA product pages, FDA package inserts, manufacturer sites, and Russian State Register
+// of Medicines (grls.rosminzdrav.ru) for RU-only entries. See per-entry comment for the specific page.
 export const brands: Brand[] = [
-  { id: 'pentaxim',      name: 'Pentaxim',      description: 'Description coming soon.' },
-  { id: 'infanrix_hexa', name: 'Infanrix Hexa', description: 'Description coming soon.' },
-  { id: 'infanrix',      name: 'Infanrix',       description: 'Description coming soon.' },
-  { id: 'infanrix_ipv',  name: 'Infanrix IPV',  description: 'Description coming soon.' },
-  { id: 'hexaxim',       name: 'Hexaxim',        description: 'Description coming soon.' },
-  { id: 'bcg',           name: 'BCG',            description: 'Description coming soon.' },
-  { id: 'bcg_m',         name: 'BCG-M',          description: 'Description coming soon.' },
-  { id: 'engerix_b',     name: 'Engerix-B',      description: 'Description coming soon.' },
-  { id: 'euvax_b',       name: 'Euvax-B',        description: 'Description coming soon.' },
-  { id: 'regevar',       name: 'Regevak B',      description: 'Description coming soon.' },
-  { id: 'priorix',       name: 'Priorix',        description: 'Description coming soon.' },
-  { id: 'mmr_ii',        name: 'M-M-R II',       description: 'Description coming soon.' },
-  { id: 'varivax',       name: 'Varivax',        description: 'Description coming soon.' },
-  { id: 'varilrix',      name: 'Varilrix',       description: 'Description coming soon.' },
-  { id: 'prevenar_13',   name: 'Prevenar 13',    description: 'Description coming soon.' },
-  { id: 'synflorix',     name: 'Synflorix',      description: 'Description coming soon.' },
-  { id: 'rotateq',       name: 'RotaTeq',        description: 'Description coming soon.' },
-  { id: 'rotarix',       name: 'Rotarix',        description: 'Description coming soon.' },
-  { id: 'menjugate',     name: 'Menjugate',      description: 'Description coming soon.' },
-  { id: 'neisvac_c',     name: 'NeisVac-C',      description: 'Description coming soon.' },
-  { id: 'nimenrix',      name: 'Nimenrix',       description: 'Description coming soon.' },
-  { id: 'gardasil_9',    name: 'Gardasil 9',     description: 'Description coming soon.' },
-  { id: 'cervarix',      name: 'Cervarix',       description: 'Description coming soon.' },
-  { id: 'havrix',        name: 'Havrix',         description: 'Description coming soon.' },
-  { id: 'avaxim',        name: 'Avaxim',         description: 'Description coming soon.' },
-  { id: 'akds',          name: 'АКДС (DTP)',     description: 'Description coming soon.' },
-  { id: 'ads_m',         name: 'АДС-М (ADS-M)', description: 'Description coming soon.' },
-  { id: 'opv',           name: 'ОПВ (OPV)',      description: 'Description coming soon.' },
+  // Sanofi Pasteur SmPC — campus.sanofi/dam/jcr:acf325db-1836-4520-8eac-4e26f280cda8/Pentaxim-API.pdf
+  { id: 'pentaxim',      name: 'Pentaxim',      description: 'Sanofi combination vaccine protecting against diphtheria, tetanus, pertussis, polio, and Hib disease.' },
+  // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/infanrix-hexa
+  { id: 'infanrix_hexa', name: 'Infanrix Hexa', description: 'GSK combination vaccine protecting against diphtheria, tetanus, pertussis, hepatitis B, polio, and Hib disease.' },
+  // FDA — fda.gov/vaccines-blood-biologics/vaccines/infanrix
+  { id: 'infanrix',      name: 'Infanrix',       description: 'GSK combination vaccine protecting against diphtheria, tetanus, and pertussis.' },
+  // EMA national-procedure listing — ema.europa.eu
+  { id: 'infanrix_ipv',  name: 'Infanrix IPV',  description: 'GSK combination vaccine protecting against diphtheria, tetanus, pertussis, and polio.' },
+  // EMA EPAR (as Hexacima) — ema.europa.eu/en/medicines/human/EPAR/hexacima
+  { id: 'hexaxim',       name: 'Hexaxim',        description: 'Sanofi fully-liquid combination vaccine protecting against diphtheria, tetanus, pertussis, hepatitis B, polio, and Hib disease.' },
+  // Microgen — microgen.ru/en/products/vaktsiny/
+  { id: 'bcg',           name: 'BCG',            description: 'Microgen live attenuated vaccine protecting against tuberculosis.' },
+  // Microgen — microgen.ru/en/products/vaktsiny/vaktsina-tuberkuleznaya-dlya-shchadyashchey-pervichnoy-immunizatsii-btszh-m/
+  { id: 'bcg_m',         name: 'BCG-M',          description: 'Microgen reduced-antigen tuberculosis vaccine for gentle primary immunization of premature or weaker infants.' },
+  // EMA EPAR / FDA package insert
+  { id: 'engerix_b',     name: 'Engerix-B',      description: 'GSK recombinant vaccine protecting against hepatitis B.' },
+  // Russian State Register of Medicines — grls.rosminzdrav.ru
+  { id: 'euvax_b',       name: 'Euvax-B',        description: 'LG Chem/Sanofi recombinant vaccine protecting against hepatitis B.' },
+  // Russian State Register of Medicines — grls.rosminzdrav.ru
+  { id: 'regevar',       name: 'Regevak B',      description: 'Russian (Binnofarm Group/Nacimbio) recombinant vaccine protecting against hepatitis B.' },
+  // GSK press release — gsk.com/en-gb/media/press-releases/gsk-announces-us-fda-approval-of-priorix
+  { id: 'priorix',       name: 'Priorix',        description: 'GSK live attenuated vaccine protecting against measles, mumps, and rubella.' },
+  // FDA — fda.gov/vaccines-blood-biologics/vaccines/measles-mumps-and-rubella-virus-vaccine-live
+  { id: 'mmr_ii',        name: 'M-M-R II',       description: 'Merck live attenuated vaccine protecting against measles, mumps, and rubella.' },
+  // FDA — fda.gov/vaccines-blood-biologics/vaccines/varivax-refrigerated-and-frozen-formulations
+  { id: 'varivax',       name: 'Varivax',        description: 'Merck live attenuated vaccine protecting against varicella (chickenpox).' },
+  // EMA referral — ema.europa.eu/en/medicines/human/referrals/varilrix
+  { id: 'varilrix',      name: 'Varilrix',       description: 'GSK live attenuated vaccine protecting against varicella (chickenpox).' },
+  // Pfizer press release — pfizer.com (Prevnar 13 FDA approval)
+  { id: 'prevenar_13',   name: 'Prevenar 13',    description: 'Pfizer conjugate vaccine protecting against 13 serotypes of pneumococcal disease.' },
+  // GSK press release — gsk.com/en-gb/media/press-releases/synflorix-glaxosmithkline-s-pneumococcal-vaccine-receives-european-authorisation/
+  { id: 'synflorix',     name: 'Synflorix',      description: 'GSK conjugate vaccine protecting against 10 serotypes of pneumococcal disease.' },
+  // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/rotateq
+  { id: 'rotateq',       name: 'RotaTeq',        description: 'Merck oral pentavalent vaccine protecting against rotavirus gastroenteritis.' },
+  // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/rotarix
+  { id: 'rotarix',       name: 'Rotarix',        description: 'GSK oral vaccine protecting against rotavirus gastroenteritis.' },
+  // EMA national-procedure listing — ema.europa.eu
+  { id: 'menjugate',     name: 'Menjugate',      description: 'GSK conjugate vaccine protecting against meningococcal group C disease.' },
+  // EMA national-procedure listing — ema.europa.eu
+  { id: 'neisvac_c',     name: 'NeisVac-C',      description: 'Pfizer conjugate vaccine protecting against meningococcal group C disease.' },
+  // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/nimenrix
+  { id: 'nimenrix',      name: 'Nimenrix',       description: 'Pfizer conjugate vaccine protecting against meningococcal groups A, C, W-135, and Y.' },
+  // FDA — fda.gov/vaccines-blood-biologics/vaccines/gardasil-9
+  { id: 'gardasil_9',    name: 'Gardasil 9',     description: 'Merck recombinant vaccine protecting against 9 HPV types linked to cervical and other cancers.' },
+  // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/cervarix
+  { id: 'cervarix',      name: 'Cervarix',       description: 'GSK bivalent vaccine protecting against HPV types 16 and 18 linked to cervical cancer.' },
+  // EMA referral — ema.europa.eu/en/medicines/human/referrals/havrix
+  { id: 'havrix',        name: 'Havrix',         description: 'GSK inactivated vaccine protecting against hepatitis A.' },
+  // Manufacturer SmPC — medicines.org.uk/emc/product/1394/smpc
+  { id: 'avaxim',        name: 'Avaxim',         description: 'Sanofi inactivated vaccine protecting against hepatitis A.' },
+  // Russian State Register of Medicines — grls.rosminzdrav.ru
+  { id: 'akds',          name: 'АКДС (DTP)',     description: 'Microgen whole-cell vaccine protecting against diphtheria, tetanus, and pertussis.' },
+  // Russian State Register of Medicines — grls.rosminzdrav.ru
+  { id: 'ads_m',         name: 'АДС-М (ADS-M)', description: 'Microgen reduced-dose diphtheria-tetanus toxoid booster vaccine for older children and adults.' },
+  // Russian State Register of Medicines — grls.rosminzdrav.ru
+  { id: 'opv',           name: 'ОПВ (OPV)',      description: 'Russian-manufactured oral live-attenuated vaccine protecting against poliomyelitis types 1–3.' },
 ]
 
 export const brandCoverage: Record<string, string[]> = {

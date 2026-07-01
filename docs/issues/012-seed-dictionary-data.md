@@ -20,7 +20,6 @@ Sources: WHO fact sheets, CDC disease pages (public domain).
 ### Brands (28 entries)
 
 For each brand in `seed.ts`, add:
-- `approvedIn`: list of country codes where approved (e.g. `['RU', 'RS', 'EU', 'US']`)
 - `description`: 1 sentence — manufacturer + key use case
 
 Brands to fill: Pentaxim, Infanrix Hexa, Infanrix, Infanrix IPV, Hexaxim, BCG, BCG-M, Engerix-B, Euvax-B, Regevak B, Priorix, M-M-R II, Varivax, Varilrix, Prevenar 13, Synflorix, RotaTeq, Rotarix, Menjugate, NeisVac-C, Nimenrix, Gardasil 9, Cervarix, Havrix, Avaxim, АКДС (DTP), АДС-М, ОПВ (OPV).
@@ -30,5 +29,5 @@ Sources: EMA product pages, manufacturer SmPCs, WHO prequalification list.
 ## Acceptance criteria
 
 - [ ] All 16 diseases have non-placeholder `description` and `symptoms`
-- [ ] All 28 brands have non-placeholder `description` and `approvedIn`
+- [ ] All 28 brands have non-placeholder `description`
 - [ ] Sources cited in a comment above each entry in `seed.ts`

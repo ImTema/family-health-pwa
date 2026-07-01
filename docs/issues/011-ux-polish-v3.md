@@ -59,7 +59,7 @@ A polish pass: unify date display to dots, show child age inline, replace text a
 ### Dictionary detail pages
 - Add two new routes: `/dictionary/disease/[id]` and `/dictionary/brand/[id]`.
 - Extend `Disease` type with optional `description?: string` and `symptoms?: string`.
-- Extend `Brand` type with optional `description?: string` and `approvedIn?: string[]`.
+- Extend `Brand` type with optional `description?: string`.
 - All values are `undefined` / placeholder ("Description coming soon.") until seeded next session.
 - Dictionary list items become links to these routes.
 - Detail page for Disease shows: name, description, symptoms.
