@@ -17,20 +17,23 @@
   let confirmDelete = $state<VaccinationRecord | null>(null)
   let timelineView = $state<'table' | 'chart'>('table')
   let chartZoom = $state(1)
-  let _pinchDist = 0
-  let _pinchZoom = 1
 
-  function pinchStart(e: TouchEvent) {
-    if (e.touches.length !== 2) return
-    _pinchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY)
-    _pinchZoom = chartZoom
-  }
-
-  function pinchMove(e: TouchEvent) {
-    if (e.touches.length !== 2) return
-    e.preventDefault()
-    const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY)
-    chartZoom = Math.min(5, Math.max(1, _pinchZoom * d / _pinchDist))
+  function pinchZoom(node: HTMLElement) {
+    let dist = 0, zoom = 1
+    const onStart = (e: TouchEvent) => {
+      if (e.touches.length !== 2) return
+      dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY)
+      zoom = chartZoom
+    }
+    const onMove = (e: TouchEvent) => {
+      if (e.touches.length !== 2) return
+      e.preventDefault()
+      const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY)
+      chartZoom = Math.min(10, Math.max(1, zoom * d / dist))
+    }
+    node.addEventListener('touchstart', onStart, { passive: true })
+    node.addEventListener('touchmove', onMove, { passive: false })
+    return { destroy() { node.removeEventListener('touchstart', onStart); node.removeEventListener('touchmove', onMove) } }
   }
   let sortBy = $state<'date' | 'brand'>('date')
   let groupByDisease = $state(false)
@@ -285,13 +288,13 @@
             <span><span class="inline-block w-3 h-0.5 bg-base-content/30 align-middle"></span> Recommended</span>
             <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-success align-middle"></span> Given</span>
             <div class="ml-auto flex gap-1 items-center">
-              <button class="btn btn-xs btn-ghost" onclick={() => chartZoom = Math.max(1, chartZoom - 0.5)}>−</button>
+              <button class="btn btn-xs btn-ghost" onclick={() => chartZoom = Math.max(1, chartZoom - 1)}>−</button>
               <span class="text-[10px] w-6 text-center">{chartZoom}×</span>
-              <button class="btn btn-xs btn-ghost" onclick={() => chartZoom = Math.min(5, chartZoom + 0.5)}>+</button>
+              <button class="btn btn-xs btn-ghost" onclick={() => chartZoom = Math.min(10, chartZoom + 1)}>+</button>
             </div>
           </div>
-          <div class="overflow-x-auto" ontouchstart={pinchStart} ontouchmove={pinchMove}>
-            <div class="flex flex-col gap-1">
+          <div class="overflow-x-auto" style="touch-action: pan-x" use:pinchZoom>
+            <div class="flex flex-col gap-1 min-w-max">
               {#each diseases as disease}
                 {@const rows = timelineData.filter(r => r.disease.id === disease.id)}
                 <div class="flex items-center gap-2">
