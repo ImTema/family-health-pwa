@@ -24,7 +24,9 @@ Vaccination-only tracker for parents relocating between countries. No sleep, wei
 
 **VaccinationRecord** — a single administered dose. References either a Brand (if known) or a set of Diseases (if brand unknown). Always has a date given.
 
-**CountrySchedule** — the recommended vaccination timetable for a specific country. Contains ScheduleEntries.
+**CountrySchedule** — the recommended vaccination timetable for a specific country. Contains ScheduleEntries. Selected per Child, not per view.
+
+**ScheduleView** — a matrix: rows = Diseases, columns = age milestones. Cells show ScheduleStatus. A "today" cursor marks the child's current age. Country is not selectable in the view — it derives from the Child's active CountrySchedule.
 
 **ScheduleEntry** — one row in a CountrySchedule: which Disease, at what age (in weeks), dose number within that disease series.
 
