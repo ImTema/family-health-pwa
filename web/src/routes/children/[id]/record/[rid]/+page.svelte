@@ -20,6 +20,7 @@
   let childBirthDate = $state('')
   let showBrandList = $state(false)
   let showDiseaseList = $state(false)
+  let confirmDelete = $state(false)
 
   onMount(async () => {
     const children = await db.getChildren()
@@ -85,6 +86,11 @@
       serialNumber: serial.trim() || undefined,
       notes: notes.trim() || undefined
     })
+    goto(`/children/${childId}`)
+  }
+
+  async function doDelete() {
+    await db.deleteRecord(rid)
     goto(`/children/${childId}`)
   }
 </script>
@@ -171,6 +177,21 @@
     <div class="flex gap-3 mt-8">
       <a href="/children/{childId}" class="btn btn-ghost">Cancel</a>
       <button class="btn btn-primary" onclick={save}>Save</button>
+      <button class="btn btn-ghost text-error ml-auto" onclick={() => confirmDelete = true}>Delete</button>
     </div>
   </div>
 </div>
+
+{#if confirmDelete}
+  <div class="modal modal-open">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg">Delete this record?</h3>
+      <p class="py-4">This cannot be undone.</p>
+      <div class="modal-action">
+        <button class="btn" onclick={() => confirmDelete = false}>Cancel</button>
+        <button class="btn btn-error" onclick={doDelete}>Delete</button>
+      </div>
+    </div>
+    <div class="modal-backdrop" onclick={() => confirmDelete = false}></div>
+  </div>
+{/if}

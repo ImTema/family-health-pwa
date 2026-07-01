@@ -15,7 +15,6 @@
   let child = $state<Child | null>(null)
   let records = $state<VaccinationRecord[]>([])
   let tab = $state<'records' | 'schedule' | 'timeline'>('records')
-  let confirmDelete = $state<VaccinationRecord | null>(null)
   let timelineView = $state<'table' | 'chart'>('table')
   let chartZoom = $state(1)
 
@@ -45,12 +44,6 @@
     if (!child) { goto('/'); return }
     records = await db.getRecords(id)
   })
-
-  async function doDeleteRecord(record: VaccinationRecord) {
-    await db.deleteRecord(record.id)
-    records = await db.getRecords(id)
-    confirmDelete = null
-  }
 
   function brandName(r: VaccinationRecord): string {
     return brands.find(b => b.id === r.brandId)?.name ?? r.customBrandName ?? ''
@@ -181,10 +174,7 @@
                       <td>{record.serialNumber ?? ''}</td>
                       <td>{record.notes ?? ''}</td>
                       <td>
-                        <div class="flex gap-1">
-                          <a href="/children/{id}/record/{record.id}" class="btn btn-ghost btn-xs" title="Edit"><Icon name="pencil" /></a>
-                          <button class="btn btn-ghost btn-xs text-error" title="Delete" onclick={() => confirmDelete = record}><Icon name="trash" /></button>
-                        </div>
+                        <a href="/children/{id}/record/{record.id}" class="btn btn-ghost btn-xs" title="Edit"><Icon name="pencil" /></a>
                       </td>
                     </tr>
                   {/each}
@@ -404,23 +394,8 @@
         </div>
         <div class="flex gap-1 ml-2 flex-shrink-0">
           <a href="/children/{id}/record/{record.id}" class="btn btn-ghost btn-sm" title="Edit"><Icon name="pencil" /></a>
-          <button class="btn btn-ghost btn-sm text-error" title="Delete" onclick={() => confirmDelete = record}><Icon name="trash" /></button>
         </div>
       </div>
     </div>
   </div>
 {/snippet}
-
-{#if confirmDelete}
-  <div class="modal modal-open">
-    <div class="modal-box">
-      <h3 class="font-bold text-lg">Delete this record?</h3>
-      <p class="py-4">Recorded on {formatDate(confirmDelete.date)}. This cannot be undone.</p>
-      <div class="modal-action">
-        <button class="btn" onclick={() => confirmDelete = null}>Cancel</button>
-        <button class="btn btn-error" onclick={() => doDeleteRecord(confirmDelete!)}>Delete</button>
-      </div>
-    </div>
-    <div class="modal-backdrop" onclick={() => confirmDelete = null}></div>
-  </div>
-{/if}
