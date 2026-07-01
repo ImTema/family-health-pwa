@@ -97,7 +97,8 @@ function entries(list: [string, string, number, number][], country: 'RUSSIA' | '
     country,
     diseaseId: disease,
     ageWeeks,
-    doseNumber
+    doseNumber,
+    necessity: 'MANDATORY' as const
   }))
 }
 

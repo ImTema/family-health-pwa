@@ -11,7 +11,7 @@ let _db: IDBPDatabase<VaxDB> | null = null
 
 async function getDb(): Promise<IDBPDatabase<VaxDB>> {
   if (_db) return _db
-  _db = await openDB<VaxDB>('vaxtrack', 1, {
+  _db = await openDB<VaxDB>('vaxtrack', 2, {
     upgrade(db, oldVersion) {
       if (oldVersion < 1) {
         db.createObjectStore('children', { keyPath: 'id' })
@@ -19,6 +19,7 @@ async function getDb(): Promise<IDBPDatabase<VaxDB>> {
         records.createIndex('childId', 'childId')
         db.createObjectStore('custom_brands', { keyPath: 'id' })
       }
+      // v2: sex + photo added as optional fields on Child — no structural changes needed
     }
   })
   return _db

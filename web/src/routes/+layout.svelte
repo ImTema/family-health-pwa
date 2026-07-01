@@ -8,6 +8,8 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js')
     }
+    const saved = localStorage.getItem('theme') ?? 'light'
+    document.documentElement.setAttribute('data-theme', saved)
   })
 </script>
 

@@ -23,6 +23,8 @@ export interface Child {
   name: string
   birthDate: string  // YYYY-MM-DD
   country: Country
+  sex?: 'MALE' | 'FEMALE'
+  photo?: string  // base64 data URL
 }
 
 export interface VaccinationRecord {
@@ -42,6 +44,7 @@ export interface ScheduleEntry {
   diseaseId: string
   ageWeeks: number
   doseNumber: number
+  necessity: 'MANDATORY' | 'OPTIONAL'
 }
 
 export interface ScheduleResult {

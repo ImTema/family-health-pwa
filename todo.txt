@@ -1,5 +1,5 @@
 1. required to display advisory schedule and real schedule
-2. change pdf file name to famili-hea;th-vax-track
+2. change pdf file name to famili-health-vax-track-date
 3. add export options for sorting and grouping by vaccines, or deseases
 4. card details change to grid-view - too many space from the right - lets use it.
 5. deseases search dropbox like for vaccines
@@ -9,3 +9,5 @@
 9. lets add kids photo to the children details. possible?
 10. settings feature: backup handling to export and import databases, dark/light theme
 11. kids card: add sex field
+12. optional feature: vaccine and deseases dictionary
+13. we have to add nessecity of the vaccine: optional or mandatory
