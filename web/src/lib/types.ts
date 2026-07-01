@@ -11,11 +11,14 @@ export type ScheduleStatus = 'DONE' | 'HIGHLIGHTED' | 'UPCOMING'
 export interface Disease {
   id: string
   name: string
+  description?: string
+  symptoms?: string
 }
 
 export interface Brand {
   id: string
   name: string
+  description?: string
 }
 
 export interface Child {

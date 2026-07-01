@@ -3,7 +3,9 @@
   import { goto } from '$app/navigation'
   import { db } from '$lib/db'
   import { brands, brandCoverage, diseases } from '$lib/seed'
+  import { formatDate, childAge } from '$lib/utils'
   import { COUNTRY_LABELS, type Child } from '$lib/types'
+  import Icon from '$lib/Icon.svelte'
 
   let children = $state<Child[]>([])
   let activeId = $state<string | null>(null)
@@ -49,9 +51,9 @@
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-bold">VaxTrack</h1>
       <div class="flex gap-2">
-        <a href="/settings" class="btn btn-ghost btn-sm">Settings</a>
+        <a href="/settings" class="btn btn-ghost btn-sm" title="Settings"><Icon name="settings" /></a>
         {#if tab === 'children'}
-          <a href="/children/new" class="btn btn-primary btn-sm">+ Add child</a>
+          <a href="/children/new" class="btn btn-primary">+ Add child</a>
         {/if}
       </div>
     </div>
@@ -94,7 +96,7 @@
                   <div class="flex-1 min-w-0">
                     <div class="font-semibold text-lg">{child.name}</div>
                     <div class="text-sm text-base-content/60">
-                      {COUNTRY_LABELS[child.country]} · Born {child.birthDate}
+                      {formatDate(child.birthDate)} · {childAge(child.birthDate)} · {COUNTRY_LABELS[child.country]}
                       {#if child.sex} · {child.sex === 'MALE' ? 'Male' : 'Female'}{/if}
                     </div>
                   </div>
@@ -102,13 +104,15 @@
                     {#if isActive}<span class="badge badge-primary badge-sm">Active</span>{/if}
                     <a
                       href="/children/{child.id}/edit"
-                      class="btn btn-ghost btn-xs"
+                      class="btn btn-ghost btn-sm"
+                      title="Edit"
                       onclick={e => e.stopPropagation()}
-                    >Edit</a>
+                    ><Icon name="pencil" /></a>
                     <button
-                      class="btn btn-ghost btn-xs text-error"
+                      class="btn btn-ghost btn-sm text-error"
+                      title="Delete"
                       onclick={e => { e.stopPropagation(); confirmDelete = child }}
-                    >Delete</button>
+                    ><Icon name="trash" /></button>
                   </div>
                 </div>
               </div>
@@ -138,7 +142,7 @@
         {#if dictView === 'brands'}
           <div class="flex flex-col gap-2">
             {#each filteredBrands as brand}
-              <div class="card bg-base-200">
+              <a href="/dictionary/brand/{brand.id}" class="card bg-base-200 hover:bg-base-300 transition-colors">
                 <div class="card-body p-3">
                   <div class="font-semibold text-sm">{brand.name}</div>
                   <div class="flex flex-wrap gap-1 mt-1">
@@ -147,14 +151,14 @@
                     {/each}
                   </div>
                 </div>
-              </div>
+              </a>
             {/each}
           </div>
         {:else}
           <div class="flex flex-col gap-2">
             {#each filteredDiseases as disease}
               {@const coveringBrands = brands.filter(b => (brandCoverage[b.id] ?? []).includes(disease.id))}
-              <div class="card bg-base-200">
+              <a href="/dictionary/disease/{disease.id}" class="card bg-base-200 hover:bg-base-300 transition-colors">
                 <div class="card-body p-3">
                   <div class="font-semibold text-sm">{disease.name}</div>
                   <div class="flex flex-wrap gap-1 mt-1">
@@ -163,7 +167,7 @@
                     {/each}
                   </div>
                 </div>
-              </div>
+              </a>
             {/each}
           </div>
         {/if}
