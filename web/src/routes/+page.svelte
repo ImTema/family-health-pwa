@@ -51,7 +51,7 @@
         {#if tab === 'children'}
           <a href="/children/new" class="btn btn-primary">+ Add child</a>
         {/if}
-        <a href="/settings" class="btn btn-ghost btn-sm" title="Settings"><Icon name="settings" /></a>
+        <a href="/settings" class="btn btn-ghost" title="Settings"><Icon name="settings" /></a>
       </div>
     </div>
 
