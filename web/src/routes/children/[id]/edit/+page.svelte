@@ -100,7 +100,7 @@
     {/if}
 
     <div class="flex gap-3 mt-8">
-      <a href="/children/{id}" class="btn btn-ghost">Cancel</a>
+      <a href="/" class="btn btn-ghost">Cancel</a>
       <button class="btn btn-primary" onclick={save}>Save</button>
       <button class="btn btn-ghost text-error ml-auto" onclick={() => confirmDelete = true}>Delete</button>
     </div>

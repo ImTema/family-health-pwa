@@ -48,10 +48,10 @@
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-bold">VaxTrack</h1>
       <div class="flex gap-2">
-        <a href="/settings" class="btn btn-ghost btn-sm" title="Settings"><Icon name="settings" /></a>
         {#if tab === 'children'}
           <a href="/children/new" class="btn btn-primary">+ Add child</a>
         {/if}
+        <a href="/settings" class="btn btn-ghost btn-sm" title="Settings"><Icon name="settings" /></a>
       </div>
     </div>
 
