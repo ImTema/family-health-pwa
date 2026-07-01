@@ -1,2 +1,4 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+body { font-variant-numeric: tabular-nums; }

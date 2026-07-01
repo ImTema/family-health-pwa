@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { db } from '$lib/db'
-  import { uuid } from '$lib/utils'
+  import { uuid, compressImage } from '$lib/utils'
   import { COUNTRY_LABELS, type Country } from '$lib/types'
 
   const today = new Date().toISOString().split('T')[0]
@@ -13,12 +13,10 @@
   let photo = $state<string | undefined>(undefined)
   let error = $state('')
 
-  function onPhotoChange(e: Event) {
+  async function onPhotoChange(e: Event) {
     const file = (e.target as HTMLInputElement).files?.[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = ev => { photo = ev.target?.result as string }
-    reader.readAsDataURL(file)
+    photo = await compressImage(file)
   }
 
   async function save() {

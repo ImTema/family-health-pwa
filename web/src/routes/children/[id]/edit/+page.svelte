@@ -3,6 +3,7 @@
   import { page } from '$app/state'
   import { goto } from '$app/navigation'
   import { db } from '$lib/db'
+  import { compressImage } from '$lib/utils'
   import { COUNTRY_LABELS, type Country } from '$lib/types'
 
   const id = page.params.id
@@ -25,12 +26,10 @@
     photo = child.photo
   })
 
-  function onPhotoChange(e: Event) {
+  async function onPhotoChange(e: Event) {
     const file = (e.target as HTMLInputElement).files?.[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = ev => { photo = ev.target?.result as string }
-    reader.readAsDataURL(file)
+    photo = await compressImage(file)
   }
 
   async function save() {

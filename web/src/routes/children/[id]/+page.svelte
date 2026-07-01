@@ -16,6 +16,22 @@
   let tab = $state<'records' | 'schedule' | 'timeline'>('records')
   let confirmDelete = $state<VaccinationRecord | null>(null)
   let timelineView = $state<'table' | 'chart'>('table')
+  let chartZoom = $state(1)
+  let _pinchDist = 0
+  let _pinchZoom = 1
+
+  function pinchStart(e: TouchEvent) {
+    if (e.touches.length !== 2) return
+    _pinchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY)
+    _pinchZoom = chartZoom
+  }
+
+  function pinchMove(e: TouchEvent) {
+    if (e.touches.length !== 2) return
+    e.preventDefault()
+    const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY)
+    chartZoom = Math.min(5, Math.max(1, _pinchZoom * d / _pinchDist))
+  }
   let sortBy = $state<'date' | 'brand'>('date')
   let groupByDisease = $state(false)
 
@@ -103,7 +119,6 @@
           </div>
         </div>
         <div class="flex gap-2">
-          <a href="/children/{id}/edit" class="btn btn-ghost btn-sm" title="Edit"><Icon name="pencil" /></a>
           <a href="/children/{id}/record/new" class="btn btn-primary btn-md">+ Record</a>
         </div>
       </div>
@@ -125,17 +140,19 @@
 
     <div class="print:hidden">
       {#if tab === 'records'}
-        <div class="flex justify-end items-center gap-3 mb-3">
-          <select class="select select-bordered select-xs" bind:value={sortBy}>
+        <div class="flex items-center gap-3 mb-3">
+          <select class="select select-bordered select-xs w-auto" bind:value={sortBy}>
             <option value="date">Sort by date</option>
             <option value="brand">Sort by brand</option>
           </select>
-          <button
-            class="btn btn-ghost btn-sm {groupByDisease ? 'btn-active' : ''}"
-            title="Group by disease"
-            onclick={() => groupByDisease = !groupByDisease}
-          ><Icon name="virus" /></button>
-          <button class="btn btn-ghost btn-sm" title="Export PDF" onclick={doPrint}><Icon name="printer" /></button>
+          <div class="ml-auto flex gap-2">
+            <button
+              class="btn btn-ghost btn-sm {groupByDisease ? 'btn-active' : ''}"
+              title="Group by disease"
+              onclick={() => groupByDisease = !groupByDisease}
+            ><Icon name="virus" /></button>
+            <button class="btn btn-ghost btn-sm" title="Export PDF" onclick={doPrint}><Icon name="printer" /></button>
+          </div>
         </div>
 
         {#if records.length === 0}
@@ -144,10 +161,30 @@
           </div>
         {:else if groupByDisease}
           {#each groupedRecords() as [disease, recs]}
-            <div class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mt-4 mb-1">{disease}</div>
-            {#each recs as record}
-              {@render recordCard(record)}
-            {/each}
+            <h2 class="text-sm font-bold bg-base-200 px-3 py-1.5 mt-6 mb-2 rounded">{disease}</h2>
+            <div class="overflow-x-auto mb-4">
+              <table class="table table-xs w-full">
+                <thead>
+                  <tr>{#each ['Date', 'Vaccine / Brand', 'Serial / Lot', 'Notes', ''] as h}<th class="text-[10px] font-bold text-base-content">{h}</th>{/each}</tr>
+                </thead>
+                <tbody>
+                  {#each recs as record}
+                    <tr>
+                      <td class="whitespace-nowrap">{formatDate(record.date)}</td>
+                      <td>{brandName(record)}</td>
+                      <td>{record.serialNumber ?? ''}</td>
+                      <td>{record.notes ?? ''}</td>
+                      <td>
+                        <div class="flex gap-1">
+                          <a href="/children/{id}/record/{record.id}" class="btn btn-ghost btn-xs" title="Edit"><Icon name="pencil" /></a>
+                          <button class="btn btn-ghost btn-xs text-error" title="Delete" onclick={() => confirmDelete = record}><Icon name="trash" /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  {/each}
+                </tbody>
+              </table>
+            </div>
           {/each}
         {:else}
           {#each sortedRecords() as record}
@@ -244,38 +281,45 @@
           </div>
 
         {:else}
-          <div class="text-xs text-base-content/50 mb-2 flex gap-4">
+          <div class="text-xs text-base-content/50 mb-2 flex gap-4 items-center">
             <span><span class="inline-block w-3 h-0.5 bg-base-content/30 align-middle"></span> Recommended</span>
             <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-success align-middle"></span> Given</span>
+            <div class="ml-auto flex gap-1 items-center">
+              <button class="btn btn-xs btn-ghost" onclick={() => chartZoom = Math.max(1, chartZoom - 0.5)}>−</button>
+              <span class="text-[10px] w-6 text-center">{chartZoom}×</span>
+              <button class="btn btn-xs btn-ghost" onclick={() => chartZoom = Math.min(5, chartZoom + 0.5)}>+</button>
+            </div>
           </div>
-          <div class="flex flex-col gap-1 overflow-x-auto">
-            {#each diseases as disease}
-              {@const rows = timelineData.filter(r => r.disease.id === disease.id)}
-              <div class="flex items-center gap-2 min-w-0">
-                <div class="text-xs w-28 flex-shrink-0 truncate text-base-content/70">{disease.name}</div>
-                <div class="relative flex-1 h-5" style="min-width: 160px">
-                  <div class="absolute top-1/2 left-0 right-0 h-px bg-base-300"></div>
-                  {#each rows as r}
-                    {@const recPct = (r.entry.ageWeeks / timelineMax) * 100}
-                    <div class="absolute top-0 w-px h-full bg-base-content/20" style="left: {recPct}%"></div>
-                    {#if r.actualWeeks !== null}
-                      {@const actPct = (r.actualWeeks / timelineMax) * 100}
-                      <div
-                        class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-success border-2 border-base-100"
-                        style="left: {actPct}%"
-                        title="{r.disease.name} dose {r.entry.doseNumber}: given at {r.actualWeeks}w (rec: {r.entry.ageWeeks}w)"
-                      ></div>
-                    {/if}
+          <div class="overflow-x-auto" ontouchstart={pinchStart} ontouchmove={pinchMove}>
+            <div class="flex flex-col gap-1">
+              {#each diseases as disease}
+                {@const rows = timelineData.filter(r => r.disease.id === disease.id)}
+                <div class="flex items-center gap-2">
+                  <div class="text-xs w-28 flex-shrink-0 truncate text-base-content/70">{disease.name}</div>
+                  <div class="relative h-5" style="width: {chartZoom * 200}px">
+                    <div class="absolute top-1/2 left-0 right-0 h-px bg-base-300"></div>
+                    {#each rows as r}
+                      {@const recPct = (r.entry.ageWeeks / timelineMax) * 100}
+                      <div class="absolute top-0 w-px h-full bg-base-content/20" style="left: {recPct}%"></div>
+                      {#if r.actualWeeks !== null}
+                        {@const actPct = (r.actualWeeks / timelineMax) * 100}
+                        <div
+                          class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-success border-2 border-base-100"
+                          style="left: {actPct}%"
+                          title="{r.disease.name} dose {r.entry.doseNumber}: given at {r.actualWeeks}w (rec: {r.entry.ageWeeks}w)"
+                        ></div>
+                      {/if}
+                    {/each}
+                  </div>
+                </div>
+              {/each}
+              <div class="flex items-center gap-2">
+                <div class="w-28 flex-shrink-0"></div>
+                <div class="relative h-4" style="width: {chartZoom * 200}px">
+                  {#each milestones.filter((_, i) => i % 2 === 0) as w}
+                    <span class="absolute text-[10px] text-base-content/40 -translate-x-1/2" style="left: {(w / timelineMax) * 100}%">{weeksToLabel(w)}</span>
                   {/each}
                 </div>
-              </div>
-            {/each}
-            <div class="flex items-center gap-2">
-              <div class="w-28 flex-shrink-0"></div>
-              <div class="relative flex-1 h-4" style="min-width: 160px">
-                {#each milestones.filter((_, i) => i % 2 === 0) as w}
-                  <span class="absolute text-[10px] text-base-content/40 -translate-x-1/2" style="left: {(w / timelineMax) * 100}%">{weeksToLabel(w)}</span>
-                {/each}
               </div>
             </div>
           </div>

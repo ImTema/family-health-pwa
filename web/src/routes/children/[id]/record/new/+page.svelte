@@ -92,12 +92,12 @@
             bind:value={brandInput}
             oninput={() => { selectedBrandId = undefined }}
             onfocus={() => showBrandList = true}
-            onblur={() => setTimeout(() => showBrandList = false, 150)}
           />
           {#if showBrandList && brandSuggestions.length > 0}
+            <div class="fixed inset-0 z-10" onclick={() => showBrandList = false}></div>
             <div class="absolute z-20 bg-base-100 border border-base-300 rounded-lg shadow-lg w-full mt-1 max-h-48 overflow-y-auto">
               {#each brandSuggestions as b}
-                <button class="w-full text-left px-3 py-2 hover:bg-base-200 text-sm" onpointerdown={() => selectBrand(b.name)}>{b.name}</button>
+                <button class="w-full text-left px-3 py-2 hover:bg-base-200 text-sm" onclick={() => selectBrand(b.name)}>{b.name}</button>
               {/each}
             </div>
           {/if}
@@ -124,12 +124,12 @@
             placeholder="Search disease…"
             bind:value={diseaseQuery}
             onfocus={() => showDiseaseList = true}
-            onblur={() => setTimeout(() => showDiseaseList = false, 150)}
           />
           {#if showDiseaseList && diseaseSuggestions.length > 0}
+            <div class="fixed inset-0 z-10" onclick={() => showDiseaseList = false}></div>
             <div class="absolute z-20 bg-base-100 border border-base-300 rounded-lg shadow-lg w-full mt-1 max-h-48 overflow-y-auto">
               {#each diseaseSuggestions as d}
-                <button class="w-full text-left px-3 py-2 hover:bg-base-200 text-sm" onpointerdown={() => addDisease(d.id)}>{d.name}</button>
+                <button class="w-full text-left px-3 py-2 hover:bg-base-200 text-sm" onclick={() => addDisease(d.id)}>{d.name}</button>
               {/each}
             </div>
           {/if}
