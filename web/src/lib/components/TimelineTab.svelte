@@ -1,30 +1,12 @@
 <script lang="ts">
-  import { childAgeWeeks, weeksToLabel, scheduleMilestones, scheduleDiseases } from '../schedule'
+  import { weeksToLabel, scheduleMilestones, scheduleDiseases } from '../schedule'
   import { formatDate } from '../utils'
   import type { Child, ScheduleResult } from '../types'
 
   let { child, schedule }: { child: Child; schedule: ScheduleResult[] } = $props()
 
   let timelineView = $state<'table' | 'chart'>('table')
-  let chartZoom = $state(1)
-
-  function pinchZoom(node: HTMLElement) {
-    let dist = 0, zoom = 1
-    const onStart = (e: TouchEvent) => {
-      if (e.touches.length !== 2) return
-      dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY)
-      zoom = chartZoom
-    }
-    const onMove = (e: TouchEvent) => {
-      if (e.touches.length !== 2) return
-      e.preventDefault()
-      const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY)
-      chartZoom = Math.min(10, Math.max(1, zoom * d / dist))
-    }
-    node.addEventListener('touchstart', onStart, { passive: true })
-    node.addEventListener('touchmove', onMove, { passive: false })
-    return { destroy() { node.removeEventListener('touchstart', onStart); node.removeEventListener('touchmove', onMove) } }
-  }
+  const chartWidth = 600
 
   const milestones = $derived(scheduleMilestones(schedule))
   const diseases = $derived(scheduleDiseases(schedule))
@@ -37,7 +19,15 @@
       return { ...r, actualWeeks }
     })
   )
-  const timelineMax = $derived(Math.max(...milestones, childAgeWeeks(child.birthDate)) + 4)
+  const actualWeeksValues = $derived(
+    timelineData.map(r => r.actualWeeks).filter((w): w is number => w !== null)
+  )
+  const timelineMax = $derived(Math.max(...milestones, ...actualWeeksValues) + 4)
+  // ponytail: sqrt compresses long gaps (e.g. birth dose given years late) so the chart
+  // isn't mostly empty space; swap for log(w+1) if sqrt still isn't compressed enough
+  function weekPct(weeks: number) {
+    return (Math.sqrt(weeks) / Math.sqrt(timelineMax)) * 100
+  }
 </script>
 
 <div class="flex gap-2 mb-3">
@@ -91,25 +81,21 @@
   <div class="text-xs text-base-content/50 mb-2 flex gap-4 items-center">
     <span><span class="inline-block w-3 h-0.5 bg-base-content/30 align-middle"></span> Recommended</span>
     <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-success align-middle"></span> Given</span>
-    <div class="ml-auto flex gap-1 items-center">
-      <button class="btn btn-xs btn-ghost" onclick={() => chartZoom = Math.max(1, chartZoom - 1)}>−</button>
-      <span class="text-[10px] w-6 text-center">{chartZoom}×</span>
-      <button class="btn btn-xs btn-ghost" onclick={() => chartZoom = Math.min(10, chartZoom + 1)}>+</button>
-    </div>
   </div>
-  <div class="overflow-x-auto" style="touch-action: pan-x" use:pinchZoom>
+  <div class="overflow-x-auto">
     <div class="flex flex-col gap-1 min-w-max">
       {#each diseases as disease}
         {@const rows = timelineData.filter(r => r.disease.id === disease.id)}
+        {@const rowMaxPct = Math.max(...rows.map(r => weekPct(Math.max(r.entry.ageWeeks, r.actualWeeks ?? 0))))}
         <div class="flex items-center gap-2">
-          <div class="text-xs w-28 flex-shrink-0 truncate text-base-content/70">{disease.name}</div>
-          <div class="relative h-5" style="width: {chartZoom * 200}px">
-            <div class="absolute top-1/2 left-0 right-0 h-px bg-base-300"></div>
+          <div class="text-xs w-28 flex-shrink-0 truncate text-base-content/70 sticky left-0 bg-base-100">{disease.name}</div>
+          <div class="relative h-5" style="width: {chartWidth}px">
+            <div class="absolute top-1/2 left-0 h-px bg-base-300" style="width: {rowMaxPct}%"></div>
             {#each rows as r}
-              {@const recPct = (r.entry.ageWeeks / timelineMax) * 100}
+              {@const recPct = weekPct(r.entry.ageWeeks)}
               <div class="absolute top-0 w-px h-full bg-base-content/20" style="left: {recPct}%"></div>
               {#if r.actualWeeks !== null}
-                {@const actPct = (r.actualWeeks / timelineMax) * 100}
+                {@const actPct = weekPct(r.actualWeeks)}
                 <div
                   class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-success border-2 border-base-100"
                   style="left: {actPct}%"
@@ -122,9 +108,9 @@
       {/each}
       <div class="flex items-center gap-2">
         <div class="w-28 flex-shrink-0"></div>
-        <div class="relative h-4" style="width: {chartZoom * 200}px">
+        <div class="relative h-4" style="width: {chartWidth}px">
           {#each milestones.filter((_, i) => i % 2 === 0) as w}
-            <span class="absolute text-[10px] text-base-content/40 -translate-x-1/2" style="left: {(w / timelineMax) * 100}%">{weeksToLabel(w)}</span>
+            <span class="absolute text-[10px] text-base-content/40 -translate-x-1/2" style="left: {weekPct(w)}%">{weeksToLabel(w)}</span>
           {/each}
         </div>
       </div>
