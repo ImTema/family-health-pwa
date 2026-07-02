@@ -6,13 +6,12 @@
   import { uuid } from '$lib/utils'
   import RecordForm from '$lib/RecordForm.svelte'
 
-  const childId = page.params.id
+  const childId = page.params.id as string
 
   let childBirthDate = $state('')
 
   onMount(async () => {
-    const children = await db.getChildren()
-    childBirthDate = children.find(c => c.id === childId)?.birthDate ?? ''
+    childBirthDate = (await db.getChild(childId))?.birthDate ?? ''
   })
 </script>
 

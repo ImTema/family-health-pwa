@@ -11,15 +11,14 @@
   import ScheduleTab from '$lib/ScheduleTab.svelte'
   import TimelineTab from '$lib/TimelineTab.svelte'
 
-  const id = page.params.id
+  const id = page.params.id as string
 
   let child = $state<Child | null>(null)
   let records = $state<VaccinationRecord[]>([])
   let tab = $state<'records' | 'schedule' | 'timeline'>('records')
 
   onMount(async () => {
-    const children = await db.getChildren()
-    child = children.find(c => c.id === id) ?? null
+    child = (await db.getChild(id)) ?? null
     if (!child) { goto('/'); return }
     records = await db.getRecords(id)
   })

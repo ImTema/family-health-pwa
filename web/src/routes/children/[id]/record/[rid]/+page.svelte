@@ -6,16 +6,15 @@
   import RecordForm from '$lib/RecordForm.svelte'
   import type { VaccinationRecord } from '$lib/types'
 
-  const childId = page.params.id
-  const rid = page.params.rid
+  const childId = page.params.id as string
+  const rid = page.params.rid as string
 
   let childBirthDate = $state('')
   let record = $state<VaccinationRecord | null>(null)
   let confirmDelete = $state(false)
 
   onMount(async () => {
-    const children = await db.getChildren()
-    childBirthDate = children.find(c => c.id === childId)?.birthDate ?? ''
+    childBirthDate = (await db.getChild(childId))?.birthDate ?? ''
 
     const found = (await db.getRecords(childId)).find(r => r.id === rid)
     if (!found) { goto(`/children/${childId}`); return }

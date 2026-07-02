@@ -2,8 +2,8 @@
   import { page } from '$app/state'
   import { diseases, brands, brandCoverage } from '$lib/seed'
 
-  const disease = diseases.find(d => d.id === page.params.id)
-  const coveringBrands = brands.filter(b => (brandCoverage[b.id] ?? []).includes(page.params.id))
+  const disease = diseases.find(d => d.id === page.params.id as string)
+  const coveringBrands = brands.filter(b => (brandCoverage[b.id] ?? []).includes(page.params.id as string))
 </script>
 
 <div class="min-h-full bg-base-100 p-4">

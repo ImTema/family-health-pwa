@@ -39,6 +39,18 @@ describe('db.getChildren / saveChild', () => {
   })
 })
 
+describe('db.getChild', () => {
+  it('returns the matching child', async () => {
+    await db.saveChild(child({ id: 'c1' }))
+    await db.saveChild(child({ id: 'c2', name: 'Other' }))
+    expect((await db.getChild('c2'))?.name).toBe('Other')
+  })
+
+  it('returns undefined for an unknown id', async () => {
+    expect(await db.getChild('unknown')).toBeUndefined()
+  })
+})
+
 describe('db.getRecords / saveRecord', () => {
   it('returns only records for the requested child', async () => {
     await db.saveRecord(record({ id: 'r1', childId: 'c1' }))

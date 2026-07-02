@@ -7,7 +7,7 @@ Tracks deepening opportunities identified for family-health-pwa and what's been 
 1. **Disease-coverage resolution scattered across 3 places** — done, see below.
 2. **Record-entry forms (`new`/`[rid]`) near-total duplication** — done, see below.
 3. **`children/[id]/+page.svelte` God route** (407 lines, 3 view-modes + inline gesture handler + duplicated print markup) — done, see below.
-4. **`db.getChildren().find(id)` pattern instead of `db.getChild(id)`** — not started.
+4. **`db.getChildren().find(id)` pattern instead of `db.getChild(id)`** — done, see below.
 
 ---
 
@@ -51,3 +51,17 @@ Tracks deepening opportunities identified for family-health-pwa and what's been 
 - Extracted `RecordsTab.svelte` (177 lines), `ScheduleTab.svelte` (49 lines), `TimelineTab.svelte` (133 lines).
 - Added two small shared helpers to `schedule.ts` (`scheduleMilestones`, `scheduleDiseases`) to avoid re-duplicating the milestone/disease derivations across the two new tabs that both need them.
 - `svelte-check` and `vitest` (40/40) clean, no new error categories. Not visually verified in a browser (no browser-automation tooling available in this environment).
+
+---
+
+## 4. `db.getChild(id)`
+
+**Problem:** `db.ts` had no single-child lookup, so 4 call sites fetched the entire `children` store and did `.find(c => c.id === id)` just to get one row.
+
+**Decision:** add `db.getChild(id)`, backed by a direct `idb.get()` (the store is keyed by `id`, so no index scan needed).
+
+**Result:**
+- Added `db.getChild(id)` to `db.ts`, with 2 new tests in `db.test.ts`.
+- Replaced the `getChildren().find(...)` pattern at all 4 call sites (`children/[id]/+page.svelte`, `children/[id]/edit/+page.svelte`, `children/[id]/record/new/+page.svelte`, `children/[id]/record/[rid]/+page.svelte`).
+- Side effect: while fixing this, `db.getChild(id: string)`'s stricter typing surfaced a pre-existing gap — `page.params.id` is typed `string | undefined` by SvelteKit and was never narrowed, which had been silently tolerated (11 pre-existing `svelte-check` errors before this session, growing to 18 as each refactor threaded `id` through more strictly-typed functions). Fixed at the source with `page.params.id as string` in the 6 affected route files (dynamic segments are always present for a matched route). `svelte-check` error count: 11 (baseline) → 0.
+- `svelte-check` and `vitest` (42/42) clean.

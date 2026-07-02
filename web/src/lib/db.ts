@@ -30,6 +30,10 @@ export const db = {
     return (await getDb()).getAll('children')
   },
 
+  async getChild(id: string): Promise<Child | undefined> {
+    return (await getDb()).get('children', id)
+  },
+
   async saveChild(child: Child): Promise<void> {
     await (await getDb()).put('children', child)
   },

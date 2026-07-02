@@ -6,7 +6,7 @@
   import { compressImage } from '$lib/utils'
   import { COUNTRY_LABELS, type Country } from '$lib/types'
 
-  const id = page.params.id
+  const id = page.params.id as string
   const today = new Date().toISOString().split('T')[0]
 
   let name = $state('')
@@ -18,7 +18,7 @@
   let confirmDelete = $state(false)
 
   onMount(async () => {
-    const child = (await db.getChildren()).find(c => c.id === id)
+    const child = await db.getChild(id)
     if (!child) { goto('/'); return }
     name = child.name
     birthDate = child.birthDate
