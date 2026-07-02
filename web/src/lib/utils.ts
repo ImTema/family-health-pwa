@@ -41,6 +41,10 @@ export function swipeTabs<T extends string>(node: HTMLElement, opts: { values: r
   return { destroy() { node.removeEventListener('touchstart', onStart); node.removeEventListener('touchend', onEnd) } }
 }
 
+export function todayISO(): string {
+  return new Date().toISOString().split('T')[0]
+}
+
 export function formatDate(iso: string): string {
   return iso.replace(/-/g, '.')
 }

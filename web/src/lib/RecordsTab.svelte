@@ -1,8 +1,6 @@
 <script lang="ts">
-  import { brands } from './seed'
-  import { diseasesFor } from './schedule'
-  import { diseaseById } from './seed'
-  import { formatDate, childAge } from './utils'
+  import { brandNameFor, diseaseNamesFor } from './schedule'
+  import { formatDate, childAge, todayISO } from './utils'
   import { COUNTRY_LABELS, type Child, type VaccinationRecord } from './types'
   import Icon from './Icon.svelte'
 
@@ -11,26 +9,18 @@
   let sortBy = $state<'date' | 'brand'>('date')
   let groupByDisease = $state(false)
 
-  function brandName(r: VaccinationRecord): string {
-    return brands.find(b => b.id === r.brandId)?.name ?? r.customBrandName ?? ''
-  }
-
-  function diseaseNames(r: VaccinationRecord): string[] {
-    return [...diseasesFor(r)].map(id => diseaseById[id]?.name).filter(Boolean) as string[]
-  }
-
   function sortedRecords(): VaccinationRecord[] {
     return [...records].sort((a, b) =>
       sortBy === 'date'
         ? b.date.localeCompare(a.date)
-        : (brandName(a) || '').localeCompare(brandName(b) || '') || b.date.localeCompare(a.date)
+        : (brandNameFor(a) || '').localeCompare(brandNameFor(b) || '') || b.date.localeCompare(a.date)
     )
   }
 
   function groupedRecords(): Map<string, VaccinationRecord[]> {
     const groups = new Map<string, VaccinationRecord[]>()
     for (const r of sortedRecords()) {
-      const names = diseaseNames(r)
+      const names = diseaseNamesFor(r)
       const key = names.length ? names[0] : 'Other'
       if (!groups.has(key)) groups.set(key, [])
       groups.get(key)!.push(r)
@@ -39,7 +29,7 @@
   }
 
   function doPrint() {
-    const today = new Date().toISOString().split('T')[0]
+    const today = todayISO()
     const prev = document.title
     document.title = `${child.name}-vaccinations-${formatDate(today)}`
     // ponytail: force light theme for print so dark-mode gray text doesn't wash out on paper
@@ -85,7 +75,7 @@
             {#each recs as record}
               <tr>
                 <td class="whitespace-nowrap">{formatDate(record.date)}</td>
-                <td>{brandName(record)}</td>
+                <td>{brandNameFor(record)}</td>
                 <td>{record.serialNumber ?? ''}</td>
                 <td>{record.notes ?? ''}</td>
                 <td>
@@ -121,7 +111,7 @@
           {#each recs as r}
             <tr>
               <td class="border border-gray-400 p-2">{formatDate(r.date)}</td>
-              <td class="border border-gray-400 p-2">{brandName(r)}</td>
+              <td class="border border-gray-400 p-2">{brandNameFor(r)}</td>
               <td class="border border-gray-400 p-2">{r.serialNumber ?? ''}</td>
               <td class="border border-gray-400 p-2">{r.notes ?? ''}</td>
             </tr>
@@ -138,8 +128,8 @@
         {#each sortedRecords() as r}
           <tr>
             <td class="border border-gray-400 p-2">{formatDate(r.date)}</td>
-            <td class="border border-gray-400 p-2">{brandName(r)}</td>
-            <td class="border border-gray-400 p-2">{diseaseNames(r).join(', ')}</td>
+            <td class="border border-gray-400 p-2">{brandNameFor(r)}</td>
+            <td class="border border-gray-400 p-2">{diseaseNamesFor(r).join(', ')}</td>
             <td class="border border-gray-400 p-2">{r.serialNumber ?? ''}</td>
             <td class="border border-gray-400 p-2">{r.notes ?? ''}</td>
           </tr>
@@ -156,12 +146,12 @@
         <div class="flex-1 min-w-0">
           <div class="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-sm">
             <span>{formatDate(record.date)}</span>
-            {#if brandName(record)}<span class="font-semibold">{brandName(record)}</span>{/if}
+            {#if brandNameFor(record)}<span class="font-semibold">{brandNameFor(record)}</span>{/if}
             {#if record.serialNumber}<span class="text-base-content/50 text-[10px]">{record.serialNumber}</span>{/if}
           </div>
-          {#if diseaseNames(record).length > 0}
+          {#if diseaseNamesFor(record).length > 0}
             <div class="flex flex-wrap gap-1 mt-1.5">
-              {#each diseaseNames(record) as name}
+              {#each diseaseNamesFor(record) as name}
                 <span class="badge badge-xs border border-base-300 bg-transparent text-base-content/60">{name}</span>
               {/each}
             </div>

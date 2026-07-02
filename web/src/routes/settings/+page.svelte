@@ -1,8 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { db } from '$lib/db'
-  import { brands, diseaseById } from '$lib/seed'
-  import type { VaccinationRecord } from '$lib/types'
+  import { brandNameFor, diseaseNamesFor } from '$lib/schedule'
+  import { todayISO } from '$lib/utils'
+  import { toBackup, fromBackup } from '$lib/backup'
 
   let theme = $state('light')
   let importError = $state<string | null>(null)
@@ -20,13 +21,9 @@
   }
 
   async function doExport() {
-    const today = new Date().toISOString().split('T')[0]
+    const today = todayISO()
     const chs = await db.getChildren()
-    const backup = {
-      version: 2,
-      exportedAt: today,
-      children: await Promise.all(chs.map(async c => ({ ...c, records: await db.getRecords(c.id) })))
-    }
+    const backup = toBackup(await Promise.all(chs.map(async c => ({ ...c, records: await db.getRecords(c.id) }))), today)
     const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -42,22 +39,14 @@
     return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v
   }
 
-  function brandName(r: VaccinationRecord): string {
-    return brands.find(b => b.id === r.brandId)?.name ?? r.customBrandName ?? ''
-  }
-
-  function diseaseNames(r: VaccinationRecord): string {
-    return r.diseaseIds.map(id => diseaseById[id]?.name).filter(Boolean).join('; ')
-  }
-
   async function doExportCsv() {
-    const today = new Date().toISOString().split('T')[0]
+    const today = todayISO()
     const chs = await db.getChildren()
     const rows = [['Child', 'Date', 'Vaccine / Brand', 'Diseases', 'Serial / Lot', 'Notes']]
     for (const c of chs) {
       const records = await db.getRecords(c.id)
       for (const r of records) {
-        rows.push([c.name, r.date, brandName(r), diseaseNames(r), r.serialNumber ?? '', r.notes ?? ''])
+        rows.push([c.name, r.date, brandNameFor(r), diseaseNamesFor(r).join('; '), r.serialNumber ?? '', r.notes ?? ''])
       }
     }
     const csv = rows.map(row => row.map(csvField).join(',')).join('\n')
@@ -73,11 +62,11 @@
   async function doImport(json: string) {
     if (!confirm('This will replace all existing data with the backup. Continue?')) return
     try {
-      const backup = JSON.parse(json)
+      const backup = fromBackup(json)
       await db.deleteAll()
-      for (const bc of backup.children) {
-        await db.saveChild({ id: bc.id, name: bc.name, birthDate: bc.birthDate, country: bc.country, sex: bc.sex, photo: bc.photo })
-        for (const br of bc.records ?? []) await db.saveRecord(br)
+      for (const { records, ...child } of backup.children) {
+        await db.saveChild(child)
+        for (const r of records) await db.saveRecord(r)
       }
       localStorage.removeItem('activeChildId')
     } catch (e) {

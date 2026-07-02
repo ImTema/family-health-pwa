@@ -8,6 +8,10 @@ Tracks deepening opportunities identified for family-health-pwa and what's been 
 2. **Record-entry forms (`new`/`[rid]`) near-total duplication** — done, see below.
 3. **`children/[id]/+page.svelte` God route** (407 lines, 3 view-modes + inline gesture handler + duplicated print markup) — done, see below.
 4. **`db.getChildren().find(id)` pattern instead of `db.getChild(id)`** — done, see below.
+5. **Child-entry forms (`new`/`edit`) near-total duplication** — done, see below.
+6. **Record display-name resolution scattered across 2 places** — done, see below.
+7. **Backup import/export with no schema module, zero test coverage** — done, see below.
+8. **`today()` reimplemented as an inline one-liner at 6 call sites** — done, see below.
 
 ---
 
@@ -65,3 +69,53 @@ Tracks deepening opportunities identified for family-health-pwa and what's been 
 - Replaced the `getChildren().find(...)` pattern at all 4 call sites (`children/[id]/+page.svelte`, `children/[id]/edit/+page.svelte`, `children/[id]/record/new/+page.svelte`, `children/[id]/record/[rid]/+page.svelte`).
 - Side effect: while fixing this, `db.getChild(id: string)`'s stricter typing surfaced a pre-existing gap — `page.params.id` is typed `string | undefined` by SvelteKit and was never narrowed, which had been silently tolerated (11 pre-existing `svelte-check` errors before this session, growing to 18 as each refactor threaded `id` through more strictly-typed functions). Fixed at the source with `page.params.id as string` in the 6 affected route files (dynamic segments are always present for a matched route). `svelte-check` error count: 11 (baseline) → 0.
 - `svelte-check` and `vitest` (42/42) clean.
+
+---
+
+## 5. `ChildForm` (recurrence of candidate #2, for `Child` instead of `VaccinationRecord`)
+
+**Problem:** `children/new/+page.svelte` (89 lines) and `children/[id]/edit/+page.svelte` (122 lines) were near-total copies — identical fields (name/birthDate/sex/country/photo), identical validation, identical markup. The lesson from candidate #2 (`RecordForm.svelte`) hadn't been generalized to the other entity that gets created/edited.
+
+**Decision:** extract `ChildForm.svelte`, mirroring `RecordForm.svelte`'s shape (`title`/`initial`/`onSave`/`extraActions` props).
+
+**Result:**
+- New shared module `web/src/lib/ChildForm.svelte` owns fields, validation, and save wiring.
+- `children/new/+page.svelte`: 89 → 15 lines. `children/[id]/edit/+page.svelte`: 122 → 41 lines.
+- `svelte-check` and `vitest` clean, no regressions.
+
+---
+
+## 6. Record display-name resolution (`brandNameFor`/`diseaseNamesFor`)
+
+**Problem:** `brandName()` and `diseaseNames()` (resolving a VaccinationRecord's brand/disease display strings) were reimplemented in `RecordsTab.svelte` and `settings/+page.svelte`. The disease-name variant had a latent precedence-drift risk — one call site went through `diseasesFor()`, the other mapped `r.diseaseIds` directly — the same class of bug as candidate #1, just for display strings.
+
+**Decision:** move `brandNameFor()`/`diseaseNamesFor()` into `schedule.ts` next to `diseasesFor()`, as the single source of truth for record display strings.
+
+**Result:**
+- Two duplicate local functions removed from `RecordsTab.svelte` and `settings/+page.svelte`.
+- `svelte-check` and `vitest` clean, no regressions.
+
+---
+
+## 7. Backup import/export schema (`backup.ts`)
+
+**Problem:** `settings/+page.svelte`'s `doImport` hand-listed the `Child` shape inline, shadowing `types.ts` with no compile-time link between them. Zero test coverage on the only code path that serializes/deserializes the full data model — a silent risk for the one operation that can destroy user data (import replaces everything via `db.deleteAll()`).
+
+**Decision:** extract `backup.ts` with `toBackup()`/`fromBackup()`, an explicit `Backup`/`BackupChild` schema, and version defaulting for pre-versioning backups.
+
+**Result:**
+- New module `web/src/lib/backup.ts` + `backup.test.ts` (6 tests: round-trip, missing-field defaults, version defaulting, invalid-shape and malformed-JSON errors).
+- `settings/+page.svelte`'s `doExport`/`doImport` now call the module instead of inlining the shape.
+- `svelte-check` and `vitest` (48/48) clean.
+
+---
+
+## 8. `today()` helper (`todayISO`)
+
+**Problem:** `new Date().toISOString().split('T')[0]` was reimplemented inline at 6 call sites (`RecordForm.svelte`, `RecordsTab.svelte`, `settings/+page.svelte` ×2, `children/new`, `children/[id]/edit`) for date-input defaults and filename stamps.
+
+**Decision:** add `todayISO()` to `utils.ts`.
+
+**Result:**
+- All 6 call sites now call `todayISO()`.
+- `svelte-check` and `vitest` clean, no regressions.

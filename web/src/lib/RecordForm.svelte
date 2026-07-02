@@ -1,5 +1,6 @@
 <script lang="ts">
   import { brands, brandCoverage, diseases, diseaseById } from './seed'
+  import { todayISO } from './utils'
   import type { Snippet } from 'svelte'
   import type { VaccinationRecord } from './types'
 
@@ -21,7 +22,7 @@
     extraActions?: Snippet
   } = $props()
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = todayISO()
 
   let brandInput = $state(brands.find(b => b.id === initial?.brandId)?.name ?? initial?.customBrandName ?? '')
   let selectedBrandId = $state<string | undefined>(initial?.brandId)
