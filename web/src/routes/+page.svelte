@@ -43,7 +43,7 @@
   )
 </script>
 
-<div class="min-h-screen bg-base-100" use:swipeTabs={{ values: ['children', 'dictionary'], get: () => tab, set: v => tab = v }}>
+<div class="min-h-full bg-base-100" use:swipeTabs={{ values: ['children', 'dictionary'], get: () => tab, set: v => tab = v }}>
   <div class="sticky top-0 z-20 bg-base-200 shadow-sm">
     <div class="max-w-lg mx-auto p-4 pb-0">
       <div class="flex justify-between items-center">

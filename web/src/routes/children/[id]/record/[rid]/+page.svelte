@@ -95,7 +95,7 @@
   }
 </script>
 
-<div class="min-h-screen bg-base-100 p-4">
+<div class="min-h-full bg-base-100 p-4">
   <div class="max-w-lg mx-auto">
     <h1 class="text-2xl font-bold mb-6">Edit record</h1>
 

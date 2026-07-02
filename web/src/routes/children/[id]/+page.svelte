@@ -104,7 +104,7 @@
 </script>
 
 {#if child}
-<div class="min-h-screen bg-base-100" use:swipeTabs={{ values: ['records', 'schedule', 'timeline'], get: () => tab, set: v => tab = v }}>
+<div class="min-h-full bg-base-100" use:swipeTabs={{ values: ['records', 'schedule', 'timeline'], get: () => tab, set: v => tab = v }}>
   <div class="sticky top-0 z-20 bg-base-200 shadow-sm print:hidden">
     <div class="max-w-2xl mx-auto p-4 pb-0">
       <a href="/" class="btn btn-ghost btn-xs mb-2">← All children</a>

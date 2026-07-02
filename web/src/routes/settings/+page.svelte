@@ -86,7 +86,7 @@
   }
 </script>
 
-<div class="min-h-screen bg-base-100 p-4">
+<div class="min-h-full bg-base-100 p-4">
   <div class="max-w-lg mx-auto">
     <a href="/" class="btn btn-ghost btn-xs mb-4">← Back</a>
     <h1 class="text-2xl font-bold mb-6">Settings</h1>
