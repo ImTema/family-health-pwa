@@ -43,27 +43,31 @@
   )
 </script>
 
-<div class="min-h-screen bg-base-100 p-4" use:swipeTabs={{ values: ['children', 'dictionary'], get: () => tab, set: v => tab = v }}>
-  <div class="max-w-lg mx-auto">
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold">VaxTrack</h1>
-      <div class="flex gap-2">
-        {#if tab === 'children'}
-          <a href="/children/new" class="btn btn-primary">+ Add child</a>
-        {/if}
-        <a href="/settings" class="btn btn-ghost" title="Settings"><Icon name="settings" /></a>
+<div class="min-h-screen bg-base-100" use:swipeTabs={{ values: ['children', 'dictionary'], get: () => tab, set: v => tab = v }}>
+  <div class="sticky top-0 z-20 bg-base-200 shadow-sm">
+    <div class="max-w-lg mx-auto p-4 pb-0">
+      <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold">VaxBook</h1>
+        <div class="flex gap-2">
+          {#if tab === 'children'}
+            <a href="/children/new" class="btn btn-primary">+ Add child</a>
+          {/if}
+          <a href="/settings" class="btn btn-ghost" title="Settings"><Icon name="settings" /></a>
+        </div>
+      </div>
+
+      <div role="tablist" class="tabs tabs-bordered mt-3">
+        <button role="tab" class="tab {tab === 'children' ? 'tab-active' : ''}" onclick={() => tab = 'children'}>
+          Children
+        </button>
+        <button role="tab" class="tab {tab === 'dictionary' ? 'tab-active' : ''}" onclick={() => tab = 'dictionary'}>
+          Dictionary
+        </button>
       </div>
     </div>
+  </div>
 
-    <div role="tablist" class="tabs tabs-bordered mb-4">
-      <button role="tab" class="tab {tab === 'children' ? 'tab-active' : ''}" onclick={() => tab = 'children'}>
-        Children
-      </button>
-      <button role="tab" class="tab {tab === 'dictionary' ? 'tab-active' : ''}" onclick={() => tab = 'dictionary'}>
-        Dictionary
-      </button>
-    </div>
-
+  <div class="max-w-lg mx-auto p-4">
     {#key tab}
     <div in:fade={{ duration: 150, delay: 100 }} out:fade={{ duration: 100 }}>
     {#if tab === 'children'}
@@ -139,10 +143,13 @@
             {#each filteredBrands as brand}
               <a href="/dictionary/brand/{brand.id}" class="card bg-base-200 hover:bg-base-300 transition-colors">
                 <div class="card-body p-3">
-                  <div class="font-semibold text-sm">{brand.name}</div>
+                  <div class="flex items-baseline gap-2">
+                    <span class="font-semibold text-sm">{brand.name}</span>
+                    {#if brand.country}<span class="text-base-content/50 text-[10px]">{brand.country}</span>{/if}
+                  </div>
                   <div class="flex flex-wrap gap-1 mt-1">
                     {#each (brandCoverage[brand.id] ?? []) as diseaseId}
-                      <span class="badge badge-outline badge-sm">{diseases.find(d => d.id === diseaseId)?.name ?? diseaseId}</span>
+                      <span class="badge badge-xs border border-base-300 bg-transparent text-base-content/60">{diseases.find(d => d.id === diseaseId)?.name ?? diseaseId}</span>
                     {/each}
                   </div>
                 </div>
@@ -158,7 +165,7 @@
                   <div class="font-semibold text-sm">{disease.name}</div>
                   <div class="flex flex-wrap gap-1 mt-1">
                     {#each coveringBrands as brand}
-                      <span class="badge badge-outline badge-sm">{brand.name}</span>
+                      <span class="badge badge-xs border border-base-300 bg-transparent text-base-content/60">{brand.name}</span>
                     {/each}
                   </div>
                 </div>

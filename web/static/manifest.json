@@ -1,6 +1,6 @@
 {
-  "name": "VaxTrack",
-  "short_name": "VaxTrack",
+  "name": "VaxBook",
+  "short_name": "VaxBook",
   "description": "Family vaccination tracker for families relocating between countries",
   "start_url": "/",
   "display": "standalone",

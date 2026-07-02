@@ -1,3 +1,7 @@
 1. add country to dictionary, styled like serial number
-2. change bubbles like from children - records
-3.
+2. change bubbles in dictionary like from children - records
+3. fix header for dictionary and children page (main page)
+4. add footer on every page about me. LinkedIn link: linkedin.com/in/apetrov08/ . Year: 2026
+5. create a readme file. contents are: Name, Description, Stack, How to run, How to test. Make it more concise in comparison to context.md.
+6. modify agents md file with references to context and to readme.
+7.

@@ -10,8 +10,6 @@ Vaccination-only tracker for parents relocating between countries. No sleep, wei
 - `idb` (1.5kb IDB wrapper) for local persistence — versioned migrations via `openDB` upgrade callback
 - Export via print CSS → browser-native PDF
 
-> **Previous stack (Kotlin KMP + Compose HTML)** was replaced for development speed. See ADR 0002.
-
 ## Ubiquitous Language
 
 **Child** — a tracked person (always a child in practice). Has a birth date. Has one or more VaccinationRecords.
@@ -20,7 +18,7 @@ Vaccination-only tracker for parents relocating between countries. No sleep, wei
 
 **Disease** — a single antigen/pathogen a vaccine can protect against (e.g. `Diphtheria`, `Tetanus`, `HepB`, `IPV`). The atomic unit of coverage. Not country-specific.
 
-**Brand** — a commercial vaccine product (e.g. `Pentaxim`, `Infanrix Hexa`, `BCG`). Covers one or more Diseases. Seeded for popular brands; user can record an unknown brand by selecting Diseases directly.
+**Brand** — a commercial vaccine product (e.g. `Pentaxim`, `Infanrix Hexa`, `BCG`). Covers one or more Diseases. Optionally has a manufacturer country. Seeded for popular brands; user can record an unknown brand by selecting Diseases directly.
 
 **BrandDiseaseCoverage** — many-to-many: which Diseases a Brand covers. This is the knowledge graph edge.
 

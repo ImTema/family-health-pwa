@@ -14,3 +14,8 @@
 </script>
 
 {@render children()}
+
+<footer class="print:hidden text-center text-xs text-base-content/40 py-6">
+  <a href="https://linkedin.com/in/apetrov08/" target="_blank" rel="noopener" class="link">LinkedIn</a>
+   · Artem Petrov · 2026
+</footer>

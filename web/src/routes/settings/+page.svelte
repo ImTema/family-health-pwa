@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { db } from '$lib/db'
+  import { brands, diseaseById } from '$lib/seed'
+  import type { VaccinationRecord } from '$lib/types'
 
   let theme = $state('light')
   let importError = $state<string | null>(null)
@@ -34,6 +36,38 @@
     URL.revokeObjectURL(url)
     exportDone = true
     setTimeout(() => exportDone = false, 3000)
+  }
+
+  function csvField(v: string): string {
+    return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v
+  }
+
+  function brandName(r: VaccinationRecord): string {
+    return brands.find(b => b.id === r.brandId)?.name ?? r.customBrandName ?? ''
+  }
+
+  function diseaseNames(r: VaccinationRecord): string {
+    return r.diseaseIds.map(id => diseaseById[id]?.name).filter(Boolean).join('; ')
+  }
+
+  async function doExportCsv() {
+    const today = new Date().toISOString().split('T')[0]
+    const chs = await db.getChildren()
+    const rows = [['Child', 'Date', 'Vaccine / Brand', 'Diseases', 'Serial / Lot', 'Notes']]
+    for (const c of chs) {
+      const records = await db.getRecords(c.id)
+      for (const r of records) {
+        rows.push([c.name, r.date, brandName(r), diseaseNames(r), r.serialNumber ?? '', r.notes ?? ''])
+      }
+    }
+    const csv = rows.map(row => row.map(csvField).join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `vaccinations-${today}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   async function doImport(json: string) {
@@ -95,9 +129,10 @@
         <div class="card-body gap-3">
           <h2 class="card-title text-base">Backup</h2>
           <p class="text-sm text-base-content/60">Export all children, records, and photos to a JSON file. Import restores from a previous export.</p>
-          <div class="flex gap-2">
+          <div class="flex gap-2 flex-wrap">
             <button class="btn btn-outline btn-sm" onclick={doExport}>Export backup</button>
             <button class="btn btn-outline btn-sm" onclick={() => importInput.click()}>Import backup</button>
+            <button class="btn btn-outline btn-sm" onclick={doExportCsv}>Export CSV</button>
           </div>
         </div>
       </div>
