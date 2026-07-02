@@ -6,7 +6,7 @@ Tracks deepening opportunities identified for family-health-pwa and what's been 
 
 1. **Disease-coverage resolution scattered across 3 places** — done, see below.
 2. **Record-entry forms (`new`/`[rid]`) near-total duplication** — done, see below.
-3. **`children/[id]/+page.svelte` God route** (407 lines, 3 view-modes + inline gesture handler + duplicated print markup) — not started.
+3. **`children/[id]/+page.svelte` God route** (407 lines, 3 view-modes + inline gesture handler + duplicated print markup) — done, see below.
 4. **`db.getChildren().find(id)` pattern instead of `db.getChild(id)`** — not started.
 
 ---
@@ -37,3 +37,17 @@ Tracks deepening opportunities identified for family-health-pwa and what's been 
 - `record/[rid]/+page.svelte`: 197 → 55 lines.
 - UX inconsistency (dismiss behavior, suggestion cap) resolved to one behavior across both forms.
 - `svelte-check` and `vitest` (40/40) clean, no regressions. Not visually verified in a browser (no browser-automation tooling available in this environment) — parity confirmed by line-by-line comparison against the originals instead.
+
+---
+
+## 3. `children/[id]/+page.svelte` God route
+
+**Problem:** one 407-line file bundled three independent concerns — Records (list/grouping/sorting + a print-only markup variant), ScheduleView (the DONE/HIGHLIGHTED/UPCOMING matrix), and Timeline (table + zoomable chart with an inline pinch-zoom gesture handler). Understanding any one view meant reading the whole file; none of it was unit-testable except by full component render.
+
+**Decision:** split into three components (`RecordsTab`, `ScheduleTab`, `TimelineTab` under `$lib/`), parent route keeps only data-fetching and tab switching. The print-only markup stays with `RecordsTab` (legitimate print-vs-screen layout difference, not logic duplication — print is only ever triggered from the Records tab).
+
+**Result:**
+- `children/[id]/+page.svelte`: 407 → 85 lines, now just data-fetching + tab chrome.
+- Extracted `RecordsTab.svelte` (177 lines), `ScheduleTab.svelte` (49 lines), `TimelineTab.svelte` (133 lines).
+- Added two small shared helpers to `schedule.ts` (`scheduleMilestones`, `scheduleDiseases`) to avoid re-duplicating the milestone/disease derivations across the two new tabs that both need them.
+- `svelte-check` and `vitest` (40/40) clean, no new error categories. Not visually verified in a browser (no browser-automation tooling available in this environment).

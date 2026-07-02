@@ -1,5 +1,5 @@
 import { diseaseById, scheduleEntries } from './seed'
-import type { Child, ScheduleResult, ScheduleStatus, VaccinationRecord } from './types'
+import type { Child, Disease, ScheduleResult, ScheduleStatus, VaccinationRecord } from './types'
 
 export function diseasesFor(record: VaccinationRecord): Set<string> {
   return new Set(record.diseaseIds)
@@ -26,6 +26,14 @@ export function computeSchedule(child: Child, records: VaccinationRecord[]): Sch
 
     return { entry, disease: diseaseById[entry.diseaseId]!, status, coveredByRecord: covering[entry.doseNumber - 1] }
   }).sort((a, b) => a.entry.ageWeeks - b.entry.ageWeeks || a.entry.doseNumber - b.entry.doseNumber)
+}
+
+export function scheduleMilestones(schedule: ScheduleResult[]): number[] {
+  return [...new Set(schedule.map(r => r.entry.ageWeeks))].sort((a, b) => a - b)
+}
+
+export function scheduleDiseases(schedule: ScheduleResult[]): Disease[] {
+  return [...new Map(schedule.map(r => [r.disease.id, r.disease])).values()]
 }
 
 export function weeksToLabel(w: number): string {
