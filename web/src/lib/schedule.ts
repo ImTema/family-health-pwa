@@ -1,8 +1,8 @@
-import { brandCoverage, diseaseById, scheduleEntries } from './seed'
+import { diseaseById, scheduleEntries } from './seed'
 import type { Child, ScheduleResult, ScheduleStatus, VaccinationRecord } from './types'
 
 export function diseasesFor(record: VaccinationRecord): Set<string> {
-  return new Set(record.brandId ? brandCoverage[record.brandId] ?? [] : record.diseaseIds)
+  return new Set(record.diseaseIds)
 }
 
 export function childAgeWeeks(birthDate: string): number {

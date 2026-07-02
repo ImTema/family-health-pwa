@@ -4,6 +4,7 @@
   import { goto } from '$app/navigation'
   import { db } from '$lib/db'
   import { brands, brandCoverage, diseases, diseaseById } from '$lib/seed'
+  import { diseasesFor } from '$lib/schedule'
 
   const childId = page.params.id
   const rid = page.params.rid
@@ -33,9 +34,7 @@
     serial = record.serialNumber ?? ''
     notes = record.notes ?? ''
     selectedBrandId = record.brandId
-    selectedDiseases = new Set(
-      record.diseaseIds.length ? record.diseaseIds : (record.brandId ? brandCoverage[record.brandId] ?? [] : [])
-    )
+    selectedDiseases = diseasesFor(record)
     brandInput = brands.find(b => b.id === record.brandId)?.name ?? record.customBrandName ?? ''
   })
 

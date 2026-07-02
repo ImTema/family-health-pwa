@@ -3,8 +3,8 @@
   import { page } from '$app/state'
   import { goto } from '$app/navigation'
   import { db } from '$lib/db'
-  import { brands, brandCoverage, diseaseById } from '$lib/seed'
-  import { computeSchedule, childAgeWeeks, weeksToLabel } from '$lib/schedule'
+  import { brands, diseaseById } from '$lib/seed'
+  import { computeSchedule, childAgeWeeks, weeksToLabel, diseasesFor } from '$lib/schedule'
   import { formatDate, childAge, swipeTabs } from '$lib/utils'
   import { fade } from 'svelte/transition'
   import { COUNTRY_LABELS, type Child, type VaccinationRecord } from '$lib/types'
@@ -50,8 +50,7 @@
   }
 
   function diseaseNames(r: VaccinationRecord): string[] {
-    const ids = r.diseaseIds.length ? r.diseaseIds : (r.brandId ? brandCoverage[r.brandId] ?? [] : [])
-    return ids.map(id => diseaseById[id]?.name).filter(Boolean) as string[]
+    return [...diseasesFor(r)].map(id => diseaseById[id]?.name).filter(Boolean) as string[]
   }
 
   function sortedRecords(): VaccinationRecord[] {

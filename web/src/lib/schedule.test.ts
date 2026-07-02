@@ -11,20 +11,20 @@ const child = (over: Partial<Child>): Child => ({
 })
 
 describe('diseasesFor', () => {
-  it('resolves diseases from brandId via brandCoverage', () => {
-    expect(diseasesFor(record({ brandId: 'pentaxim' }))).toEqual(
-      new Set(['diphtheria', 'tetanus', 'pertussis', 'ipv', 'hib'])
-    )
-  })
-
-  it('falls back to diseaseIds when no brandId', () => {
+  it('returns diseaseIds regardless of brandId', () => {
     expect(diseasesFor(record({ diseaseIds: ['measles', 'mumps'] }))).toEqual(
       new Set(['measles', 'mumps'])
     )
   })
 
-  it('returns empty set for unknown brandId', () => {
-    expect(diseasesFor(record({ brandId: 'nonexistent' }))).toEqual(new Set())
+  it('returns diseaseIds even when brandId is also set', () => {
+    expect(diseasesFor(record({ brandId: 'pentaxim', diseaseIds: ['measles'] }))).toEqual(
+      new Set(['measles'])
+    )
+  })
+
+  it('returns empty set when diseaseIds is empty', () => {
+    expect(diseasesFor(record({ brandId: 'pentaxim' }))).toEqual(new Set())
   })
 })
 
