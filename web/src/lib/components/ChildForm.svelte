@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { compressImage, todayISO } from './utils'
-  import { COUNTRY_LABELS, type Child, type Country } from './types'
+  import { compressImage, todayISO } from '../utils'
+  import { COUNTRY_LABELS, type Child, type Country } from '../types'
   import type { Snippet } from 'svelte'
 
   type ChildFields = Omit<Child, 'id'>

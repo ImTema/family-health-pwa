@@ -7,9 +7,9 @@
   import { formatDate, childAge, swipeTabs } from '$lib/utils'
   import { fade } from 'svelte/transition'
   import { COUNTRY_LABELS, type Child, type VaccinationRecord } from '$lib/types'
-  import RecordsTab from '$lib/RecordsTab.svelte'
-  import ScheduleTab from '$lib/ScheduleTab.svelte'
-  import TimelineTab from '$lib/TimelineTab.svelte'
+  import RecordsTab from '$lib/components/RecordsTab.svelte'
+  import ScheduleTab from '$lib/components/ScheduleTab.svelte'
+  import TimelineTab from '$lib/components/TimelineTab.svelte'
 
   const id = page.params.id as string
 

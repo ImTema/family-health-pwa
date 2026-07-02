@@ -6,7 +6,7 @@
   import { formatDate, childAge, swipeTabs } from '$lib/utils'
   import { fade } from 'svelte/transition'
   import { COUNTRY_LABELS, type Child } from '$lib/types'
-  import Icon from '$lib/Icon.svelte'
+  import Icon from '$lib/components/Icon.svelte'
 
   let children = $state<Child[]>([])
   let activeId = $state<string | null>(null)

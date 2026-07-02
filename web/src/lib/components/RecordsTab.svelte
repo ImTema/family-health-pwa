@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { brandNameFor, diseaseNamesFor } from './schedule'
-  import { formatDate, childAge, todayISO } from './utils'
-  import { COUNTRY_LABELS, type Child, type VaccinationRecord } from './types'
+  import { brandNameFor, diseaseNamesFor } from '../schedule'
+  import { formatDate, childAge, todayISO } from '../utils'
+  import { COUNTRY_LABELS, type Child, type VaccinationRecord } from '../types'
   import Icon from './Icon.svelte'
 
   let { childId, child, records }: { childId: string; child: Child; records: VaccinationRecord[] } = $props()

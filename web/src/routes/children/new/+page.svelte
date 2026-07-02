@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
   import { db } from '$lib/db'
   import { uuid } from '$lib/utils'
-  import ChildForm from '$lib/ChildForm.svelte'
+  import ChildForm from '$lib/components/ChildForm.svelte'
   import type { Child } from '$lib/types'
 
   async function save(fields: Omit<Child, 'id'>) {

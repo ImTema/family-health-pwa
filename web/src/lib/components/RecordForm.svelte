@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { brands, brandCoverage, diseases, diseaseById } from './seed'
-  import { todayISO } from './utils'
+  import { brands, brandCoverage, diseases, diseaseById } from '../seed'
+  import { todayISO } from '../utils'
   import type { Snippet } from 'svelte'
-  import type { VaccinationRecord } from './types'
+  import type { VaccinationRecord } from '../types'
 
   type RecordFields = Omit<VaccinationRecord, 'id' | 'childId'>
 

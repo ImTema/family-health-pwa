@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { childAgeWeeks, weeksToLabel, scheduleMilestones, scheduleDiseases } from './schedule'
-  import type { Child, ScheduleResult } from './types'
+  import { childAgeWeeks, weeksToLabel, scheduleMilestones, scheduleDiseases } from '../schedule'
+  import type { Child, ScheduleResult } from '../types'
 
   let { child, schedule }: { child: Child; schedule: ScheduleResult[] } = $props()
 

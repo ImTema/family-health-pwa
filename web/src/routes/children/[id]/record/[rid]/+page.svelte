@@ -3,7 +3,7 @@
   import { page } from '$app/state'
   import { goto } from '$app/navigation'
   import { db } from '$lib/db'
-  import RecordForm from '$lib/RecordForm.svelte'
+  import RecordForm from '$lib/components/RecordForm.svelte'
   import type { VaccinationRecord } from '$lib/types'
 
   const childId = page.params.id as string

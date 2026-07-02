@@ -4,7 +4,7 @@
   import { goto } from '$app/navigation'
   import { db } from '$lib/db'
   import { uuid } from '$lib/utils'
-  import RecordForm from '$lib/RecordForm.svelte'
+  import RecordForm from '$lib/components/RecordForm.svelte'
 
   const childId = page.params.id as string
 
