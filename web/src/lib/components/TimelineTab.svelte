@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { weeksToLabel, scheduleMilestones, scheduleDiseases } from '../schedule'
+  import { childAgeWeeks, weeksToLabel, scheduleMilestones, scheduleDiseases } from '../schedule'
   import { formatDate } from '../utils'
   import type { Child, ScheduleResult } from '../types'
 
   let { child, schedule }: { child: Child; schedule: ScheduleResult[] } = $props()
 
-  let timelineView = $state<'table' | 'chart'>('table')
-  const chartWidth = 600
+  let timelineView = $state<'table' | 'chart'>('chart')
 
   const milestones = $derived(scheduleMilestones(schedule))
   const diseases = $derived(scheduleDiseases(schedule))
@@ -22,12 +21,14 @@
   const actualWeeksValues = $derived(
     timelineData.map(r => r.actualWeeks).filter((w): w is number => w !== null)
   )
-  const timelineMax = $derived(Math.max(...milestones, ...actualWeeksValues) + 4)
+  const todayWeeks = $derived(childAgeWeeks(child.birthDate))
+  const timelineMax = $derived(Math.max(...milestones, ...actualWeeksValues, todayWeeks) + 4)
   // ponytail: sqrt compresses long gaps (e.g. birth dose given years late) so the chart
   // isn't mostly empty space; swap for log(w+1) if sqrt still isn't compressed enough
   function weekPct(weeks: number) {
     return (Math.sqrt(weeks) / Math.sqrt(timelineMax)) * 100
   }
+  const todayPct = $derived(weekPct(todayWeeks))
 </script>
 
 <div class="flex gap-2 mb-3">
@@ -81,38 +82,38 @@
   <div class="text-xs text-base-content/50 mb-2 flex gap-4 items-center">
     <span><span class="inline-block w-3 h-0.5 bg-base-content/30 align-middle"></span> Recommended</span>
     <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-success align-middle"></span> Given</span>
+    <span><span class="inline-block w-px h-2.5 bg-error align-middle"></span> Today</span>
   </div>
-  <div class="overflow-x-auto">
-    <div class="flex flex-col gap-1 min-w-max">
+  <div class="relative">
+    {#if todayPct <= 100}
+      <div class="absolute top-0 bottom-0 w-px bg-error/50" style="left: calc(7.5rem + (100% - 7.5rem) * {todayPct} / 100)"></div>
+    {/if}
+    <div class="grid grid-cols-[7rem_1fr] gap-x-2 gap-y-1">
       {#each diseases as disease}
         {@const rows = timelineData.filter(r => r.disease.id === disease.id)}
         {@const rowMaxPct = Math.max(...rows.map(r => weekPct(Math.max(r.entry.ageWeeks, r.actualWeeks ?? 0))))}
-        <div class="flex items-center gap-2">
-          <div class="text-xs w-28 flex-shrink-0 truncate text-base-content/70 sticky left-0 bg-base-100">{disease.name}</div>
-          <div class="relative h-5" style="width: {chartWidth}px">
-            <div class="absolute top-1/2 left-0 h-px bg-base-300" style="width: {rowMaxPct}%"></div>
-            {#each rows as r}
-              {@const recPct = weekPct(r.entry.ageWeeks)}
-              <div class="absolute top-0 w-px h-full bg-base-content/20" style="left: {recPct}%"></div>
-              {#if r.actualWeeks !== null}
-                {@const actPct = weekPct(r.actualWeeks)}
-                <div
-                  class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-success border-2 border-base-100"
-                  style="left: {actPct}%"
-                  title="{r.disease.name} dose {r.entry.doseNumber}: given at {r.actualWeeks}w (rec: {r.entry.ageWeeks}w)"
-                ></div>
-              {/if}
-            {/each}
-          </div>
-        </div>
-      {/each}
-      <div class="flex items-center gap-2">
-        <div class="w-28 flex-shrink-0"></div>
-        <div class="relative h-4" style="width: {chartWidth}px">
-          {#each milestones.filter((_, i) => i % 2 === 0) as w}
-            <span class="absolute text-[10px] text-base-content/40 -translate-x-1/2" style="left: {weekPct(w)}%">{weeksToLabel(w)}</span>
+        <div class="text-xs truncate text-base-content/70 self-center">{disease.name}</div>
+        <div class="relative h-5">
+          <div class="absolute top-1/2 left-0 h-px bg-base-300" style="width: {rowMaxPct}%"></div>
+          {#each rows as r}
+            {@const recPct = weekPct(r.entry.ageWeeks)}
+            <div class="absolute top-0 w-px h-full bg-base-content/20" style="left: {recPct}%"></div>
+            {#if r.actualWeeks !== null}
+              {@const actPct = weekPct(r.actualWeeks)}
+              <div
+                class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-success border-2 border-base-100"
+                style="left: {actPct}%"
+                title="{r.disease.name} dose {r.entry.doseNumber}: given at {r.actualWeeks}w (rec: {r.entry.ageWeeks}w)"
+              ></div>
+            {/if}
           {/each}
         </div>
+      {/each}
+      <div></div>
+      <div class="relative h-4">
+        {#each milestones.filter((_, i) => i % 2 === 0) as w}
+          <span class="absolute text-[10px] text-base-content/40 -translate-x-1/2" style="left: {weekPct(w)}%">{weeksToLabel(w)}</span>
+        {/each}
       </div>
     </div>
   </div>

@@ -1,0 +1,5 @@
+1. no scheduled entries for vaccines from day 1. just no explamation marks
+2. optional vaccines does not work - no flags, frames or what so ever.
+3. data imported notification with summary i guess
+4. main page - swipe does not working outside of widget zone. must work even at the bottom.
+5. when traveling through links in dictionary - dictionary button does not get me back to main page - actually, it works like history.
