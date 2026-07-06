@@ -64,6 +64,15 @@
     showDiseaseList = false
   }
 
+  function setKind(next: 'vaccine' | 'illness') {
+    if (kind === next) return
+    kind = next
+    brandInput = ''
+    selectedBrandId = undefined
+    selectedDiseases = new Set()
+    diseaseQuery = ''
+  }
+
   function removeDisease(id: string) {
     const next = new Set(selectedDiseases)
     next.delete(id)
@@ -110,8 +119,8 @@
 
     <div class="flex flex-col gap-4">
       <div class="join w-full">
-        <button class="btn join-item flex-1 {kind === 'vaccine' ? 'btn-primary' : ''}" onclick={() => kind = 'vaccine'}>Vaccine</button>
-        <button class="btn join-item flex-1 {kind === 'illness' ? 'btn-primary' : ''}" onclick={() => kind = 'illness'}>Illness</button>
+        <button class="btn join-item flex-1 {kind === 'vaccine' ? 'btn-primary' : ''}" onclick={() => setKind('vaccine')}>Vaccine</button>
+        <button class="btn join-item flex-1 {kind === 'illness' ? 'btn-primary' : ''}" onclick={() => setKind('illness')}>Illness</button>
       </div>
 
       {#if kind === 'vaccine'}
