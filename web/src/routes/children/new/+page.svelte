@@ -13,4 +13,4 @@
   }
 </script>
 
-<ChildForm title="Add family member" onSave={save} />
+<ChildForm title="Add member" onSave={save} />

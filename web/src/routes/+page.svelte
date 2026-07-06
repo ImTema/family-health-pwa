@@ -66,7 +66,7 @@
         <h1 class="text-2xl font-bold">VaxTrack</h1>
         <div class="flex gap-2">
           {#if tab === 'children'}
-            <a href="/children/new" class="btn btn-primary">+ Add family member</a>
+            <a href="/children/new" class="btn btn-primary">+ Add member</a>
           {/if}
           <a href="/settings" class="btn btn-ghost" title="Settings"><Icon name="settings" /></a>
         </div>
