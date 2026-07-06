@@ -1,20 +1,9 @@
 <script lang="ts">
-  import { childAgeWeeks, weeksToLabel, scheduleMilestones, scheduleDiseases } from '../schedule'
+  import { weeksToLabel } from '../schedule'
   import { formatDate } from '../utils'
-  import { COUNTRY_LABELS } from '../types'
-  import { db } from '../db'
   import type { Child, ScheduleResult } from '../types'
 
   let { child, schedule }: { child: Child; schedule: ScheduleResult[] } = $props()
-
-  let timelineView = $state<'table' | 'chart'>('chart')
-
-  function onCountryChange() {
-    db.saveChild($state.snapshot(child))
-  }
-
-  const milestones = $derived(scheduleMilestones(schedule))
-  const diseases = $derived(scheduleDiseases(schedule))
 
   const timelineData = $derived(
     schedule.map(r => {
@@ -24,111 +13,45 @@
       return { ...r, actualWeeks }
     })
   )
-  const actualWeeksValues = $derived(
-    timelineData.map(r => r.actualWeeks).filter((w): w is number => w !== null)
-  )
-  const todayWeeks = $derived(childAgeWeeks(child.birthDate))
-  const timelineMax = $derived(Math.max(...milestones, ...actualWeeksValues, todayWeeks) + 4)
-  // ponytail: sqrt compresses long gaps (e.g. birth dose given years late) so the chart
-  // isn't mostly empty space; swap for log(w+1) if sqrt still isn't compressed enough
-  function weekPct(weeks: number) {
-    return (Math.sqrt(weeks) / Math.sqrt(timelineMax)) * 100
-  }
-  const todayPct = $derived(weekPct(todayWeeks))
 </script>
 
-<div class="form-control mb-3">
-  <select class="select select-ghost select-sm w-auto font-medium focus:outline-none" bind:value={child.country} onchange={onCountryChange}>
-    {#each Object.entries(COUNTRY_LABELS) as [value, label]}
-      <option {value}>{label}</option>
-    {/each}
-  </select>
-</div>
-
-<div class="flex gap-2 mb-3">
-  <button class="btn btn-xs {timelineView === 'table' ? 'btn-primary' : 'btn-ghost'}" onclick={() => timelineView = 'table'}>Table</button>
-  <button class="btn btn-xs {timelineView === 'chart' ? 'btn-primary' : 'btn-ghost'}" onclick={() => timelineView = 'chart'}>Chart</button>
-</div>
-
-{#if timelineView === 'table'}
-  <div class="overflow-x-auto">
-    <table class="table table-xs w-full">
-      <thead>
-        <tr>
-          <th>Disease</th>
-          <th>Dose</th>
-          <th>Recommended</th>
-          <th>Given at</th>
-          <th>Δ weeks</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each timelineData as r}
-          <tr class="{r.entry.necessity === 'OPTIONAL' ? 'opacity-50' : ''}">
-            <td class="text-xs whitespace-nowrap">{r.disease.name}</td>
-            <td class="text-xs text-center">{r.entry.doseNumber}</td>
-            <td class="text-xs text-center">{weeksToLabel(r.entry.ageWeeks)}</td>
-            <td class="text-xs text-center">
-              {#if r.actualWeeks !== null}
-                {weeksToLabel(r.actualWeeks)}
-                <div class="text-base-content/40">{formatDate(r.coveredByRecord!.date)}</div>
-              {:else}
-                <span class="text-base-content/30">—</span>
-              {/if}
-            </td>
-            <td class="text-xs text-center">
-              {#if r.actualWeeks !== null}
-                {@const delta = r.actualWeeks - r.entry.ageWeeks}
-                <span class="{delta > 4 ? 'text-warning' : delta < 0 ? 'text-info' : 'text-success'}">
-                  {delta > 0 ? `+${delta}` : delta}
-                </span>
-              {:else}
-                <span class="text-base-content/30">—</span>
-              {/if}
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </div>
-
-{:else}
-  <div class="text-xs text-base-content/50 mb-2 flex gap-4 items-center">
-    <span><span class="inline-block w-3 h-0.5 bg-base-content/30 align-middle"></span> Recommended</span>
-    <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-success align-middle"></span> Given</span>
-    <span><span class="inline-block w-px h-2.5 bg-error align-middle"></span> Today</span>
-  </div>
-  <div class="relative">
-    {#if todayPct <= 100}
-      <div class="absolute top-0 bottom-0 w-px bg-error/50" style="left: calc(7.5rem + (100% - 7.5rem) * {todayPct} / 100)"></div>
-    {/if}
-    <div class="grid grid-cols-[7rem_1fr] gap-x-2 gap-y-1">
-      {#each diseases as disease}
-        {@const rows = timelineData.filter(r => r.disease.id === disease.id)}
-        {@const rowMaxPct = Math.max(...rows.map(r => weekPct(Math.max(r.entry.ageWeeks, r.actualWeeks ?? 0))))}
-        <div class="text-xs truncate text-base-content/70 self-center">{disease.name}</div>
-        <div class="relative h-5">
-          <div class="absolute top-1/2 left-0 h-px bg-base-300" style="width: {rowMaxPct}%"></div>
-          {#each rows as r}
-            {@const recPct = weekPct(r.entry.ageWeeks)}
-            <div class="absolute top-0 w-px h-full bg-base-content/20" style="left: {recPct}%"></div>
+<div class="overflow-x-auto">
+  <table class="table table-xs w-full">
+    <thead>
+      <tr>
+        <th>Disease</th>
+        <th>Dose</th>
+        <th>Recommended</th>
+        <th>Given at</th>
+        <th>Δ weeks</th>
+      </tr>
+    </thead>
+    <tbody>
+      {#each timelineData as r}
+        <tr class="{r.entry.necessity === 'OPTIONAL' ? 'opacity-50' : ''}">
+          <td class="text-xs whitespace-nowrap">{r.disease.name}</td>
+          <td class="text-xs text-center">{r.entry.doseNumber}</td>
+          <td class="text-xs text-center">{weeksToLabel(r.entry.ageWeeks)}</td>
+          <td class="text-xs text-center">
             {#if r.actualWeeks !== null}
-              {@const actPct = weekPct(r.actualWeeks)}
-              <div
-                class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-success border-2 border-base-100"
-                style="left: {actPct}%"
-                title="{r.disease.name} dose {r.entry.doseNumber}: given at {r.actualWeeks}w (rec: {r.entry.ageWeeks}w)"
-              ></div>
+              {weeksToLabel(r.actualWeeks)}
+              <div class="text-base-content/40">{formatDate(r.coveredByRecord!.date)}</div>
+            {:else}
+              <span class="text-base-content/30">—</span>
             {/if}
-          {/each}
-        </div>
+          </td>
+          <td class="text-xs text-center">
+            {#if r.actualWeeks !== null}
+              {@const delta = r.actualWeeks - r.entry.ageWeeks}
+              <span class="{delta > 4 ? 'text-warning' : delta < 0 ? 'text-info' : 'text-success'}">
+                {delta > 0 ? `+${delta}` : delta}
+              </span>
+            {:else}
+              <span class="text-base-content/30">—</span>
+            {/if}
+          </td>
+        </tr>
       {/each}
-      <div></div>
-      <div class="relative h-4">
-        {#each milestones.filter((_, i) => i % 2 === 0) as w}
-          <span class="absolute text-[10px] text-base-content/40 -translate-x-1/2" style="left: {weekPct(w)}%">{weeksToLabel(w)}</span>
-        {/each}
-      </div>
-    </div>
-  </div>
-{/if}
+    </tbody>
+  </table>
+</div>

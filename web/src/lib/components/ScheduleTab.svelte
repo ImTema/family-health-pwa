@@ -18,7 +18,7 @@
   }
 </script>
 
-<div class="form-control mb-3">
+<div class="flex items-center gap-3 mb-3">
   <select class="select select-ghost select-sm w-auto text-sm font-normal focus:outline-none" bind:value={child.country} onchange={onCountryChange}>
     {#each Object.entries(COUNTRY_LABELS) as [value, label]}
       <option {value}>{label}</option>
