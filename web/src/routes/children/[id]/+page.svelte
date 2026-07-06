@@ -70,7 +70,7 @@
         <RecordsTab childId={id} {child} {records} />
       {:else if tab === 'schedule'}
         <div class="print:hidden">
-          <ScheduleTab {child} {schedule} />
+          <ScheduleTab {child} {schedule} {records} />
         </div>
       {:else}
         <div class="print:hidden">

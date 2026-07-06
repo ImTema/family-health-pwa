@@ -57,3 +57,11 @@ export interface ScheduleResult {
   status: ScheduleStatus
   coveredByRecord?: VaccinationRecord
 }
+
+// A vaccine with no fixed age milestone (e.g. annual flu shot) — tracked by count/last-date, not the age matrix.
+export interface RecurringEntry {
+  id: string
+  country: Country
+  diseaseId: string
+  necessity: 'MANDATORY' | 'OPTIONAL'
+}

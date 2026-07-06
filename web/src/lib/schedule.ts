@@ -1,5 +1,5 @@
-import { brands, diseaseById, scheduleEntries } from './seed'
-import type { Child, Disease, ScheduleResult, ScheduleStatus, VaccinationRecord } from './types'
+import { brands, diseaseById, recurringEntries, scheduleEntries } from './seed'
+import type { Child, Country, Disease, RecurringEntry, ScheduleResult, ScheduleStatus, VaccinationRecord } from './types'
 
 export function diseasesFor(record: VaccinationRecord): Set<string> {
   return new Set(record.diseaseIds)
@@ -42,6 +42,20 @@ export function scheduleMilestones(schedule: ScheduleResult[]): number[] {
 
 export function scheduleDiseases(schedule: ScheduleResult[]): Disease[] {
   return [...new Map(schedule.map(r => [r.disease.id, r.disease])).values()]
+}
+
+export interface RecurringResult {
+  entry: RecurringEntry
+  disease: Disease
+  count: number
+  lastDate?: string
+}
+
+export function recurringFor(country: Country, records: VaccinationRecord[]): RecurringResult[] {
+  return recurringEntries.filter(e => e.country === country).map(entry => {
+    const covering = records.filter(r => diseasesFor(r).has(entry.diseaseId)).sort((a, b) => b.date.localeCompare(a.date))
+    return { entry, disease: diseaseById[entry.diseaseId]!, count: covering.length, lastDate: covering[0]?.date }
+  })
 }
 
 export function weeksToLabel(w: number): string {

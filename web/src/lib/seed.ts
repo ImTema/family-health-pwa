@@ -6,7 +6,7 @@
  * EU/ECDC — https://vaccine-schedule.ecdc.europa.eu/
  */
 
-import type { Brand, Disease, ScheduleEntry } from './types'
+import type { Brand, Disease, RecurringEntry, ScheduleEntry } from './types'
 
 // Sources: WHO fact sheets (who.int/news-room/fact-sheets) and CDC disease pages (cdc.gov/vaccines/pubs/pinkbook), public domain.
 export const diseases: Disease[] = [
@@ -26,6 +26,10 @@ export const diseases: Disease[] = [
   { id: 'menc',       name: 'Meningococcal C',                       description: 'Meningococcal disease is caused by Neisseria meningitidis serogroup C bacteria, spread through respiratory or throat secretions during close contact.', symptoms: 'Sudden fever, headache, stiff neck, and rash; can progress rapidly to life-threatening meningitis or bloodstream infection.' },
   { id: 'hepa',       name: 'Hepatitis A',                           description: 'Hepatitis A is a liver infection caused by the hepatitis A virus, spread mainly through contaminated food or water and close contact.', symptoms: 'Fever, fatigue, nausea, abdominal pain, and jaundice; usually self-limiting without chronic infection.' },
   { id: 'hpv',        name: 'Human Papillomavirus (HPV)',            description: 'HPV is a very common sexually transmitted virus; certain high-risk types cause most cervical cancers and other genital and throat cancers.', symptoms: 'Most infections cause no symptoms and clear on their own; persistent high-risk infection can lead to precancerous changes and cancer years later.' },
+  { id: 'menb',       name: 'Meningococcal B',                       description: 'Meningococcal disease is caused by Neisseria meningitidis serogroup B bacteria, spread through respiratory or throat secretions during close contact; the leading meningococcal serogroup in infants across much of Europe.', symptoms: 'Sudden fever, headache, stiff neck, and rash; can progress rapidly to life-threatening meningitis or bloodstream infection.' },
+  { id: 'influenza',  name: 'Influenza (Flu)',                       description: 'Influenza is a contagious respiratory virus spread through droplets, with new circulating strains each year requiring annual re-vaccination.', symptoms: 'Fever, cough, sore throat, muscle aches, and fatigue; can lead to pneumonia or worsen chronic conditions, especially in young children.' },
+  { id: 'tbe',        name: 'Tick-borne Encephalitis (TBE)',         description: 'TBE is caused by a flavivirus transmitted through the bite of infected ticks, endemic to forested regions of Central/Eastern Europe and parts of Russia.', symptoms: 'Fever and flu-like symptoms initially; a minority progress to encephalitis or meningitis with headache, stiff neck, and neurological symptoms.' },
+  { id: 'rsv',        name: 'Respiratory Syncytial Virus (RSV)',     description: 'RSV is a common respiratory virus and the leading cause of severe lower respiratory tract infection in infants; prevention is via a long-acting monoclonal antibody given at birth or before RSV season rather than a traditional vaccine.', symptoms: 'Cough, congestion, and fever; in infants can progress to bronchiolitis or pneumonia with wheezing and difficulty breathing.' },
 ]
 
 export const diseaseById: Record<string, Disease> = Object.fromEntries(diseases.map(d => [d.id, d]))
@@ -89,6 +93,18 @@ export const brands: Brand[] = [
   { id: 'ads_m',         name: 'АДС-М (ADS-M)', description: 'Microgen reduced-dose diphtheria-tetanus toxoid booster vaccine for older children and adults.', country: 'Russia' },
   // Russian State Register of Medicines — grls.rosminzdrav.ru
   { id: 'opv',           name: 'ОПВ (OPV)',      description: 'Russian-manufactured oral live-attenuated vaccine protecting against poliomyelitis types 1–3.', country: 'Russia' },
+  // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/bexsero
+  { id: 'bexsero',       name: 'Bexsero',        description: 'GSK (formerly Novartis) multicomponent vaccine protecting against meningococcal group B disease.', country: 'Italy' },
+  // FDA — fda.gov/vaccines-blood-biologics/vaccines/menactra
+  { id: 'menactra',      name: 'Menactra',       description: 'Sanofi conjugate vaccine protecting against meningococcal groups A, C, W-135, and Y.', country: 'United States' },
+  // EMA national-procedure listing — ema.europa.eu
+  { id: 'fsme_junior',   name: 'FSME-Immun Junior', description: 'Pfizer inactivated vaccine protecting against tick-borne encephalitis, for children.', country: 'Austria' },
+  // Russian State Register of Medicines — grls.rosminzdrav.ru
+  { id: 'ultrix',        name: 'Ультрикс (Ultrix)', description: 'Russian (FORT) inactivated split-virion vaccine protecting against seasonal influenza.', country: 'Russia' },
+  // EMA national-procedure listing — ema.europa.eu
+  { id: 'vaxigrip_tetra', name: 'Vaxigrip Tetra', description: 'Sanofi inactivated quadrivalent vaccine protecting against seasonal influenza.', country: 'France' },
+  // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/beyfortus
+  { id: 'beyfortus',     name: 'Beyfortus',      description: 'Sanofi/AstraZeneca long-acting monoclonal antibody protecting infants against RSV disease for a full season.', country: 'France' },
 ]
 
 export const brandCoverage: Record<string, string[]> = {
@@ -120,6 +136,12 @@ export const brandCoverage: Record<string, string[]> = {
   akds:          ['diphtheria', 'tetanus', 'pertussis'],
   ads_m:         ['diphtheria', 'tetanus'],
   opv:           ['ipv'],
+  bexsero:       ['menb'],
+  menactra:      ['menc'],
+  fsme_junior:   ['tbe'],
+  ultrix:        ['influenza'],
+  vaxigrip_tetra: ['influenza'],
+  beyfortus:     ['rsv'],
 }
 
 function entries(list: [string, string, number, number, ('MANDATORY' | 'OPTIONAL')?][], country: 'RUSSIA' | 'SERBIA' | 'EU', prefix: string): ScheduleEntry[] {
@@ -149,6 +171,9 @@ export const scheduleEntries: ScheduleEntry[] = [
     ['', 'varicella',  52,  1, 'OPTIONAL'],
     ['', 'rotavirus',   8,  1, 'OPTIONAL'], ['', 'rotavirus',  16,  2, 'OPTIONAL'],
     ['', 'hpv',       572,  1, 'OPTIONAL'],
+    ['', 'hepa',       52,  1, 'OPTIONAL'], ['', 'hepa',       82,  2, 'OPTIONAL'],
+    ['', 'menb',        8,  1, 'OPTIONAL'], ['', 'menb',       16,  2, 'OPTIONAL'], ['', 'menb',       52,  3, 'OPTIONAL'],
+    ['', 'tbe',        83,  1, 'OPTIONAL'], ['', 'tbe',       100,  2, 'OPTIONAL'],
   ], 'RUSSIA', 'ru'),
 
   ...entries([
@@ -165,6 +190,7 @@ export const scheduleEntries: ScheduleEntry[] = [
     ['', 'rubella',    52,  1], ['', 'rubella',   260,  2],
     ['', 'rotavirus',   8,  1, 'OPTIONAL'], ['', 'rotavirus',  16,  2, 'OPTIONAL'],
     ['', 'hpv',       572,  1, 'OPTIONAL'],
+    ['', 'hepa',       52,  1, 'OPTIONAL'], ['', 'hepa',       82,  2, 'OPTIONAL'],
   ], 'SERBIA', 'rs'),
 
   ...entries([
@@ -182,5 +208,16 @@ export const scheduleEntries: ScheduleEntry[] = [
     ['', 'menc',       52,  1],
     ['', 'rotavirus',   8,  1, 'OPTIONAL'], ['', 'rotavirus',  16,  2, 'OPTIONAL'],
     ['', 'hpv',       572,  1, 'OPTIONAL'],
+    ['', 'hepa',       52,  1, 'OPTIONAL'], ['', 'hepa',       82,  2, 'OPTIONAL'],
+    ['', 'menb',        8,  1, 'OPTIONAL'], ['', 'menb',       16,  2, 'OPTIONAL'], ['', 'menb',       52,  3, 'OPTIONAL'],
+    ['', 'tbe',        83,  1, 'OPTIONAL'], ['', 'tbe',       100,  2, 'OPTIONAL'],
+    ['', 'rsv',         0,  1, 'OPTIONAL'],
   ], 'EU', 'eu'),
+]
+
+// Annual/seasonal vaccines with no fixed age milestone — tracked by count/last-date instead of the age matrix.
+export const recurringEntries: RecurringEntry[] = [
+  { id: 'ru_influenza', country: 'RUSSIA', diseaseId: 'influenza', necessity: 'MANDATORY' },
+  { id: 'rs_influenza', country: 'SERBIA', diseaseId: 'influenza', necessity: 'OPTIONAL' },
+  { id: 'eu_influenza', country: 'EU',     diseaseId: 'influenza', necessity: 'OPTIONAL' },
 ]

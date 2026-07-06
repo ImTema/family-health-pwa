@@ -1,12 +1,14 @@
 <script lang="ts">
-  import { childAgeWeeks, weeksToLabel, scheduleMilestones, scheduleDiseases } from '../schedule'
-  import type { Child, ScheduleResult } from '../types'
+  import { childAgeWeeks, weeksToLabel, scheduleMilestones, scheduleDiseases, recurringFor } from '../schedule'
+  import { formatDate } from '../utils'
+  import type { Child, ScheduleResult, VaccinationRecord } from '../types'
 
-  let { child, schedule }: { child: Child; schedule: ScheduleResult[] } = $props()
+  let { child, schedule, records }: { child: Child; schedule: ScheduleResult[]; records: VaccinationRecord[] } = $props()
 
   const milestones = $derived(scheduleMilestones(schedule))
   const diseases = $derived(scheduleDiseases(schedule))
   const todayCol = $derived(milestones.findLastIndex(w => w <= childAgeWeeks(child.birthDate)))
+  const recurring = $derived(recurringFor(child.country, records))
 </script>
 
 <div class="flex gap-4 text-xs mb-3 text-base-content/60">
@@ -50,3 +52,20 @@
     </tbody>
   </table>
 </div>
+
+{#if recurring.length}
+  <div class="text-xs text-base-content/40 mt-4 mb-1">Recurring — no fixed age, tracked by count</div>
+  <ul class="text-sm divide-y divide-base-200">
+    {#each recurring as r}
+      <li class="flex justify-between items-center py-1.5">
+        <span>
+          {r.disease.name}
+          {#if r.entry.necessity === 'OPTIONAL'}<sup class="text-info">○</sup>{/if}
+        </span>
+        <span class="text-base-content/60 text-xs">
+          {r.count > 0 ? `${r.count}× · last ${formatDate(r.lastDate!)}` : 'none yet'}
+        </span>
+      </li>
+    {/each}
+  </ul>
+{/if}
