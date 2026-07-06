@@ -133,6 +133,16 @@ export const brands: Brand[] = [
   { id: 'sovigripp',     name: 'Совигрипп (Sovigripp)', description: 'Microgen adjuvanted trivalent vaccine protecting against seasonal influenza.', country: 'Russia' },
   // Russian State Register of Medicines — grls.rosminzdrav.ru
   { id: 'ultrix_quadri', name: 'Ультрикс Квадри (Ultrix Quadri)', description: 'Russian (FORT) inactivated split-virion quadrivalent vaccine protecting against seasonal influenza.', country: 'Russia' },
+  // FDA — fda.gov/vaccines-blood-biologics/vaccines/vaxelis
+  { id: 'vaxelis',       name: 'Vaxelis',        description: 'Sanofi/MSP Vaccine Company hexavalent combination vaccine protecting against diphtheria, tetanus, pertussis, hepatitis B, polio, and Hib disease.', country: 'United States' },
+  // FDA — fda.gov/vaccines-blood-biologics/vaccines/pediarix
+  { id: 'pediarix',      name: 'Pediarix',       description: 'GSK combination vaccine protecting against diphtheria, tetanus, pertussis, hepatitis B, and polio.', country: 'Belgium' },
+  // FDA — fda.gov/vaccines-blood-biologics/vaccines/kinrix
+  { id: 'kinrix',        name: 'Kinrix',         description: 'GSK combination vaccine protecting against diphtheria, tetanus, pertussis, and polio, for the booster dose at 4-6 years.', country: 'Belgium' },
+  // FDA — fda.gov/vaccines-blood-biologics/vaccines/vivotif
+  { id: 'vivotif',       name: 'Vivotif',        description: 'Emergent BioSolutions oral live-attenuated (Ty21a) vaccine protecting against typhoid fever.', country: 'United States' },
+  // FDA — fda.gov/vaccines-blood-biologics/vaccines/twinrix
+  { id: 'twinrix',       name: 'Twinrix',        description: 'GSK combination vaccine protecting against hepatitis A and hepatitis B.', country: 'Belgium' },
 ]
 
 export const brandCoverage: Record<string, string[]> = {
@@ -182,6 +192,11 @@ export const brandCoverage: Record<string, string[]> = {
   grippol_quadrivalent: ['influenza'],
   sovigripp:     ['influenza'],
   ultrix_quadri: ['influenza'],
+  vaxelis:       ['diphtheria', 'tetanus', 'pertussis', 'hepb', 'ipv', 'hib'],
+  pediarix:      ['diphtheria', 'tetanus', 'pertussis', 'hepb', 'ipv'],
+  kinrix:        ['diphtheria', 'tetanus', 'pertussis', 'ipv'],
+  vivotif:       ['typhoid'],
+  twinrix:       ['hepa', 'hepb'],
 }
 
 function entries(list: [string, string, number, number, ('MANDATORY' | 'OPTIONAL')?, string?][], country: Country, prefix: string): ScheduleEntry[] {
@@ -286,6 +301,52 @@ export const scheduleEntries: ScheduleEntry[] = [
     ['', 'cholera',     52,  1, 'OPTIONAL', WHO_ENDEMIC_NOTE],
     ['', 'rsv',          0,  1, 'OPTIONAL', 'Newer WHO recommendation delivered as a long-acting monoclonal antibody rather than a traditional vaccine; rollout depends on national programme capacity'],
   ], 'WHO', 'who'),
+
+  // United States (AAP) — American Academy of Pediatrics "Recommended Childhood and Adolescent
+  // Immunization Schedule: United States, 2026" policy statement, continuing the long-standing
+  // ACIP-harmonized schedule independent of the separate 2026 CDC schedule below.
+  // https://publications.aap.org/pediatrics/article/157/3/e2025075754/206175
+  ...entries([
+    ['', 'hepb',        0,  1], ['', 'hepb',        4,  2], ['', 'hepb',       26,  3],
+    ['', 'rotavirus',   8,  1], ['', 'rotavirus',  16,  2], ['', 'rotavirus',  26,  3],
+    ['', 'diphtheria',  8,  1], ['', 'diphtheria', 16,  2], ['', 'diphtheria', 26,  3], ['', 'diphtheria', 65,  4], ['', 'diphtheria', 260, 5], ['', 'diphtheria', 598, 6],
+    ['', 'tetanus',     8,  1], ['', 'tetanus',    16,  2], ['', 'tetanus',    26,  3], ['', 'tetanus',    65,  4], ['', 'tetanus',    260, 5], ['', 'tetanus',    598, 6],
+    ['', 'pertussis',   8,  1], ['', 'pertussis',  16,  2], ['', 'pertussis',  26,  3], ['', 'pertussis',  65,  4], ['', 'pertussis',  260, 5], ['', 'pertussis',  598, 6],
+    ['', 'hib',         8,  1], ['', 'hib',        16,  2], ['', 'hib',        26,  3], ['', 'hib',        52,  4],
+    ['', 'pcv',         8,  1], ['', 'pcv',        16,  2], ['', 'pcv',        26,  3], ['', 'pcv',        52,  4],
+    ['', 'ipv',         8,  1], ['', 'ipv',        16,  2], ['', 'ipv',        26,  3], ['', 'ipv',       260,  4],
+    ['', 'measles',    52,  1], ['', 'measles',   260,  2],
+    ['', 'mumps',      52,  1], ['', 'mumps',     260,  2],
+    ['', 'rubella',    52,  1], ['', 'rubella',   260,  2],
+    ['', 'varicella',  52,  1], ['', 'varicella', 260,  2],
+    ['', 'hepa',       52,  1], ['', 'hepa',       78,  2],
+    ['', 'hpv',       598,  1], ['', 'hpv',       624,  2],
+    ['', 'menc',      598,  1], ['', 'menc',      832,  2],
+    ['', 'menb',      832,  1, 'OPTIONAL', 'Shared clinical decision-making — discuss with your child\'s doctor (ACIP Category B, ages 16-18)'],
+    ['', 'rsv',         0,  1, 'OPTIONAL', 'Recommended for infants entering their first RSV season, timing depends on birth month and maternal vaccination status (ACIP)'],
+  ], 'US_AAP', 'us_aap'),
+
+  // United States (CDC 2026) — following a January 2026 presidential memorandum, CDC reorganized
+  // the routine schedule and narrowed the core disease list to: measles, mumps, rubella, polio,
+  // pertussis, tetanus, diphtheria, Hib, pneumococcal disease, HPV, and varicella
+  // (see cdc.gov/media/releases/2026/2026-cdc-acts-on-presidential-memorandum...). The announcement
+  // did not publish granular per-dose ages for the restructured schedule; ages below assume
+  // continuity with the prior ACIP dose timing for these retained vaccines and should be verified
+  // against the official CDC schedule before clinical use. Hepatitis B, rotavirus, hepatitis A,
+  // RSV, influenza, and meningococcal are omitted here as they're no longer part of the core list.
+  ...entries([
+    ['', 'diphtheria',  8,  1], ['', 'diphtheria', 16,  2], ['', 'diphtheria', 26,  3], ['', 'diphtheria', 65,  4], ['', 'diphtheria', 260, 5], ['', 'diphtheria', 598, 6],
+    ['', 'tetanus',     8,  1], ['', 'tetanus',    16,  2], ['', 'tetanus',    26,  3], ['', 'tetanus',    65,  4], ['', 'tetanus',    260, 5], ['', 'tetanus',    598, 6],
+    ['', 'pertussis',   8,  1], ['', 'pertussis',  16,  2], ['', 'pertussis',  26,  3], ['', 'pertussis',  65,  4], ['', 'pertussis',  260, 5], ['', 'pertussis',  598, 6],
+    ['', 'hib',         8,  1], ['', 'hib',        16,  2], ['', 'hib',        26,  3], ['', 'hib',        52,  4],
+    ['', 'pcv',         8,  1], ['', 'pcv',        16,  2], ['', 'pcv',        26,  3], ['', 'pcv',        52,  4],
+    ['', 'ipv',         8,  1], ['', 'ipv',        16,  2], ['', 'ipv',        26,  3], ['', 'ipv',       260,  4],
+    ['', 'measles',    52,  1], ['', 'measles',   260,  2],
+    ['', 'mumps',      52,  1], ['', 'mumps',     260,  2],
+    ['', 'rubella',    52,  1], ['', 'rubella',   260,  2],
+    ['', 'varicella',  52,  1], ['', 'varicella', 260,  2],
+    ['', 'hpv',       598,  1], ['', 'hpv',       624,  2],
+  ], 'US_CDC_2026', 'us_cdc'),
 ]
 
 // Annual/seasonal vaccines with no fixed age milestone — tracked by count/last-date instead of the age matrix.
@@ -294,4 +355,5 @@ export const recurringEntries: RecurringEntry[] = [
   { id: 'rs_influenza', country: 'SERBIA', diseaseId: 'influenza', necessity: 'OPTIONAL' },
   { id: 'eu_influenza', country: 'EU',     diseaseId: 'influenza', necessity: 'OPTIONAL' },
   { id: 'who_influenza', country: 'WHO',  diseaseId: 'influenza', necessity: 'OPTIONAL', note: 'Recommended for countries with programme capacity to target priority risk groups (WHO position paper)' },
+  { id: 'us_aap_influenza', country: 'US_AAP', diseaseId: 'influenza', necessity: 'MANDATORY' },
 ]

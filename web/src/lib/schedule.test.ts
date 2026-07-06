@@ -199,3 +199,27 @@ describe('WHO reference schedule', () => {
     expect(yellowFever.entry.note).toBeTruthy()
   })
 })
+
+describe('US schedules', () => {
+  it('AAP schedule includes hepatitis B and marks MenB shared-decision as OPTIONAL with a note', () => {
+    vi.setSystemTime(new Date('2024-01-01T00:00:00Z'))
+    const c = child({ birthDate: '2024-01-01', country: 'US_AAP' as Child['country'] })
+    const result = computeSchedule(c, [])
+    expect(result.some(r => r.entry.diseaseId === 'hepb')).toBe(true)
+
+    const menb = result.find(r => r.entry.diseaseId === 'menb')!
+    expect(menb.entry.necessity).toBe('OPTIONAL')
+    expect(menb.entry.note).toBeTruthy()
+  })
+
+  it('CDC 2026 schedule omits hepatitis B, rotavirus, and RSV', () => {
+    vi.setSystemTime(new Date('2024-01-01T00:00:00Z'))
+    const c = child({ birthDate: '2024-01-01', country: 'US_CDC_2026' as Child['country'] })
+    const result = computeSchedule(c, [])
+    expect(result.every(r => r.entry.country === 'US_CDC_2026')).toBe(true)
+    expect(result.some(r => r.entry.diseaseId === 'hepb')).toBe(false)
+    expect(result.some(r => r.entry.diseaseId === 'rotavirus')).toBe(false)
+    expect(result.some(r => r.entry.diseaseId === 'rsv')).toBe(false)
+    expect(result.some(r => r.entry.diseaseId === 'measles')).toBe(true)
+  })
+})

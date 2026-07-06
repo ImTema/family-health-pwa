@@ -1,10 +1,12 @@
-export type Country = 'RUSSIA' | 'SERBIA' | 'EU' | 'WHO'
+export type Country = 'RUSSIA' | 'SERBIA' | 'EU' | 'WHO' | 'US_AAP' | 'US_CDC_2026'
 
 export const COUNTRY_LABELS: Record<Country, string> = {
   RUSSIA: 'Russia',
   SERBIA: 'Serbia',
   EU: 'European Union',
-  WHO: 'WHO (Global Reference)'
+  WHO: 'WHO (Global Reference)',
+  US_AAP: 'United States (AAP)',
+  US_CDC_2026: 'United States (CDC 2026)'
 }
 
 export type ScheduleStatus = 'DONE' | 'HIGHLIGHTED' | 'UPCOMING'
