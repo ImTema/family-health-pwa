@@ -1,6 +1,8 @@
 <script lang="ts">
   import { weeksToLabel } from '../schedule'
   import { formatDate } from '../utils'
+  import { COUNTRY_LABELS } from '../types'
+  import { db } from '../db'
   import type { Child, ScheduleResult } from '../types'
 
   let { child, schedule }: { child: Child; schedule: ScheduleResult[] } = $props()
@@ -13,7 +15,19 @@
       return { ...r, actualWeeks }
     })
   )
+
+  function onCountryChange() {
+    db.saveChild($state.snapshot(child))
+  }
 </script>
+
+<div class="flex items-center gap-3 mb-3">
+  <select class="select select-ghost select-sm w-auto text-sm font-normal focus:outline-none" bind:value={child.country} onchange={onCountryChange}>
+    {#each Object.entries(COUNTRY_LABELS) as [value, label]}
+      <option {value}>{label}</option>
+    {/each}
+  </select>
+</div>
 
 <div class="overflow-x-auto">
   <table class="table table-xs w-full">
