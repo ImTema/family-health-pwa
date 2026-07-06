@@ -1,0 +1,10 @@
+{
+  "name": "family-health-pwa",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "npm --prefix web install && npm --prefix web run build",
+    "start": "npm --prefix web start"
+  }
+}
