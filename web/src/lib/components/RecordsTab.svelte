@@ -1,8 +1,9 @@
 <script lang="ts">
   import { brandNameFor, diseaseNamesFor, groupRecordsByDisease } from '../schedule'
-  import { formatDate, childAge, todayISO } from '../utils'
-  import { COUNTRY_LABELS, type Child, type VaccinationRecord } from '../types'
+  import { formatDate } from '../utils'
+  import type { Child, VaccinationRecord } from '../types'
   import Icon from './Icon.svelte'
+  import PrintExport from './PrintExport.svelte'
 
   let { childId, child, records }: { childId: string; child: Child; records: VaccinationRecord[] } = $props()
 
@@ -21,19 +22,7 @@
     return groupRecordsByDisease(sortedRecords())
   }
 
-  function doPrint() {
-    const today = todayISO()
-    const prev = document.title
-    document.title = `${child.name}-vaccinations-${formatDate(today)}`
-    // ponytail: force light theme for print so dark-mode gray text doesn't wash out on paper
-    document.documentElement.setAttribute('data-theme', 'light')
-    window.onafterprint = () => {
-      document.title = prev
-      document.documentElement.removeAttribute('data-theme')
-      window.onafterprint = null
-    }
-    window.print()
-  }
+
 </script>
 
 <div class="print:hidden">
@@ -48,7 +37,7 @@
         title="Group by disease"
         onclick={() => groupByDisease = !groupByDisease}
       ><Icon name="virus" size={20} strokeWidth={1.5} /></button>
-      <button class="btn btn-ghost btn-sm" title="Export PDF" onclick={doPrint}><Icon name="printer" /></button>
+      <PrintExport {child} {groupByDisease} {sortedRecords} {groupedRecords} />
     </div>
   </div>
 
@@ -84,51 +73,6 @@
     {#each sortedRecords() as record}
       {@render recordCard(record)}
     {/each}
-  {/if}
-</div>
-
-<!-- Print view -->
-<div class="hidden print:block">
-  <div class="mb-4">
-    <h1 class="text-2xl font-bold">{child.name}</h1>
-    <p class="text-sm">{formatDate(child.birthDate)} · {childAge(child.birthDate)} · {COUNTRY_LABELS[child.country]}</p>
-  </div>
-  {#if groupByDisease}
-    {#each groupedRecords() as [disease, recs]}
-      <h2 class="text-lg font-semibold mt-4 mb-1">{disease}</h2>
-      <table class="w-full border-collapse text-sm mb-4">
-        <thead>
-          <tr>{#each ['Date', 'Vaccine / Brand', 'Serial / Lot', 'Notes'] as h}<th class="border border-gray-400 p-2 text-left bg-gray-100">{h}</th>{/each}</tr>
-        </thead>
-        <tbody>
-          {#each recs as r}
-            <tr>
-              <td class="border border-gray-400 p-2">{formatDate(r.date)}</td>
-              <td class="border border-gray-400 p-2">{brandNameFor(r)}</td>
-              <td class="border border-gray-400 p-2">{r.serialNumber ?? ''}</td>
-              <td class="border border-gray-400 p-2">{r.notes ?? ''}</td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    {/each}
-  {:else}
-    <table class="w-full border-collapse text-sm">
-      <thead>
-        <tr>{#each ['Date', 'Vaccine / Brand', 'Diseases', 'Serial / Lot', 'Notes'] as h}<th class="border border-gray-400 p-2 text-left bg-gray-100">{h}</th>{/each}</tr>
-      </thead>
-      <tbody>
-        {#each sortedRecords() as r}
-          <tr>
-            <td class="border border-gray-400 p-2">{formatDate(r.date)}</td>
-            <td class="border border-gray-400 p-2">{brandNameFor(r)}</td>
-            <td class="border border-gray-400 p-2">{diseaseNamesFor(r).join(', ')}</td>
-            <td class="border border-gray-400 p-2">{r.serialNumber ?? ''}</td>
-            <td class="border border-gray-400 p-2">{r.notes ?? ''}</td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
   {/if}
 </div>
 
