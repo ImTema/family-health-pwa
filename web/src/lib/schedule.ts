@@ -100,8 +100,9 @@ export function assignFootnotes(items: { note?: string }[]): Map<string, number>
 export function weeksToLabel(w: number): string {
   const m: Record<number, string> = {
     0: 'Birth', 4: '1m', 8: '2m', 13: '3m', 16: '4m', 19: '4.5m',
-    24: '6m', 26: '6m+', 30: '7m', 52: '12m', 65: '15m', 78: '18m',
-    87: '20m', 260: '5yr', 312: '6yr'
+    24: '6m', 26: '6m+', 30: '7m', 35: '8m', 39: '9m', 52: '12m',
+    65: '15m', 71: '16m', 78: '18m', 87: '20m', 260: '5yr', 312: '6yr',
+    469: '9yr', 495: '9.5yr'
   }
   return m[w] ?? `${w}w`
 }

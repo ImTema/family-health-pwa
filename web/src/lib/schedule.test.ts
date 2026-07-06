@@ -182,3 +182,20 @@ describe('assignFootnotes', () => {
     expect(assignFootnotes(items)).toEqual(new Map([['B', 1], ['A', 2]]))
   })
 })
+
+describe('WHO reference schedule', () => {
+  it('marks universal antigens MANDATORY and region-specific ones OPTIONAL with a note', () => {
+    vi.setSystemTime(new Date('2024-01-01T00:00:00Z'))
+    const c = child({ birthDate: '2024-01-01', country: 'WHO' as Child['country'] })
+    const result = computeSchedule(c, [])
+    expect(result.every(r => r.entry.country === 'WHO')).toBe(true)
+
+    const measles1 = result.find(r => r.entry.diseaseId === 'measles' && r.entry.doseNumber === 1)!
+    expect(measles1.entry.necessity).toBe('MANDATORY')
+    expect(measles1.entry.ageWeeks).toBe(39)
+
+    const yellowFever = result.find(r => r.entry.diseaseId === 'yellow_fever')!
+    expect(yellowFever.entry.necessity).toBe('OPTIONAL')
+    expect(yellowFever.entry.note).toBeTruthy()
+  })
+})

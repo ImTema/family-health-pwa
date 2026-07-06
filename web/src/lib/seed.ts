@@ -6,7 +6,7 @@
  * EU/ECDC — https://vaccine-schedule.ecdc.europa.eu/
  */
 
-import type { Brand, Disease, RecurringEntry, ScheduleEntry } from './types'
+import type { Brand, Country, Disease, RecurringEntry, ScheduleEntry } from './types'
 
 // Sources: WHO fact sheets (who.int/news-room/fact-sheets) and CDC disease pages (cdc.gov/vaccines/pubs/pinkbook), public domain.
 export const diseases: Disease[] = [
@@ -30,6 +30,10 @@ export const diseases: Disease[] = [
   { id: 'influenza',  name: 'Influenza (Flu)',                       description: 'Influenza is a contagious respiratory virus spread through droplets, with new circulating strains each year requiring annual re-vaccination.', symptoms: 'Fever, cough, sore throat, muscle aches, and fatigue; can lead to pneumonia or worsen chronic conditions, especially in young children.' },
   { id: 'tbe',        name: 'Tick-borne Encephalitis (TBE)',         description: 'TBE is caused by a flavivirus transmitted through the bite of infected ticks, endemic to forested regions of Central/Eastern Europe and parts of Russia.', symptoms: 'Fever and flu-like symptoms initially; a minority progress to encephalitis or meningitis with headache, stiff neck, and neurological symptoms.' },
   { id: 'rsv',        name: 'Respiratory Syncytial Virus (RSV)',     description: 'RSV is a common respiratory virus and the leading cause of severe lower respiratory tract infection in infants; prevention is via a long-acting monoclonal antibody given at birth or before RSV season rather than a traditional vaccine.', symptoms: 'Cough, congestion, and fever; in infants can progress to bronchiolitis or pneumonia with wheezing and difficulty breathing.' },
+  { id: 'yellow_fever', name: 'Yellow Fever',                        description: 'Yellow fever is caused by a flavivirus transmitted by infected mosquitoes, endemic to parts of Africa and South America.', symptoms: 'Fever, chills, headache, and muscle pain; a minority progress to jaundice, bleeding, and organ failure.' },
+  { id: 'jap_enceph', name: 'Japanese Encephalitis',                 description: 'Japanese encephalitis is caused by a flavivirus transmitted by infected mosquitoes, the leading cause of viral encephalitis in many parts of Asia.', symptoms: 'Most infections are mild or asymptomatic; a small proportion develop high fever, headache, and encephalitis with lasting neurological damage.' },
+  { id: 'typhoid',    name: 'Typhoid Fever',                         description: 'Typhoid fever is caused by Salmonella Typhi bacteria, spread through contaminated food or water in areas with poor sanitation.', symptoms: 'Sustained high fever, fatigue, headache, and abdominal pain; can lead to intestinal perforation if untreated.' },
+  { id: 'cholera',    name: 'Cholera',                                description: 'Cholera is caused by Vibrio cholerae bacteria, spread through contaminated water or food, and can cause outbreaks where water and sanitation infrastructure is poor.', symptoms: 'Sudden severe watery diarrhea and vomiting that can lead to rapid, life-threatening dehydration.' },
 ]
 
 export const diseaseById: Record<string, Disease> = Object.fromEntries(diseases.map(d => [d.id, d]))
@@ -180,16 +184,20 @@ export const brandCoverage: Record<string, string[]> = {
   ultrix_quadri: ['influenza'],
 }
 
-function entries(list: [string, string, number, number, ('MANDATORY' | 'OPTIONAL')?][], country: 'RUSSIA' | 'SERBIA' | 'EU', prefix: string): ScheduleEntry[] {
-  return list.map(([, disease, ageWeeks, doseNumber, necessity]) => ({
+function entries(list: [string, string, number, number, ('MANDATORY' | 'OPTIONAL')?, string?][], country: Country, prefix: string): ScheduleEntry[] {
+  return list.map(([, disease, ageWeeks, doseNumber, necessity, note]) => ({
     id: `${prefix}_${disease}_${doseNumber}`,
     country,
     diseaseId: disease,
     ageWeeks,
     doseNumber,
-    necessity: necessity ?? 'MANDATORY'
+    necessity: necessity ?? 'MANDATORY',
+    note
   }))
 }
+
+const WHO_ENDEMIC_NOTE = 'Recommended only in countries/settings with high disease burden or endemic risk (WHO position paper)'
+const WHO_CAPACITY_NOTE = 'Recommended only for national programmes able to sustain ≥80% coverage (WHO position paper)'
 
 export const scheduleEntries: ScheduleEntry[] = [
   ...entries([
@@ -249,6 +257,35 @@ export const scheduleEntries: ScheduleEntry[] = [
     ['', 'tbe',        83,  1, 'OPTIONAL'], ['', 'tbe',       100,  2, 'OPTIONAL'],
     ['', 'rsv',         0,  1, 'OPTIONAL'],
   ], 'EU', 'eu'),
+
+  // WHO Table 2 "Summary of WHO Position Papers - Recommended Routine Immunizations for Children"
+  // (updated September 2020) — https://www.who.int/publications/m/item/table1-summary-of-who-position-papers-recommendations-for-routine-immunization
+  // Global reference schedule, not a national mandate. "Recommendations for all children" -> MANDATORY;
+  // region/context/programme-dependent recommendations -> OPTIONAL with an explanatory footnote.
+  ...entries([
+    ['', 'bcg',         0,  1],
+    ['', 'hepb',        0,  1], ['', 'hepb',        4,  2], ['', 'hepb',       26,  3],
+    ['', 'diphtheria',  6,  1], ['', 'diphtheria', 10,  2], ['', 'diphtheria', 14,  3], ['', 'diphtheria', 78, 4],
+    ['', 'tetanus',     6,  1], ['', 'tetanus',    10,  2], ['', 'tetanus',    14,  3], ['', 'tetanus',    78, 4],
+    ['', 'pertussis',   6,  1], ['', 'pertussis',  10,  2], ['', 'pertussis',  14,  3], ['', 'pertussis',  78, 4],
+    ['', 'ipv',         6,  1], ['', 'ipv',        10,  2], ['', 'ipv',        14,  3],
+    ['', 'hib',         6,  1], ['', 'hib',        10,  2], ['', 'hib',        14,  3],
+    ['', 'pcv',         6,  1], ['', 'pcv',        10,  2], ['', 'pcv',        14,  3],
+    ['', 'rotavirus',   6,  1], ['', 'rotavirus',  10,  2],
+    ['', 'measles',    39,  1], ['', 'measles',    71,  2],
+    ['', 'rubella',    39,  1],
+    ['', 'hpv',       469,  1], ['', 'hpv',       495,  2],
+    ['', 'mumps',      39,  1, 'OPTIONAL', WHO_CAPACITY_NOTE], ['', 'mumps', 71, 2, 'OPTIONAL', WHO_CAPACITY_NOTE],
+    ['', 'varicella',  52,  1, 'OPTIONAL', WHO_CAPACITY_NOTE],
+    ['', 'hepa',       52,  1, 'OPTIONAL', WHO_ENDEMIC_NOTE], ['', 'hepa', 82, 2, 'OPTIONAL', WHO_ENDEMIC_NOTE],
+    ['', 'menc',       39,  1, 'OPTIONAL', WHO_ENDEMIC_NOTE],
+    ['', 'tbe',        83,  1, 'OPTIONAL', WHO_ENDEMIC_NOTE], ['', 'tbe', 100, 2, 'OPTIONAL', WHO_ENDEMIC_NOTE],
+    ['', 'yellow_fever', 39, 1, 'OPTIONAL', WHO_ENDEMIC_NOTE],
+    ['', 'jap_enceph',  35,  1, 'OPTIONAL', WHO_ENDEMIC_NOTE],
+    ['', 'typhoid',     39,  1, 'OPTIONAL', WHO_ENDEMIC_NOTE],
+    ['', 'cholera',     52,  1, 'OPTIONAL', WHO_ENDEMIC_NOTE],
+    ['', 'rsv',          0,  1, 'OPTIONAL', 'Newer WHO recommendation delivered as a long-acting monoclonal antibody rather than a traditional vaccine; rollout depends on national programme capacity'],
+  ], 'WHO', 'who'),
 ]
 
 // Annual/seasonal vaccines with no fixed age milestone — tracked by count/last-date instead of the age matrix.
@@ -256,4 +293,5 @@ export const recurringEntries: RecurringEntry[] = [
   { id: 'ru_influenza', country: 'RUSSIA', diseaseId: 'influenza', necessity: 'MANDATORY' },
   { id: 'rs_influenza', country: 'SERBIA', diseaseId: 'influenza', necessity: 'OPTIONAL' },
   { id: 'eu_influenza', country: 'EU',     diseaseId: 'influenza', necessity: 'OPTIONAL' },
+  { id: 'who_influenza', country: 'WHO',  diseaseId: 'influenza', necessity: 'OPTIONAL', note: 'Recommended for countries with programme capacity to target priority risk groups (WHO position paper)' },
 ]
