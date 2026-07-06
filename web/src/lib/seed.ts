@@ -122,14 +122,14 @@ export const brandCoverage: Record<string, string[]> = {
   opv:           ['ipv'],
 }
 
-function entries(list: [string, string, number, number][], country: 'RUSSIA' | 'SERBIA' | 'EU', prefix: string): ScheduleEntry[] {
-  return list.map(([, disease, ageWeeks, doseNumber]) => ({
+function entries(list: [string, string, number, number, ('MANDATORY' | 'OPTIONAL')?][], country: 'RUSSIA' | 'SERBIA' | 'EU', prefix: string): ScheduleEntry[] {
+  return list.map(([, disease, ageWeeks, doseNumber, necessity]) => ({
     id: `${prefix}_${disease}_${doseNumber}`,
     country,
     diseaseId: disease,
     ageWeeks,
     doseNumber,
-    necessity: 'MANDATORY' as const
+    necessity: necessity ?? 'MANDATORY'
   }))
 }
 
@@ -146,7 +146,9 @@ export const scheduleEntries: ScheduleEntry[] = [
     ['', 'measles',    52,  1], ['', 'measles',   312,  2],
     ['', 'mumps',      52,  1], ['', 'mumps',     312,  2],
     ['', 'rubella',    52,  1], ['', 'rubella',   312,  2],
-    ['', 'varicella',  52,  1],
+    ['', 'varicella',  52,  1, 'OPTIONAL'],
+    ['', 'rotavirus',   8,  1, 'OPTIONAL'], ['', 'rotavirus',  16,  2, 'OPTIONAL'],
+    ['', 'hpv',       572,  1, 'OPTIONAL'],
   ], 'RUSSIA', 'ru'),
 
   ...entries([
@@ -161,6 +163,8 @@ export const scheduleEntries: ScheduleEntry[] = [
     ['', 'measles',    52,  1], ['', 'measles',   260,  2],
     ['', 'mumps',      52,  1], ['', 'mumps',     260,  2],
     ['', 'rubella',    52,  1], ['', 'rubella',   260,  2],
+    ['', 'rotavirus',   8,  1, 'OPTIONAL'], ['', 'rotavirus',  16,  2, 'OPTIONAL'],
+    ['', 'hpv',       572,  1, 'OPTIONAL'],
   ], 'SERBIA', 'rs'),
 
   ...entries([
@@ -176,5 +180,7 @@ export const scheduleEntries: ScheduleEntry[] = [
     ['', 'rubella',    52,  1], ['', 'rubella',   260,  2],
     ['', 'varicella',  52,  1], ['', 'varicella',  78,  2],
     ['', 'menc',       52,  1],
+    ['', 'rotavirus',   8,  1, 'OPTIONAL'], ['', 'rotavirus',  16,  2, 'OPTIONAL'],
+    ['', 'hpv',       572,  1, 'OPTIONAL'],
   ], 'EU', 'eu'),
 ]
