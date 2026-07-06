@@ -18,3 +18,10 @@ npm run dev
 cd web
 npm test
 ```
+
+## How to build and run for Node.js hosting (e.g. Hostinger)
+Root `package.json`/`index.js` proxy into `web/`, since Hostinger runs `npm run build` and `node index.js` from the repo root.
+```
+npm run build   # -> npm --prefix web install && npm --prefix web run build
+npm start       # -> node index.js, static file server over web/build with SPA fallback
+```
