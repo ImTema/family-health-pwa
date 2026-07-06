@@ -28,6 +28,14 @@ createServer(async (req, res) => {
     res.writeHead(200, { 'Content-Type': MIME_TYPES[extname(filePath)] || 'application/octet-stream' })
     res.end(data)
   } catch {
+    // ponytail: SPA fallback only for routes (no file extension); a missing
+    // asset (e.g. a stale hashed .js from a cached page) must 404, not be
+    // silently served as index.html, or browsers reject it as the wrong MIME type.
+    if (extname(safePath)) {
+      res.writeHead(404)
+      res.end()
+      return
+    }
     const fallback = await readFile(join(BUILD_DIR, 'index.html'))
     res.writeHead(200, { 'Content-Type': 'text/html' })
     res.end(fallback)
