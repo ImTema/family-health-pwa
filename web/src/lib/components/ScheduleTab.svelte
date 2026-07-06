@@ -3,6 +3,7 @@
   import { formatDate } from '../utils'
   import { COUNTRY_LABELS } from '../types'
   import { db } from '../db'
+  import Icon from './Icon.svelte'
   import type { Child, ScheduleResult, VaccinationRecord } from '../types'
 
   let { child, schedule, records }: { child: Child; schedule: ScheduleResult[]; records: VaccinationRecord[] } = $props()
@@ -52,12 +53,16 @@
             {@const result = schedule.find(r => r.entry.diseaseId === disease.id && r.entry.ageWeeks === w)}
             <td class="text-center {i === todayCol ? 'bg-primary/10' : ''}">
               {#if result}
-                {@const [icon, cls] =
-                  result.status === 'DONE'        ? ['✓', 'text-success font-bold'] :
-                  result.status === 'HIGHLIGHTED' ? ['!', 'text-warning font-bold'] :
-                                                    ['●', 'text-base-content/20 text-[5px]']}
-                <span class={cls}>{icon}</span>
-                {#if result.entry.necessity === 'OPTIONAL'}
+                {#if result.status === 'DONE' && result.coveredByRecord?.kind === 'illness'}
+                  <span class="text-success inline-block align-middle"><Icon name="virus" size={14} strokeWidth={1.5} /></span>
+                {:else}
+                  {@const [icon, cls] =
+                    result.status === 'DONE'        ? ['✓', 'text-success font-bold'] :
+                    result.status === 'HIGHLIGHTED' ? ['!', 'text-warning font-bold'] :
+                                                      ['●', 'text-base-content/20 text-[5px]']}
+                  <span class={cls}>{icon}</span>
+                {/if}
+                {#if result.entry.necessity === 'OPTIONAL' && result.coveredByRecord?.kind !== 'illness'}
                   <span class="inline-block w-1 h-1 rounded-full ring-1 ring-blue-500 align-super ml-0.5"></span>
                 {/if}
               {/if}

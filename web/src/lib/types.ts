@@ -31,16 +31,18 @@ export interface Child {
   photo?: string  // base64 data URL
 }
 
-export interface VaccinationRecord {
+interface VaccinationRecordCommon {
   id: string
   childId: string
   date: string  // YYYY-MM-DD
-  brandId?: string
-  customBrandName?: string
   diseaseIds: string[]
-  serialNumber?: string
   notes?: string
 }
+
+export type VaccinationRecord = VaccinationRecordCommon & (
+  | { kind: 'vaccine', brandId?: string, customBrandName?: string, serialNumber?: string }
+  | { kind: 'illness' }
+)
 
 export interface ScheduleEntry {
   id: string

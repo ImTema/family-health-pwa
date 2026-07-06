@@ -47,7 +47,7 @@
     for (const c of chs) {
       const records = await db.getRecords(c.id)
       for (const r of records) {
-        rows.push([c.name, r.date, brandNameFor(r), diseaseNamesFor(r).join('; '), r.serialNumber ?? '', r.notes ?? ''])
+        rows.push([c.name, r.date, brandNameFor(r), diseaseNamesFor(r).join('; '), r.kind === 'vaccine' ? r.serialNumber ?? '' : '', r.notes ?? ''])
       }
     }
     const csv = rows.map(row => row.map(csvField).join(',')).join('\n')

@@ -8,8 +8,8 @@ const child = (over: Partial<Child>): Child => ({
 })
 
 const record = (over: Partial<VaccinationRecord>): VaccinationRecord => ({
-  id: 'r1', childId: 'c1', date: '2024-01-01', diseaseIds: [], ...over
-})
+  id: 'r1', childId: 'c1', date: '2024-01-01', diseaseIds: [], kind: 'vaccine', ...over
+} as VaccinationRecord)
 
 // db.ts caches its IDB connection at module scope, so isolate tests by clearing
 // all stores rather than swapping the underlying indexedDB instance.
@@ -61,6 +61,15 @@ describe('db.getRecords / saveRecord', () => {
 
   it('returns an empty list for a child with no records', async () => {
     expect(await db.getRecords('unknown')).toEqual([])
+  })
+})
+
+describe('db.getRecords legacy data', () => {
+  it('defaults records saved before the kind field existed to kind: vaccine', async () => {
+    const legacy = record({ id: 'r1', childId: 'c1' }) as VaccinationRecord
+    delete (legacy as { kind?: string }).kind
+    await db.saveRecord(legacy)
+    expect((await db.getRecords('c1'))[0].kind).toBe('vaccine')
   })
 })
 

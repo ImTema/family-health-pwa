@@ -48,7 +48,8 @@ export const db = {
   },
 
   async getRecords(childId: string): Promise<VaccinationRecord[]> {
-    return (await getDb()).getAllFromIndex('vaccination_records', 'childId', childId)
+    const records = await (await getDb()).getAllFromIndex('vaccination_records', 'childId', childId)
+    return records.map(r => (r.kind ? r : { ...(r as object), kind: 'vaccine' as const }) as VaccinationRecord)
   },
 
   async saveRecord(record: VaccinationRecord): Promise<void> {

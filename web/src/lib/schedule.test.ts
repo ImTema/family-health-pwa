@@ -1,13 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { childAgeWeeks, computeSchedule, diseasesFor, groupRecordsByDisease, weeksToLabel } from './schedule'
+import { brandNameFor, childAgeWeeks, computeSchedule, diseasesFor, groupRecordsByDisease, weeksToLabel } from './schedule'
 import type { Child, VaccinationRecord } from './types'
 
 const record = (over: Partial<VaccinationRecord>): VaccinationRecord => ({
-  id: 'r1', childId: 'c1', date: '2024-01-01', diseaseIds: [], ...over
-})
+  id: 'r1', childId: 'c1', date: '2024-01-01', diseaseIds: [], kind: 'vaccine', ...over
+} as VaccinationRecord)
 
 const child = (over: Partial<Child>): Child => ({
   id: 'c1', name: 'Kid', birthDate: '2024-01-01', country: 'RUSSIA', ...over
+})
+
+describe('brandNameFor', () => {
+  it('returns "Illness" for an illness record', () => {
+    expect(brandNameFor(record({ kind: 'illness' }))).toBe('Illness')
+  })
 })
 
 describe('diseasesFor', () => {

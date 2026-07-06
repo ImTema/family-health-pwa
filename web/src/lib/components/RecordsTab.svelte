@@ -58,7 +58,7 @@
               <tr>
                 <td class="whitespace-nowrap">{formatDate(record.date)}</td>
                 <td>{brandNameFor(record)}</td>
-                <td>{record.serialNumber ?? ''}</td>
+                <td>{record.kind === 'vaccine' ? record.serialNumber ?? '' : ''}</td>
                 <td>{record.notes ?? ''}</td>
                 <td>
                   <a href="/children/{childId}/record/{record.id}" class="btn btn-ghost btn-xs" title="Edit"><Icon name="pencil" /></a>
@@ -84,7 +84,7 @@
           <div class="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-sm">
             <span>{formatDate(record.date)}</span>
             {#if brandNameFor(record)}<span class="font-semibold">{brandNameFor(record)}</span>{/if}
-            {#if record.serialNumber}<span class="text-base-content/50 text-[10px]">{record.serialNumber}</span>{/if}
+            {#if record.kind === 'vaccine' && record.serialNumber}<span class="text-base-content/50 text-[10px]">{record.serialNumber}</span>{/if}
           </div>
           {#if diseaseNamesFor(record).length > 0}
             <div class="flex flex-wrap gap-1 mt-1.5">

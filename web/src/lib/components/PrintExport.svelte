@@ -52,7 +52,7 @@
             <tr>
               <td class="border border-gray-400 p-2">{formatDate(r.date)}</td>
               <td class="border border-gray-400 p-2">{brandNameFor(r)}</td>
-              <td class="border border-gray-400 p-2">{r.serialNumber ?? ''}</td>
+              <td class="border border-gray-400 p-2">{r.kind === 'vaccine' ? r.serialNumber ?? '' : ''}</td>
               {#if hasNotes}<td class="border border-gray-400 p-2">{r.notes ?? ''}</td>{/if}
             </tr>
           {/each}
@@ -70,7 +70,7 @@
             <td class="border border-gray-400 p-2">{formatDate(r.date)}</td>
             <td class="border border-gray-400 p-2">{brandNameFor(r)}</td>
             <td class="border border-gray-400 p-2">{diseaseNamesFor(r).join(', ')}</td>
-            <td class="border border-gray-400 p-2">{r.serialNumber ?? ''}</td>
+            <td class="border border-gray-400 p-2">{r.kind === 'vaccine' ? r.serialNumber ?? '' : ''}</td>
             {#if hasNotes}<td class="border border-gray-400 p-2">{r.notes ?? ''}</td>{/if}
           </tr>
         {/each}

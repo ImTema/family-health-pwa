@@ -5,7 +5,8 @@
   import type { Snippet } from 'svelte'
   import type { VaccinationRecord } from '../types'
 
-  type RecordFields = Omit<VaccinationRecord, 'id' | 'childId'>
+  type DistributiveOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : never
+  type RecordFields = DistributiveOmit<VaccinationRecord, 'id' | 'childId'>
 
   let {
     title,
@@ -27,12 +28,14 @@
   // ponytail: form is seeded once from `initial` on mount, never re-seeded from a later prop change
   const seed = untrack(() => initial)
 
-  let brandInput = $state(brands.find(b => b.id === seed?.brandId)?.name ?? seed?.customBrandName ?? '')
-  let selectedBrandId = $state<string | undefined>(seed?.brandId)
+  const seedVaccine = seed?.kind === 'vaccine' ? seed : undefined
+  let kind = $state<'vaccine' | 'illness'>(seed?.kind ?? 'vaccine')
+  let brandInput = $state(brands.find(b => b.id === seedVaccine?.brandId)?.name ?? seedVaccine?.customBrandName ?? '')
+  let selectedBrandId = $state<string | undefined>(seedVaccine?.brandId)
   let selectedDiseases = $state<Set<string>>(new Set(seed?.diseaseIds ?? []))
   let diseaseQuery = $state('')
   let date = $state(seed?.date ?? today)
-  let serial = $state(seed?.serialNumber ?? '')
+  let serial = $state(seedVaccine?.serialNumber ?? '')
   let notes = $state(seed?.notes ?? '')
   let error = $state('')
   let showBrandList = $state(false)
@@ -76,14 +79,17 @@
     error = ''
     if (!date) { error = 'Date is required.'; return }
     if (childBirthDate && date < childBirthDate) { error = 'Vaccination date cannot be before birth date.'; return }
-    await onSave({
-      date,
-      brandId: selectedBrandId,
-      customBrandName: !selectedBrandId && brandInput.trim() ? brandInput.trim() : undefined,
-      diseaseIds: [...selectedDiseases],
-      serialNumber: serial.trim() || undefined,
-      notes: notes.trim() || undefined
-    })
+    await onSave(kind === 'illness'
+      ? { kind, date, diseaseIds: [...selectedDiseases], notes: notes.trim() || undefined }
+      : {
+          kind,
+          date,
+          brandId: selectedBrandId,
+          customBrandName: !selectedBrandId && brandInput.trim() ? brandInput.trim() : undefined,
+          diseaseIds: [...selectedDiseases],
+          serialNumber: serial.trim() || undefined,
+          notes: notes.trim() || undefined
+        })
   }
 </script>
 
@@ -92,6 +98,11 @@
     <h1 class="text-2xl font-bold mb-6">{title}</h1>
 
     <div class="flex flex-col gap-4">
+      <div class="join w-full">
+        <button class="btn join-item flex-1 {kind === 'vaccine' ? 'btn-primary' : ''}" onclick={() => kind = 'vaccine'}>Vaccine</button>
+        <button class="btn join-item flex-1 {kind === 'illness' ? 'btn-primary' : ''}" onclick={() => kind = 'illness'}>Illness</button>
+      </div>
+
       <div class="form-control">
         <label class="label" for="brand-input"><span class="label-text">Vaccine / Brand</span></label>
         <div class="relative">
@@ -100,12 +111,13 @@
             type="text"
             class="input input-bordered w-full"
             placeholder="Search or type brand name"
-            bind:value={brandInput}
-            oninput={() => { selectedBrandId = undefined }}
+            value={kind === 'illness' ? 'Illness' : brandInput}
+            disabled={kind === 'illness'}
+            oninput={e => { brandInput = e.currentTarget.value; selectedBrandId = undefined }}
             onfocus={() => showBrandList = true}
             onblur={() => setTimeout(() => showBrandList = false, 150)}
           />
-          {#if showBrandList && brandSuggestions.length > 0}
+          {#if kind === 'vaccine' && showBrandList && brandSuggestions.length > 0}
             <div class="absolute z-20 bg-base-100 border border-base-300 rounded-lg shadow-lg w-full mt-1 max-h-48 overflow-y-auto">
               {#each brandSuggestions as b}
                 <button class="w-full text-left px-3 py-2 hover:bg-base-200 text-sm" onpointerdown={() => selectBrand(b.name)}>{b.name}</button>
@@ -155,7 +167,15 @@
 
       <div class="form-control">
         <label class="label" for="record-serial"><span class="label-text">Serial / Lot number (optional)</span></label>
-        <input id="record-serial" type="text" class="input input-bordered w-full" placeholder="e.g. A12345B" bind:value={serial} />
+        <input
+          id="record-serial"
+          type="text"
+          class="input input-bordered w-full"
+          placeholder="e.g. A12345B"
+          value={kind === 'illness' ? '' : serial}
+          disabled={kind === 'illness'}
+          oninput={e => serial = e.currentTarget.value}
+        />
       </div>
 
       <div class="form-control">
