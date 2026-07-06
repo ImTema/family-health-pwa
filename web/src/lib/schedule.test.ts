@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { brandNameFor, childAgeWeeks, computeSchedule, diseasesFor, groupRecordsByDisease, weeksToLabel } from './schedule'
+import { assignFootnotes, brandNameFor, childAgeWeeks, computeSchedule, diseasesFor, groupRecordsByDisease, weeksToLabel } from './schedule'
 import type { Child, VaccinationRecord } from './types'
 
 const record = (over: Partial<VaccinationRecord>): VaccinationRecord => ({
@@ -158,5 +158,27 @@ describe('computeSchedule', () => {
         (prev.ageWeeks === cur.ageWeeks && prev.doseNumber <= cur.doseNumber)
       ).toBe(true)
     }
+  })
+})
+
+describe('assignFootnotes', () => {
+  it('returns an empty map when nothing has a note', () => {
+    expect(assignFootnotes([{}, {}])).toEqual(new Map())
+  })
+
+  it('assigns number 1 to a single noted item', () => {
+    expect(assignFootnotes([{ note: 'endemic regions only' }])).toEqual(
+      new Map([['endemic regions only', 1]])
+    )
+  })
+
+  it('shares one number across items with identical note text', () => {
+    const items = [{ note: 'risk-group only' }, {}, { note: 'risk-group only' }]
+    expect(assignFootnotes(items)).toEqual(new Map([['risk-group only', 1]]))
+  })
+
+  it('numbers distinct notes sequentially by first appearance', () => {
+    const items = [{ note: 'B' }, { note: 'A' }, { note: 'B' }]
+    expect(assignFootnotes(items)).toEqual(new Map([['B', 1], ['A', 2]]))
   })
 })

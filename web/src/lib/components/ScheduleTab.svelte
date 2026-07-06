@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { childAgeWeeks, weeksToLabel, scheduleMilestones, scheduleDiseases, recurringFor } from '../schedule'
+  import { assignFootnotes, childAgeWeeks, weeksToLabel, scheduleMilestones, scheduleDiseases, recurringFor } from '../schedule'
   import { formatDate } from '../utils'
   import { COUNTRY_LABELS } from '../types'
   import { db } from '../db'
@@ -12,6 +12,8 @@
   const diseases = $derived(scheduleDiseases(schedule))
   const todayCol = $derived(milestones.findLastIndex(w => w <= childAgeWeeks(child.birthDate)))
   const recurring = $derived(recurringFor(child.country, records))
+  const footnotes = $derived(assignFootnotes([...schedule.map(r => r.entry), ...recurring.map(r => r.entry)]))
+  const footnoteLegend = $derived([...footnotes.entries()])
 
   function onCountryChange() {
     db.saveChild($state.snapshot(child))
@@ -97,6 +99,9 @@
                 {#if result.entry.necessity === 'OPTIONAL' && result.coveredByRecord?.kind !== 'illness'}
                   <span class="inline-block w-1 h-1 rounded-full ring-1 ring-blue-500 align-super ml-0.5"></span>
                 {/if}
+                {#if result.entry.note}
+                  <sup class="text-[9px] text-base-content/50">{footnotes.get(result.entry.note)}</sup>
+                {/if}
               {/if}
             </td>
           {/each}
@@ -118,11 +123,20 @@
         <span>
           {r.disease.name}
           {#if r.entry.necessity === 'OPTIONAL'}<span class="inline-block w-1 h-1 rounded-full ring-1 ring-blue-500 align-super ml-0.5"></span>{/if}
+          {#if r.entry.note}<sup class="text-[9px] text-base-content/50">{footnotes.get(r.entry.note)}</sup>{/if}
         </span>
         <span class="text-base-content/60 text-xs">
           {r.count > 0 ? `${r.count}× · last ${formatDate(r.lastDate!)}` : 'none yet'}
         </span>
       </li>
+    {/each}
+  </ul>
+{/if}
+
+{#if footnoteLegend.length}
+  <ul class="text-xs text-base-content/50 mt-2 space-y-0.5">
+    {#each footnoteLegend as [note, num]}
+      <li><sup>{num}</sup> {note}</li>
     {/each}
   </ul>
 {/if}

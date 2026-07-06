@@ -51,6 +51,7 @@ export interface ScheduleEntry {
   ageWeeks: number
   doseNumber: number
   necessity: 'MANDATORY' | 'OPTIONAL'
+  note?: string
 }
 
 export interface ScheduleResult {
@@ -66,4 +67,5 @@ export interface RecurringEntry {
   country: Country
   diseaseId: string
   necessity: 'MANDATORY' | 'OPTIONAL'
+  note?: string
 }

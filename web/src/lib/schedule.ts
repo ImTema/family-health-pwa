@@ -89,6 +89,14 @@ export function groupRecordsByDisease(records: VaccinationRecord[]): Map<string,
   return groups
 }
 
+export function assignFootnotes(items: { note?: string }[]): Map<string, number> {
+  const numberFor = new Map<string, number>()
+  for (const { note } of items) {
+    if (note && !numberFor.has(note)) numberFor.set(note, numberFor.size + 1)
+  }
+  return numberFor
+}
+
 export function weeksToLabel(w: number): string {
   const m: Record<number, string> = {
     0: 'Birth', 4: '1m', 8: '2m', 13: '3m', 16: '4m', 19: '4.5m',
