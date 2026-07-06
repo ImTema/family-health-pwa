@@ -16,6 +16,30 @@
   function onCountryChange() {
     db.saveChild($state.snapshot(child))
   }
+
+  let scrollEl = $state<HTMLDivElement>()
+  let canScrollMore = $state(false)
+
+  function updateCanScrollMore() {
+    if (!scrollEl) return
+    canScrollMore = scrollEl.scrollWidth - scrollEl.scrollLeft - scrollEl.clientWidth > 1
+  }
+
+  $effect(() => {
+    milestones.length
+    diseases.length
+    if (!scrollEl) return
+    const el = scrollEl
+    const observer = new ResizeObserver(updateCanScrollMore)
+    observer.observe(el)
+    // ponytail: table-layout:auto needs a paint before scrollWidth reflects final column widths
+    requestAnimationFrame(updateCanScrollMore)
+    window.addEventListener('resize', updateCanScrollMore)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', updateCanScrollMore)
+    }
+  })
 </script>
 
 <div class="flex items-center gap-3 mb-3">
@@ -33,7 +57,8 @@
 <div class="flex items-center gap-1 text-xs text-base-content/40 mb-2">
   <span class="inline-block w-1 h-1 rounded-full ring-1 ring-blue-500"></span> = optional vaccine
 </div>
-<div class="overflow-x-auto">
+<div class="relative">
+  <div class="overflow-x-scroll" bind:this={scrollEl} onscroll={updateCanScrollMore}>
   <table class="table table-xs table-pin-rows">
     <thead>
       <tr>
@@ -72,6 +97,10 @@
       {/each}
     </tbody>
   </table>
+  </div>
+  {#if canScrollMore}
+    <div class="pointer-events-none absolute top-0 right-0 bottom-0 w-8 z-30 bg-gradient-to-l from-base-100 to-transparent"></div>
+  {/if}
 </div>
 
 {#if recurring.length}
