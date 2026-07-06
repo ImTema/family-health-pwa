@@ -50,7 +50,7 @@
   }
 
   function addDisease(diseaseId: string) {
-    selectedDiseases = new Set([...selectedDiseases, diseaseId])
+    selectedDiseases = kind === 'illness' ? new Set([diseaseId]) : new Set([...selectedDiseases, diseaseId])
     diseaseQuery = ''
     showDiseaseList = false
   }
