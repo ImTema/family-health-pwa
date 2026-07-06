@@ -40,6 +40,15 @@
   let error = $state('')
   let showBrandList = $state(false)
   let showDiseaseList = $state(false)
+  let brandFieldEl: HTMLDivElement | undefined = $state()
+  let diseaseFieldEl: HTMLDivElement | undefined = $state()
+
+  // ponytail: close-on-blur made mobile browsers dismiss the list on page scroll
+  // (scrolling blurs the focused input there); close on real outside clicks instead.
+  function handleOutsideClick(e: PointerEvent) {
+    if (brandFieldEl && !brandFieldEl.contains(e.target as Node)) showBrandList = false
+    if (diseaseFieldEl && !diseaseFieldEl.contains(e.target as Node)) showDiseaseList = false
+  }
 
   function selectBrand(name: string) {
     brandInput = name
@@ -93,6 +102,8 @@
   }
 </script>
 
+<svelte:window onpointerdown={handleOutsideClick} />
+
 <div class="min-h-full bg-base-100 p-4">
   <div class="max-w-lg mx-auto">
     <h1 class="text-2xl font-bold mb-6">{title}</h1>
@@ -106,7 +117,7 @@
       {#if kind === 'vaccine'}
         <div class="form-control">
           <label class="label" for="brand-input"><span class="label-text">Vaccine / Brand</span></label>
-          <div class="relative">
+          <div class="relative" bind:this={brandFieldEl}>
             <input
               id="brand-input"
               type="text"
@@ -115,7 +126,6 @@
               value={brandInput}
               oninput={e => { brandInput = e.currentTarget.value; selectedBrandId = undefined }}
               onfocus={() => showBrandList = true}
-              onblur={() => setTimeout(() => showBrandList = false, 150)}
             />
             {#if showBrandList && brandSuggestions.length > 0}
               <div class="absolute z-20 bg-base-100 border border-base-300 rounded-lg shadow-lg w-full mt-1 max-h-48 overflow-y-auto">
@@ -141,7 +151,7 @@
 
       <div class="form-control">
         <label class="label" for="disease-query"><span class="label-text">Add disease</span></label>
-        <div class="relative">
+        <div class="relative" bind:this={diseaseFieldEl}>
           <input
             id="disease-query"
             type="text"
@@ -149,7 +159,6 @@
             placeholder="Search disease…"
             bind:value={diseaseQuery}
             onfocus={() => showDiseaseList = true}
-            onblur={() => setTimeout(() => showDiseaseList = false, 150)}
           />
           {#if showDiseaseList && diseaseSuggestions.length > 0}
             <div class="absolute z-20 bg-base-100 border border-base-300 rounded-lg shadow-lg w-full mt-1 max-h-48 overflow-y-auto">
