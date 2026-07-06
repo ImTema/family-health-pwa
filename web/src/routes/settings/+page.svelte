@@ -4,6 +4,7 @@
   import { brandNameFor, diseaseNamesFor } from '$lib/schedule'
   import { todayISO } from '$lib/utils'
   import { toBackup, fromBackup } from '$lib/backup'
+  import Icon from '$lib/components/Icon.svelte'
 
   let theme = $state('light')
   let importError = $state<string | null>(null)
@@ -118,6 +119,21 @@
               >Dark</button>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div class="card bg-base-200">
+        <div class="card-body gap-3">
+          <h2 class="card-title text-base"><Icon name="info" size={18} /> About VaxTrack</h2>
+          <p class="text-sm">VaxTrack helps you keep track of your children's vaccinations wherever you move. See what's done, what's overdue, and what's coming next — compared against your country's official schedule. Export a clean summary for doctors and schools any time.</p>
+          <ul class="text-sm list-disc list-inside text-base-content/80">
+            <li>Log a vaccination in seconds</li>
+            <li>Compare against country schedules</li>
+            <li>Export a PDF for clinics or schools</li>
+            <li>Works fully offline</li>
+            <li>All your data stays on your device</li>
+          </ul>
+          <p class="text-sm text-base-content/60">Privacy: all your data is stored only on this device. Nothing is uploaded, nothing is shared.</p>
         </div>
       </div>
 
