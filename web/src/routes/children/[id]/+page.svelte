@@ -34,7 +34,7 @@
       <div class="flex justify-between items-start gap-3">
         <div class="flex items-center gap-3">
           {#if child.photo}
-            <img src={child.photo} alt={child.name} class="w-12 h-12 rounded-full object-cover flex-shrink-0" />
+            <img src={child.photo} alt={child.name} class="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
           {/if}
           <div>
             <h1 class="text-xl font-bold">{child.name}</h1>

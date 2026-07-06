@@ -13,12 +13,25 @@
   let tab = $state<'children' | 'dictionary'>('children')
   let dictView = $state<'brands' | 'diseases'>('brands')
   let dictSearch = $state('')
+  let countrySearch = $state('')
+  let selectedCountries = $state<string[]>([])
 
   export const snapshot = {
-    capture: () => ({ tab, dictView, dictSearch }),
-    restore: (v: { tab: typeof tab; dictView: typeof dictView; dictSearch: string }) => {
-      tab = v.tab; dictView = v.dictView; dictSearch = v.dictSearch
+    capture: () => ({ tab, dictView, dictSearch, selectedCountries }),
+    restore: (v: { tab: typeof tab; dictView: typeof dictView; dictSearch: string; selectedCountries?: string[] }) => {
+      tab = v.tab; dictView = v.dictView; dictSearch = v.dictSearch; selectedCountries = v.selectedCountries ?? []
     }
+  }
+
+  const allCountries = [...new Set(brands.map(b => b.country).filter((c): c is string => !!c))].sort()
+  const filteredCountryOptions = $derived(
+    allCountries.filter(c => c.toLowerCase().includes(countrySearch.toLowerCase()))
+  )
+
+  function toggleCountry(country: string) {
+    selectedCountries = selectedCountries.includes(country)
+      ? selectedCountries.filter(c => c !== country)
+      : [...selectedCountries, country]
   }
 
   onMount(async () => {
@@ -36,7 +49,10 @@
   }
 
   const filteredBrands = $derived(
-    brands.filter(b => b.name.toLowerCase().includes(dictSearch.toLowerCase()))
+    brands.filter(b =>
+      b.name.toLowerCase().includes(dictSearch.toLowerCase()) &&
+      (selectedCountries.length === 0 || (b.country && selectedCountries.includes(b.country)))
+    )
   )
   const filteredDiseases = $derived(
     diseases.filter(d => d.name.toLowerCase().includes(dictSearch.toLowerCase()))
@@ -93,7 +109,7 @@
               <div class="card-body p-4">
                 <div class="flex justify-between items-start gap-3">
                   {#if child.photo}
-                    <img src={child.photo} alt={child.name} class="w-12 h-12 rounded-full object-cover flex-shrink-0" />
+                    <img src={child.photo} alt={child.name} class="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
                   {/if}
                   <div class="flex-1 min-w-0">
                     <div class="font-semibold text-lg">{child.name}</div>
@@ -126,6 +142,10 @@
           bind:value={dictSearch}
         />
 
+        <p class="text-xs text-base-content/50">
+          Dictionary data is not a source of truth and may contain mistakes — double-check against official sources before relying on it.
+        </p>
+
         <div role="tablist" class="tabs tabs-bordered">
           <button role="tab" class="tab {dictView === 'brands' ? 'tab-active' : ''}" onclick={() => dictView = 'brands'}>
             Brands ({filteredBrands.length})
@@ -134,6 +154,38 @@
             Diseases ({filteredDiseases.length})
           </button>
         </div>
+
+        {#if dictView === 'brands'}
+          <details class="collapse collapse-arrow bg-base-200">
+            <summary class="collapse-title text-sm font-medium min-h-0 py-2">
+              Filter by country{selectedCountries.length ? ` (${selectedCountries.length})` : ''}
+            </summary>
+            <div class="collapse-content flex flex-col gap-2">
+              <input
+                type="text"
+                class="input input-bordered input-sm w-full"
+                placeholder="Search countries…"
+                bind:value={countrySearch}
+              />
+              <div class="flex flex-col gap-1 max-h-48 overflow-y-auto">
+                {#each filteredCountryOptions as country}
+                  <label class="label cursor-pointer justify-start gap-2 py-1">
+                    <input
+                      type="checkbox"
+                      class="checkbox checkbox-sm"
+                      checked={selectedCountries.includes(country)}
+                      onchange={() => toggleCountry(country)}
+                    />
+                    <span class="label-text">{country}</span>
+                  </label>
+                {/each}
+              </div>
+              {#if selectedCountries.length}
+                <button class="btn btn-ghost btn-xs self-start" onclick={() => selectedCountries = []}>Clear filter</button>
+              {/if}
+            </div>
+          </details>
+        {/if}
 
         <div use:swipeTabs={{ values: ['brands', 'diseases'], get: () => dictView, set: v => dictView = v }}>
         {#key dictView}

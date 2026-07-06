@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { brandNameFor, diseaseNamesFor } from '../schedule'
+  import { brandNameFor, diseaseNamesFor, groupRecordsByDisease } from '../schedule'
   import { formatDate, childAge, todayISO } from '../utils'
   import { COUNTRY_LABELS, type Child, type VaccinationRecord } from '../types'
   import Icon from './Icon.svelte'
@@ -18,14 +18,7 @@
   }
 
   function groupedRecords(): Map<string, VaccinationRecord[]> {
-    const groups = new Map<string, VaccinationRecord[]>()
-    for (const r of sortedRecords()) {
-      const names = diseaseNamesFor(r)
-      const key = names.length ? names[0] : 'Other'
-      if (!groups.has(key)) groups.set(key, [])
-      groups.get(key)!.push(r)
-    }
-    return groups
+    return groupRecordsByDisease(sortedRecords())
   }
 
   function doPrint() {

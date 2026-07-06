@@ -58,6 +58,36 @@ export function recurringFor(country: Country, records: VaccinationRecord[]): Re
   })
 }
 
+// Groups records by Venn-diagram atomic region: diseases covered by the exact same
+// set of records land in one group, so a record can appear in more than one group.
+export function groupRecordsByDisease(records: VaccinationRecord[]): Map<string, VaccinationRecord[]> {
+  const recordsByDisease = new Map<string, Set<VaccinationRecord>>()
+  const otherRecords: VaccinationRecord[] = []
+
+  for (const r of records) {
+    const names = diseaseNamesFor(r)
+    if (names.length === 0) { otherRecords.push(r); continue }
+    for (const name of names) {
+      if (!recordsByDisease.has(name)) recordsByDisease.set(name, new Set())
+      recordsByDisease.get(name)!.add(r)
+    }
+  }
+
+  const regions = new Map<string, { records: Set<VaccinationRecord>; diseases: string[] }>()
+  for (const [disease, sig] of recordsByDisease) {
+    const signatureKey = [...sig].map(r => r.id).sort().join('|')
+    if (!regions.has(signatureKey)) regions.set(signatureKey, { records: sig, diseases: [] })
+    regions.get(signatureKey)!.diseases.push(disease)
+  }
+
+  const groups = new Map<string, VaccinationRecord[]>()
+  for (const { records: regionRecords, diseases } of regions.values()) {
+    groups.set(diseases.sort().join(', '), records.filter(r => regionRecords.has(r)))
+  }
+  if (otherRecords.length) groups.set('Other', otherRecords)
+  return groups
+}
+
 export function weeksToLabel(w: number): string {
   const m: Record<number, string> = {
     0: 'Birth', 4: '1m', 8: '2m', 13: '3m', 16: '4m', 19: '4.5m',

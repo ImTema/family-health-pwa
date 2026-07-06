@@ -82,7 +82,7 @@
         <label class="label" for="child-photo"><span class="label-text">Photo (optional)</span></label>
         {#if photo}
           <div class="flex items-center gap-3 mb-2">
-            <img src={photo} alt="Preview" class="w-16 h-16 rounded-full object-cover" />
+            <img src={photo} alt="Preview" class="w-16 h-16 rounded-lg object-cover" />
             <button class="btn btn-ghost btn-xs text-error" onclick={() => photo = undefined}>Remove</button>
           </div>
         {/if}

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { childAgeWeeks, computeSchedule, diseasesFor, weeksToLabel } from './schedule'
+import { childAgeWeeks, computeSchedule, diseasesFor, groupRecordsByDisease, weeksToLabel } from './schedule'
 import type { Child, VaccinationRecord } from './types'
 
 const record = (over: Partial<VaccinationRecord>): VaccinationRecord => ({
@@ -58,6 +58,33 @@ describe('weeksToLabel', () => {
   it('falls back to "<n>w" for unmapped weeks', () => {
     expect(weeksToLabel(3)).toBe('3w')
     expect(weeksToLabel(100)).toBe('100w')
+  })
+})
+
+describe('groupRecordsByDisease', () => {
+  it('keeps a disjoint multi-disease vaccine in one group covering its full disease set', () => {
+    const a = record({ id: 'a', diseaseIds: ['hepb', 'diphtheria'] })
+    const b = record({ id: 'b', diseaseIds: ['measles', 'mumps'] })
+    const groups = groupRecordsByDisease([a, b])
+    expect(groups.size).toBe(2)
+    expect(groups.get('Diphtheria, Hepatitis B')).toEqual([a])
+    expect(groups.get('Measles, Mumps')).toEqual([b])
+  })
+
+  it('splits into shared and unique groups when disease sets partially overlap', () => {
+    const a = record({ id: 'a', diseaseIds: ['hepb', 'diphtheria'] })
+    const b = record({ id: 'b', diseaseIds: ['diphtheria', 'measles'] })
+    const groups = groupRecordsByDisease([a, b])
+    expect(groups.size).toBe(3)
+    expect(groups.get('Hepatitis B')).toEqual([a])
+    expect(groups.get('Diphtheria')).toEqual([a, b])
+    expect(groups.get('Measles')).toEqual([b])
+  })
+
+  it('buckets records with no diseases under "Other"', () => {
+    const a = record({ id: 'a', diseaseIds: [] })
+    const groups = groupRecordsByDisease([a])
+    expect(groups.get('Other')).toEqual([a])
   })
 })
 
