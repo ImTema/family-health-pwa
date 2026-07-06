@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { brandNameFor, diseaseNamesFor, groupRecordsByDisease } from '../schedule'
+  import { brandNameFor, diseaseNamesFor, groupIllnessesAfterVaccines, groupRecordsByDisease } from '../schedule'
   import { formatDate } from '../utils'
   import type { Child, VaccinationRecord } from '../types'
   import Icon from './Icon.svelte'
@@ -33,7 +33,7 @@
   <div class="ml-auto flex gap-2">
     <button
       class="btn btn-ghost btn-sm print:hidden {groupByDisease ? 'btn-active' : ''}"
-      title="Group by disease"
+      title="Group illnesses with related vaccine"
       onclick={() => groupByDisease = !groupByDisease}
     ><Icon name="virus" size={20} strokeWidth={1.5} /></button>
     <PrintExport {child} {groupByDisease} {sortedRecords} {groupedRecords} />
@@ -46,29 +46,23 @@
       <p>No vaccination records yet. Tap "+ Record" to add one.</p>
     </div>
   {:else if groupByDisease}
-    {#each groupedRecords() as [disease, recs]}
-      <h2 class="text-sm font-bold bg-base-200 px-3 py-1.5 mt-6 mb-2 rounded">{disease}</h2>
-      <div class="overflow-x-auto mb-4">
-        <table class="table table-xs w-full">
-          <thead>
-            <tr>{#each ['Date', 'Vaccine / Brand', 'Serial / Lot', 'Notes', ''] as h}<th class="text-[10px] font-bold text-base-content">{h}</th>{/each}</tr>
-          </thead>
-          <tbody>
-            {#each recs as record}
-              <tr>
-                <td class="whitespace-nowrap">{formatDate(record.date)}</td>
-                <td>{brandNameFor(record)}</td>
-                <td>{record.kind === 'vaccine' ? record.serialNumber ?? '' : ''}</td>
-                <td>{record.notes ?? ''}</td>
-                <td>
-                  <a href="/children/{childId}/record/{record.id}" class="btn btn-ghost btn-xs" title="Edit"><Icon name="pencil" /></a>
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
+    {@const timeline = groupIllnessesAfterVaccines(sortedRecords())}
+    {#each timeline.groups as { vaccine, illnesses }}
+      {@render recordCard(vaccine)}
+      {#if illnesses.length > 0}
+        <div class="ml-6 mb-3 flex flex-col gap-2">
+          {#each illnesses as illness}
+            {@render recordCard(illness)}
+          {/each}
+        </div>
+      {/if}
     {/each}
+    {#if timeline.unmatched.length > 0}
+      <h2 class="text-sm font-bold bg-base-200 px-3 py-1.5 mt-6 mb-2 rounded">Other</h2>
+      {#each timeline.unmatched as illness}
+        {@render recordCard(illness)}
+      {/each}
+    {/if}
   {:else}
     {#each sortedRecords() as record}
       {@render recordCard(record)}
