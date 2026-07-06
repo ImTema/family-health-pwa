@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { brandNameFor, diseaseNamesFor, groupIllnessesAfterVaccines, groupRecordsByDisease } from '../schedule'
+  import { brandNameFor, diseaseNamesFor, groupRecordsByDisease } from '../schedule'
   import { formatDate } from '../utils'
   import type { Child, VaccinationRecord } from '../types'
   import Icon from './Icon.svelte'
@@ -47,7 +47,6 @@
     </div>
   {:else if groupByDisease}
     {#each groupedRecords() as [disease, recs]}
-      {@const timeline = groupIllnessesAfterVaccines(recs)}
       <h2 class="text-sm font-bold bg-base-200 px-3 py-1.5 mt-6 mb-2 rounded">{disease}</h2>
       <div class="overflow-x-auto mb-4">
         <table class="table table-xs w-full">
@@ -55,14 +54,11 @@
             <tr>{#each ['Date', 'Vaccine / Brand', 'Serial / Lot', 'Notes', ''] as h}<th class="text-[10px] font-bold text-base-content">{h}</th>{/each}</tr>
           </thead>
           <tbody>
-            {#each timeline.groups as { vaccine, illnesses }}
-              {@render recordRow(vaccine)}
-              {#each illnesses as illness}
-                {@render recordRow(illness)}
-              {/each}
+            {#each recs.filter(r => r.kind === 'vaccine') as record}
+              {@render recordRow(record)}
             {/each}
-            {#each timeline.unmatched as illness}
-              {@render recordRow(illness)}
+            {#each recs.filter(r => r.kind === 'illness') as record}
+              {@render recordRow(record)}
             {/each}
           </tbody>
         </table>

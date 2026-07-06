@@ -89,27 +89,6 @@ export function groupRecordsByDisease(records: VaccinationRecord[]): Map<string,
   return groups
 }
 
-export interface TimelineGroup {
-  vaccine: VaccinationRecord
-  illnesses: VaccinationRecord[]
-}
-
-// Anchors each illness record to the first not-yet-used vaccine record it shares a disease
-// with, preserving the vaccines' given order. Illnesses matching no vaccine come back separately.
-export function groupIllnessesAfterVaccines(records: VaccinationRecord[]): { groups: TimelineGroup[]; unmatched: VaccinationRecord[] } {
-  const illnesses = records.filter(r => r.kind === 'illness')
-  const used = new Set<string>()
-
-  const groups = records.filter(r => r.kind === 'vaccine').map(vaccine => {
-    const vaccineDiseases = diseasesFor(vaccine)
-    const matched = illnesses.filter(i => !used.has(i.id) && [...diseasesFor(i)].some(d => vaccineDiseases.has(d)))
-    matched.forEach(i => used.add(i.id))
-    return { vaccine, illnesses: matched }
-  })
-
-  return { groups, unmatched: illnesses.filter(i => !used.has(i.id)) }
-}
-
 export function weeksToLabel(w: number): string {
   const m: Record<number, string> = {
     0: 'Birth', 4: '1m', 8: '2m', 13: '3m', 16: '4m', 19: '4.5m',
