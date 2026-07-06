@@ -51,7 +51,7 @@
 </div>
 
 <div class="flex gap-4 text-xs mb-3 text-base-content/60">
-  <span>✓ Done &nbsp; ! Overdue &nbsp; · Upcoming</span>
+  <span class="inline-flex items-center gap-1">✓ Done &nbsp; ! Overdue &nbsp; · Upcoming &nbsp; <Icon name="virus" size={12} strokeWidth={1.5} /> = covered by illness (not vaccine)</span>
   <span class="ml-auto">Age: {childAgeWeeks(child.birthDate)}w</span>
 </div>
 <div class="flex items-center gap-1 text-xs text-base-content/40 mb-2">
