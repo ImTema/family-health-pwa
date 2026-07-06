@@ -81,7 +81,7 @@
     diseases.filter(d =>
       !selectedDiseases.has(d.id) &&
       (diseaseQuery.length === 0 || d.name.toLowerCase().includes(diseaseQuery.toLowerCase()))
-    ).slice(0, 8)
+    )
   )
 
   async function save() {
@@ -138,37 +138,54 @@
         </div>
       {/if}
 
-      {#if selectedDiseases.size > 0}
-        <div class="flex flex-wrap gap-1">
-          {#each [...selectedDiseases] as id}
-            <span class="badge badge-primary gap-1">
-              {diseaseById[id]?.name ?? id}
-              <button class="ml-1 font-bold" onclick={() => removeDisease(id)}>×</button>
-            </span>
-          {/each}
+      {#if kind === 'illness'}
+        <div class="form-control">
+          <label class="label" for="illness-select"><span class="label-text">Disease</span></label>
+          <select
+            id="illness-select"
+            class="select select-bordered w-full"
+            value={[...selectedDiseases][0] ?? ''}
+            onchange={e => addDisease(e.currentTarget.value)}
+          >
+            <option value="" disabled>Select disease</option>
+            {#each diseases as d}
+              <option value={d.id}>{d.name}</option>
+            {/each}
+          </select>
         </div>
-      {/if}
+      {:else}
+        <div class="form-control">
+          <label class="label" for="disease-query"><span class="label-text">Add disease</span></label>
+          <div class="relative" bind:this={diseaseFieldEl}>
+            <input
+              id="disease-query"
+              type="text"
+              class="input input-bordered w-full"
+              placeholder="Search disease…"
+              bind:value={diseaseQuery}
+              onfocus={() => showDiseaseList = true}
+            />
+            {#if showDiseaseList && diseaseSuggestions.length > 0}
+              <div class="absolute z-20 bg-base-100 border border-base-300 rounded-lg shadow-lg w-full mt-1 max-h-48 overflow-y-auto">
+                {#each diseaseSuggestions as d}
+                  <button class="w-full text-left px-3 py-2 hover:bg-base-200 text-sm" onclick={() => addDisease(d.id)}>{d.name}</button>
+                {/each}
+              </div>
+            {/if}
+          </div>
+        </div>
 
-      <div class="form-control">
-        <label class="label" for="disease-query"><span class="label-text">Add disease</span></label>
-        <div class="relative" bind:this={diseaseFieldEl}>
-          <input
-            id="disease-query"
-            type="text"
-            class="input input-bordered w-full"
-            placeholder="Search disease…"
-            bind:value={diseaseQuery}
-            onfocus={() => showDiseaseList = true}
-          />
-          {#if showDiseaseList && diseaseSuggestions.length > 0}
-            <div class="absolute z-20 bg-base-100 border border-base-300 rounded-lg shadow-lg w-full mt-1 max-h-48 overflow-y-auto">
-              {#each diseaseSuggestions as d}
-                <button class="w-full text-left px-3 py-2 hover:bg-base-200 text-sm" onclick={() => addDisease(d.id)}>{d.name}</button>
-              {/each}
-            </div>
-          {/if}
-        </div>
-      </div>
+        {#if selectedDiseases.size > 0}
+          <div class="flex flex-wrap gap-1">
+            {#each [...selectedDiseases] as id}
+              <span class="badge badge-primary gap-1">
+                {diseaseById[id]?.name ?? id}
+                <button class="ml-1 font-bold" onclick={() => removeDisease(id)}>×</button>
+              </span>
+            {/each}
+          </div>
+        {/if}
+      {/if}
 
       <div class="form-control">
         <label class="label" for="record-date"><span class="label-text">Date</span></label>
