@@ -105,6 +105,30 @@ export const brands: Brand[] = [
   { id: 'vaxigrip_tetra', name: 'Vaxigrip Tetra', description: 'Sanofi inactivated quadrivalent vaccine protecting against seasonal influenza.', country: 'France' },
   // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/beyfortus
   { id: 'beyfortus',     name: 'Beyfortus',      description: 'Sanofi/AstraZeneca long-acting monoclonal antibody protecting infants against RSV disease for a full season.', country: 'France' },
+  // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/menveo
+  { id: 'menveo',        name: 'Menveo',         description: 'GSK conjugate vaccine protecting against meningococcal groups A, C, W-135, and Y.', country: 'Italy' },
+  // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/menquadfi
+  { id: 'menquadfi',     name: 'MenQuadfi',      description: 'Sanofi conjugate vaccine protecting against meningococcal groups A, C, W-135, and Y.', country: 'France' },
+  // FDA — fda.gov/vaccines-blood-biologics/vaccines/trumenba
+  { id: 'trumenba',      name: 'Trumenba',       description: 'Pfizer recombinant vaccine protecting against meningococcal group B disease.', country: 'United States' },
+  // FDA — fda.gov/vaccines-blood-biologics/vaccines/prevnar-20
+  { id: 'prevenar_20',   name: 'Prevenar 20',    description: 'Pfizer conjugate vaccine protecting against 20 serotypes of pneumococcal disease.', country: 'United States' },
+  // EMA EPAR — ema.europa.eu/en/medicines/human/EPAR/boostrix
+  { id: 'boostrix',      name: 'Boostrix',       description: 'GSK reduced-antigen booster vaccine protecting against diphtheria, tetanus, and pertussis for older children and adults.', country: 'Belgium' },
+  // FDA — fda.gov/vaccines-blood-biologics/vaccines/adacel
+  { id: 'adacel',        name: 'Adacel',         description: 'Sanofi reduced-antigen booster vaccine protecting against diphtheria, tetanus, and pertussis for older children and adults.', country: 'United States' },
+  // EMA national-procedure listing — ema.europa.eu
+  { id: 'tetraxim',      name: 'Tetraxim',       description: 'Sanofi combination vaccine protecting against diphtheria, tetanus, pertussis, and polio.', country: 'France' },
+  // EMA national-procedure listing — ema.europa.eu
+  { id: 'influvac_tetra', name: 'Influvac Tetra', description: 'Abbott inactivated quadrivalent subunit vaccine protecting against seasonal influenza.', country: 'Netherlands' },
+  // Russian State Register of Medicines — grls.rosminzdrav.ru
+  { id: 'grippol_plus',  name: 'Гриппол Плюс (Grippol Plus)', description: 'Petrovax adjuvanted trivalent vaccine protecting against seasonal influenza, for children.', country: 'Russia' },
+  // Russian State Register of Medicines — grls.rosminzdrav.ru
+  { id: 'grippol_quadrivalent', name: 'Гриппол Квадривалент (Grippol Quadrivalent)', description: 'Petrovax adjuvanted quadrivalent vaccine protecting against seasonal influenza.', country: 'Russia' },
+  // Russian State Register of Medicines — grls.rosminzdrav.ru
+  { id: 'sovigripp',     name: 'Совигрипп (Sovigripp)', description: 'Microgen adjuvanted trivalent vaccine protecting against seasonal influenza.', country: 'Russia' },
+  // Russian State Register of Medicines — grls.rosminzdrav.ru
+  { id: 'ultrix_quadri', name: 'Ультрикс Квадри (Ultrix Quadri)', description: 'Russian (FORT) inactivated split-virion quadrivalent vaccine protecting against seasonal influenza.', country: 'Russia' },
 ]
 
 export const brandCoverage: Record<string, string[]> = {
@@ -142,6 +166,18 @@ export const brandCoverage: Record<string, string[]> = {
   ultrix:        ['influenza'],
   vaxigrip_tetra: ['influenza'],
   beyfortus:     ['rsv'],
+  menveo:        ['menc'],
+  menquadfi:     ['menc'],
+  trumenba:      ['menb'],
+  prevenar_20:   ['pcv'],
+  boostrix:      ['diphtheria', 'tetanus', 'pertussis'],
+  adacel:        ['diphtheria', 'tetanus', 'pertussis'],
+  tetraxim:      ['diphtheria', 'tetanus', 'pertussis', 'ipv'],
+  influvac_tetra: ['influenza'],
+  grippol_plus:  ['influenza'],
+  grippol_quadrivalent: ['influenza'],
+  sovigripp:     ['influenza'],
+  ultrix_quadri: ['influenza'],
 }
 
 function entries(list: [string, string, number, number, ('MANDATORY' | 'OPTIONAL')?][], country: 'RUSSIA' | 'SERBIA' | 'EU', prefix: string): ScheduleEntry[] {
