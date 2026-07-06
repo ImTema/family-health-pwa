@@ -44,3 +44,4 @@ bin/
 /web/node_modules/
 /web/.svelte-kit/
 /workspace/
+/docs/issues/
