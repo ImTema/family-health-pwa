@@ -1,9 +1,0 @@
-1. add confirmation before deletion. timer with 5 secs
-2. same view as for exported file - grouped and sorted
-3. change filename during export
-4. dictionary - on disease tap -> move to details (description: what is it, symptoms, general sidease description)
-5. dictionary - on vaccine tap -> move to details (country of the vaccine)
-6. hot take: can we query information if vaccine is certified?
-7. remove word "Born", add age (e.g. 4y 4m = 4 years, 4 months)
-8. change date format to 2026.07.25 - remove minus change to dot.
-9. export pdf group by

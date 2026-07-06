@@ -1,7 +1,0 @@
-1. when adding to iphone table as application - it launches different session - no data saved across sessions.
-2. can we make image worse? it needs to take less space in backup. simple image could take 7mb of data in our file.
-3. remove edit button from add record screen
-4. grouping by on the site should be like grouping in the pdf
-5. sort by date should be more narrower, not that wide.
-6. add zoom to timeline - chart
-7.
