@@ -6,7 +6,7 @@ export function diseasesFor(record: VaccinationRecord): Set<string> {
 }
 
 export function brandNameFor(record: VaccinationRecord): string {
-  if (record.kind === 'illness') return 'Illness'
+  if (record.kind === 'illness') return diseaseNamesFor(record).join(', ') || 'Illness'
   return brands.find(b => b.id === record.brandId)?.name ?? record.customBrandName ?? ''
 }
 
