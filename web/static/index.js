@@ -3,7 +3,9 @@ import { createServer } from 'node:http'
 import { readFile } from 'node:fs/promises'
 import { extname, join, normalize } from 'node:path'
 
-const BUILD_DIR = join(import.meta.dirname, 'build')
+// ponytail: lives in static/ so SvelteKit copies it into build/ verbatim, same as
+// service-worker.js and manifest.json; it then serves files alongside itself.
+const BUILD_DIR = import.meta.dirname
 const PORT = process.env.PORT || 3000
 
 const MIME_TYPES = {
