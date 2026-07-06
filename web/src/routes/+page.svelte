@@ -47,7 +47,7 @@
   <div class="sticky top-0 z-20 bg-base-200 shadow-sm">
     <div class="max-w-lg mx-auto p-4 pb-0">
       <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold">VaxBook</h1>
+        <h1 class="text-2xl font-bold">VaxTrack</h1>
         <div class="flex gap-2">
           {#if tab === 'children'}
             <a href="/children/new" class="btn btn-primary">+ Add child</a>
