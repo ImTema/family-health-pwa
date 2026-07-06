@@ -67,9 +67,18 @@
     {/each}
     {#if illnessRecords().length > 0}
       <h2 class="text-sm font-bold bg-base-200 px-3 py-1.5 mt-6 mb-2 rounded">Illnesses</h2>
-      {#each illnessRecords() as record}
-        {@render recordCard(record)}
-      {/each}
+      <div class="overflow-x-auto mb-4">
+        <table class="table table-xs w-full">
+          <thead>
+            <tr>{#each ['Date', 'Disease', 'Notes', ''] as h}<th class="text-[10px] font-bold text-base-content">{h}</th>{/each}</tr>
+          </thead>
+          <tbody>
+            {#each illnessRecords() as record}
+              {@render illnessRow(record)}
+            {/each}
+          </tbody>
+        </table>
+      </div>
     {/if}
   {:else}
     {#each sortedRecords() as record}
@@ -83,6 +92,17 @@
     <td class="whitespace-nowrap">{formatDate(record.date)}</td>
     <td>{brandNameFor(record)}</td>
     <td>{record.kind === 'vaccine' ? record.serialNumber ?? '' : ''}</td>
+    <td>{record.notes ?? ''}</td>
+    <td>
+      <a href="/children/{childId}/record/{record.id}" class="btn btn-ghost btn-xs" title="Edit"><Icon name="pencil" /></a>
+    </td>
+  </tr>
+{/snippet}
+
+{#snippet illnessRow(record: VaccinationRecord)}
+  <tr class="bg-error/10">
+    <td class="whitespace-nowrap">{formatDate(record.date)}</td>
+    <td>{brandNameFor(record)}</td>
     <td>{record.notes ?? ''}</td>
     <td>
       <a href="/children/{childId}/record/{record.id}" class="btn btn-ghost btn-xs" title="Edit"><Icon name="pencil" /></a>
