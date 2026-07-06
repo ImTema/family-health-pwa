@@ -6,7 +6,7 @@
   import { computeSchedule } from '$lib/schedule'
   import { formatDate, childAge } from '$lib/utils'
   import { fade } from 'svelte/transition'
-  import { COUNTRY_LABELS, type Child, type VaccinationRecord } from '$lib/types'
+  import { type Child, type VaccinationRecord } from '$lib/types'
   import RecordsTab from '$lib/components/RecordsTab.svelte'
   import ScheduleTab from '$lib/components/ScheduleTab.svelte'
   import TimelineTab from '$lib/components/TimelineTab.svelte'
@@ -39,7 +39,7 @@
           <div>
             <h1 class="text-xl font-bold">{child.name}</h1>
             <p class="text-sm text-base-content/60">
-              {formatDate(child.birthDate)} · {childAge(child.birthDate)} · {COUNTRY_LABELS[child.country]}
+              {formatDate(child.birthDate)} · {childAge(child.birthDate)}
               {#if child.sex} · {child.sex === 'MALE' ? 'Male' : 'Female'}{/if}
             </p>
           </div>

@@ -1,11 +1,17 @@
 <script lang="ts">
   import { childAgeWeeks, weeksToLabel, scheduleMilestones, scheduleDiseases } from '../schedule'
   import { formatDate } from '../utils'
+  import { COUNTRY_LABELS } from '../types'
+  import { db } from '../db'
   import type { Child, ScheduleResult } from '../types'
 
   let { child, schedule }: { child: Child; schedule: ScheduleResult[] } = $props()
 
   let timelineView = $state<'table' | 'chart'>('chart')
+
+  function onCountryChange() {
+    db.saveChild($state.snapshot(child))
+  }
 
   const milestones = $derived(scheduleMilestones(schedule))
   const diseases = $derived(scheduleDiseases(schedule))
@@ -30,6 +36,14 @@
   }
   const todayPct = $derived(weekPct(todayWeeks))
 </script>
+
+<div class="form-control mb-3">
+  <select class="select select-bordered select-sm w-fit focus:outline-none" bind:value={child.country} onchange={onCountryChange}>
+    {#each Object.entries(COUNTRY_LABELS) as [value, label]}
+      <option {value}>{label}</option>
+    {/each}
+  </select>
+</div>
 
 <div class="flex gap-2 mb-3">
   <button class="btn btn-xs {timelineView === 'table' ? 'btn-primary' : 'btn-ghost'}" onclick={() => timelineView = 'table'}>Table</button>

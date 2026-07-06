@@ -1,6 +1,8 @@
 <script lang="ts">
   import { childAgeWeeks, weeksToLabel, scheduleMilestones, scheduleDiseases, recurringFor } from '../schedule'
   import { formatDate } from '../utils'
+  import { COUNTRY_LABELS } from '../types'
+  import { db } from '../db'
   import type { Child, ScheduleResult, VaccinationRecord } from '../types'
 
   let { child, schedule, records }: { child: Child; schedule: ScheduleResult[]; records: VaccinationRecord[] } = $props()
@@ -9,7 +11,19 @@
   const diseases = $derived(scheduleDiseases(schedule))
   const todayCol = $derived(milestones.findLastIndex(w => w <= childAgeWeeks(child.birthDate)))
   const recurring = $derived(recurringFor(child.country, records))
+
+  function onCountryChange() {
+    db.saveChild($state.snapshot(child))
+  }
 </script>
+
+<div class="form-control mb-3">
+  <select class="select select-bordered select-sm w-fit focus:outline-none" bind:value={child.country} onchange={onCountryChange}>
+    {#each Object.entries(COUNTRY_LABELS) as [value, label]}
+      <option {value}>{label}</option>
+    {/each}
+  </select>
+</div>
 
 <div class="flex gap-4 text-xs mb-3 text-base-content/60">
   <span>✓ Done &nbsp; ! Overdue &nbsp; · Upcoming</span>
