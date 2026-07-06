@@ -77,7 +77,7 @@
 </div>
 
 {#snippet recordCard(record: VaccinationRecord)}
-  <div class="card bg-base-200 mb-3">
+  <div class="card mb-3 {record.kind === 'illness' ? 'bg-error/10' : 'bg-base-200'}">
     <div class="card-body p-4">
       <div class="flex justify-between items-start">
         <div class="flex-1 min-w-0">
