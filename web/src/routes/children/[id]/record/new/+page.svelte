@@ -15,6 +15,8 @@
   })
 </script>
 
+<svelte:head><title>Add record · VaxTrack</title></svelte:head>
+
 <RecordForm
   title="Add record"
   {childId}

@@ -27,6 +27,8 @@
   }
 </script>
 
+<svelte:head><title>Edit record · VaxTrack</title></svelte:head>
+
 {#if record}
   <RecordForm
     title="Edit record"

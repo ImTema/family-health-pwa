@@ -100,7 +100,7 @@
             {#if brandNameFor(record)}<span class="font-semibold">{brandNameFor(record)}</span>{/if}
             {#if record.kind === 'vaccine' && record.serialNumber}<span class="text-base-content/50 text-[10px]">{record.serialNumber}</span>{/if}
           </div>
-          {#if diseaseNamesFor(record).length > 0}
+          {#if record.kind === 'vaccine' && diseaseNamesFor(record).length > 0}
             <div class="flex flex-wrap gap-1 mt-1.5">
               {#each diseaseNamesFor(record) as name}
                 <span class="badge badge-xs border border-base-300 bg-transparent text-base-content/60">{name}</span>

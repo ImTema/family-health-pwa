@@ -6,6 +6,8 @@
   const coveringBrands = brands.filter(b => (brandCoverage[b.id] ?? []).includes(page.params.id as string))
 </script>
 
+<svelte:head><title>{disease ? `${disease.name} · VaxTrack` : 'VaxTrack'}</title></svelte:head>
+
 <div class="min-h-full bg-base-100 p-4">
   <div class="max-w-lg mx-auto">
     <a href="/" class="btn btn-ghost btn-xs mb-4">← Dictionary</a>

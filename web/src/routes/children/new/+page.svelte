@@ -13,4 +13,6 @@
   }
 </script>
 
+<svelte:head><title>Add member · VaxTrack</title></svelte:head>
+
 <ChildForm title="Add member" onSave={save} />

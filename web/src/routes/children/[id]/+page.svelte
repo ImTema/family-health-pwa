@@ -26,6 +26,8 @@
   const schedule = $derived(child ? computeSchedule(child, records) : [])
 </script>
 
+<svelte:head><title>{child ? `${child.name} · VaxTrack` : 'VaxTrack'}</title></svelte:head>
+
 {#if child}
 <div class="min-h-full bg-base-100">
   <div class="sticky top-0 z-20 bg-base-200 shadow-sm print:hidden">

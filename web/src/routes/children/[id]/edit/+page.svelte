@@ -28,6 +28,8 @@
   }
 </script>
 
+<svelte:head><title>Edit family member · VaxTrack</title></svelte:head>
+
 {#if child}
   <ChildForm title="Edit family member" initial={child} onSave={save}>
     {#snippet extraActions()}
