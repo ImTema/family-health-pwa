@@ -30,7 +30,7 @@
 <div class="min-h-full bg-base-100">
   <div class="sticky top-0 z-20 bg-base-200 shadow-sm print:hidden">
     <div class="max-w-2xl mx-auto p-4 pb-0">
-      <a href="/" class="btn btn-ghost btn-xs mb-2">← All children</a>
+      <a href="/" class="btn btn-ghost btn-xs mb-2">← All family members</a>
       <div class="flex justify-between items-start gap-3">
         <div class="flex items-center gap-3">
           {#if child.photo}

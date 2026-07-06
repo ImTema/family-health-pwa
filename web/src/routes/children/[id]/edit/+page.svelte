@@ -29,7 +29,7 @@
 </script>
 
 {#if child}
-  <ChildForm title="Edit child" initial={child} onSave={save}>
+  <ChildForm title="Edit family member" initial={child} onSave={save}>
     {#snippet extraActions()}
       <button class="btn btn-ghost text-error ml-auto" onclick={() => confirmDelete = true}>Delete</button>
     {/snippet}

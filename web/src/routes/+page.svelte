@@ -66,7 +66,7 @@
         <h1 class="text-2xl font-bold">VaxTrack</h1>
         <div class="flex gap-2">
           {#if tab === 'children'}
-            <a href="/children/new" class="btn btn-primary">+ Add child</a>
+            <a href="/children/new" class="btn btn-primary">+ Add family member</a>
           {/if}
           <a href="/settings" class="btn btn-ghost" title="Settings"><Icon name="settings" /></a>
         </div>
@@ -74,7 +74,7 @@
 
       <div role="tablist" class="tabs tabs-bordered mt-3">
         <button role="tab" class="tab {tab === 'children' ? 'tab-active' : ''}" onclick={() => tab = 'children'}>
-          Children
+          Family
         </button>
         <button role="tab" class="tab {tab === 'dictionary' ? 'tab-active' : ''}" onclick={() => tab = 'dictionary'}>
           Dictionary
@@ -91,8 +91,8 @@
         <div class="hero min-h-64">
           <div class="hero-content text-center">
             <div>
-              <p class="text-base-content/60 mb-4">No children yet.</p>
-              <a href="/children/new" class="btn btn-primary">Add your first child</a>
+              <p class="text-base-content/60 mb-4">No family members yet.</p>
+              <a href="/children/new" class="btn btn-primary">Add your first family member</a>
             </div>
           </div>
         </div>

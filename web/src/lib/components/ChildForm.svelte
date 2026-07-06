@@ -52,7 +52,7 @@
     <div class="flex flex-col gap-4">
       <div class="form-control">
         <label class="label" for="child-name"><span class="label-text">Name</span></label>
-        <input id="child-name" type="text" class="input input-bordered w-full" placeholder="Child's name" bind:value={name} />
+        <input id="child-name" type="text" class="input input-bordered w-full" placeholder="Name" bind:value={name} />
       </div>
 
       <div class="form-control">

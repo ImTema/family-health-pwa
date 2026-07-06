@@ -43,7 +43,7 @@
   async function doExportCsv() {
     const today = todayISO()
     const chs = await db.getChildren()
-    const rows = [['Child', 'Date', 'Vaccine / Brand', 'Diseases', 'Serial / Lot', 'Notes']]
+    const rows = [['Name', 'Date', 'Vaccine / Brand', 'Diseases', 'Serial / Lot', 'Notes']]
     for (const c of chs) {
       const records = await db.getRecords(c.id)
       for (const r of records) {
@@ -72,7 +72,7 @@
         recordCount += records.length
       }
       localStorage.removeItem('activeChildId')
-      importSummary = `Imported ${backup.children.length} ${backup.children.length === 1 ? 'child' : 'children'}, ${recordCount} ${recordCount === 1 ? 'record' : 'records'}`
+      importSummary = `Imported ${backup.children.length} ${backup.children.length === 1 ? 'family member' : 'family members'}, ${recordCount} ${recordCount === 1 ? 'record' : 'records'}`
       setTimeout(() => importSummary = null, 3000)
     } catch (e) {
       importError = `Import failed: ${e instanceof Error ? e.message : 'Invalid file'}`
@@ -122,7 +122,7 @@
       <div class="card bg-base-200">
         <div class="card-body gap-3">
           <h2 class="card-title text-base">Backup</h2>
-          <p class="text-sm text-base-content/60">Export all children, records, and photos to a JSON file. Import restores from a previous export.</p>
+          <p class="text-sm text-base-content/60">Export all family members, records, and photos to a JSON file. Import restores from a previous export.</p>
           <div class="flex gap-2 flex-wrap">
             <button class="btn btn-outline btn-sm" onclick={doExport}>Export backup</button>
             <button class="btn btn-outline btn-sm" onclick={() => importInput.click()}>Import backup</button>
