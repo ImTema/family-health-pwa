@@ -160,7 +160,7 @@
 
       <div class="form-control">
         <label class="label" for="record-notes"><span class="label-text">Notes (optional)</span></label>
-        <input id="record-notes" type="text" class="input input-bordered w-full" placeholder="Doctor name, clinic, etc." bind:value={notes} />
+        <input id="record-notes" type="text" class="input input-bordered w-full" placeholder="Doctor name, clinic, city, country, etc." bind:value={notes} />
       </div>
     </div>
 
