@@ -146,6 +146,6 @@
         <button class="btn" onclick={() => importError = null}>OK</button>
       </div>
     </div>
-    <div class="modal-backdrop" onclick={() => importError = null}></div>
+    <button type="button" class="modal-backdrop" aria-label="Close" onclick={() => importError = null}></button>
   </div>
 {/if}

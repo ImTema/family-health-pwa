@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte'
   import { compressImage, todayISO } from '../utils'
   import { COUNTRY_LABELS, type Child, type Country } from '../types'
   import type { Snippet } from 'svelte'
@@ -18,12 +19,14 @@
   } = $props()
 
   const today = todayISO()
+  // ponytail: form is seeded once from `initial` on mount, never re-seeded from a later prop change
+  const seed = untrack(() => initial)
 
-  let name = $state(initial?.name ?? '')
-  let birthDate = $state(initial?.birthDate ?? '')
-  let country = $state<Country>(initial?.country ?? 'RUSSIA')
-  let sex = $state<'MALE' | 'FEMALE' | ''>(initial?.sex ?? '')
-  let photo = $state<string | undefined>(initial?.photo)
+  let name = $state(seed?.name ?? '')
+  let birthDate = $state(seed?.birthDate ?? '')
+  let country = $state<Country>(seed?.country ?? 'RUSSIA')
+  let sex = $state<'MALE' | 'FEMALE' | ''>(seed?.sex ?? '')
+  let photo = $state<string | undefined>(seed?.photo)
   let error = $state('')
 
   async function onPhotoChange(e: Event) {
@@ -48,18 +51,18 @@
 
     <div class="flex flex-col gap-4">
       <div class="form-control">
-        <label class="label"><span class="label-text">Name</span></label>
-        <input type="text" class="input input-bordered w-full" placeholder="Child's name" bind:value={name} />
+        <label class="label" for="child-name"><span class="label-text">Name</span></label>
+        <input id="child-name" type="text" class="input input-bordered w-full" placeholder="Child's name" bind:value={name} />
       </div>
 
       <div class="form-control">
-        <label class="label"><span class="label-text">Date of birth</span></label>
-        <input type="date" class="input input-bordered w-full" max={today} bind:value={birthDate} />
+        <label class="label" for="child-birthdate"><span class="label-text">Date of birth</span></label>
+        <input id="child-birthdate" type="date" class="input input-bordered w-full" max={today} bind:value={birthDate} />
       </div>
 
       <div class="form-control">
-        <label class="label"><span class="label-text">Sex</span></label>
-        <select class="select select-bordered w-full" bind:value={sex}>
+        <label class="label" for="child-sex"><span class="label-text">Sex</span></label>
+        <select id="child-sex" class="select select-bordered w-full" bind:value={sex}>
           <option value="">Select…</option>
           <option value="MALE">Male</option>
           <option value="FEMALE">Female</option>
@@ -67,8 +70,8 @@
       </div>
 
       <div class="form-control">
-        <label class="label"><span class="label-text">Vaccination schedule</span></label>
-        <select class="select select-bordered w-full" bind:value={country}>
+        <label class="label" for="child-country"><span class="label-text">Vaccination schedule</span></label>
+        <select id="child-country" class="select select-bordered w-full" bind:value={country}>
           {#each Object.entries(COUNTRY_LABELS) as [value, label]}
             <option {value}>{label}</option>
           {/each}
@@ -76,14 +79,14 @@
       </div>
 
       <div class="form-control">
-        <label class="label"><span class="label-text">Photo (optional)</span></label>
+        <label class="label" for="child-photo"><span class="label-text">Photo (optional)</span></label>
         {#if photo}
           <div class="flex items-center gap-3 mb-2">
             <img src={photo} alt="Preview" class="w-16 h-16 rounded-full object-cover" />
             <button class="btn btn-ghost btn-xs text-error" onclick={() => photo = undefined}>Remove</button>
           </div>
         {/if}
-        <input type="file" accept="image/*" class="file-input file-input-bordered w-full" onchange={onPhotoChange} />
+        <input id="child-photo" type="file" accept="image/*" class="file-input file-input-bordered w-full" onchange={onPhotoChange} />
       </div>
     </div>
 

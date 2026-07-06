@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte'
   import { brands, brandCoverage, diseases, diseaseById } from '../seed'
   import { todayISO } from '../utils'
   import type { Snippet } from 'svelte'
@@ -23,14 +24,16 @@
   } = $props()
 
   const today = todayISO()
+  // ponytail: form is seeded once from `initial` on mount, never re-seeded from a later prop change
+  const seed = untrack(() => initial)
 
-  let brandInput = $state(brands.find(b => b.id === initial?.brandId)?.name ?? initial?.customBrandName ?? '')
-  let selectedBrandId = $state<string | undefined>(initial?.brandId)
-  let selectedDiseases = $state<Set<string>>(new Set(initial?.diseaseIds ?? []))
+  let brandInput = $state(brands.find(b => b.id === seed?.brandId)?.name ?? seed?.customBrandName ?? '')
+  let selectedBrandId = $state<string | undefined>(seed?.brandId)
+  let selectedDiseases = $state<Set<string>>(new Set(seed?.diseaseIds ?? []))
   let diseaseQuery = $state('')
-  let date = $state(initial?.date ?? today)
-  let serial = $state(initial?.serialNumber ?? '')
-  let notes = $state(initial?.notes ?? '')
+  let date = $state(seed?.date ?? today)
+  let serial = $state(seed?.serialNumber ?? '')
+  let notes = $state(seed?.notes ?? '')
   let error = $state('')
   let showBrandList = $state(false)
   let showDiseaseList = $state(false)
@@ -90,9 +93,10 @@
 
     <div class="flex flex-col gap-4">
       <div class="form-control">
-        <label class="label"><span class="label-text">Vaccine / Brand</span></label>
+        <label class="label" for="brand-input"><span class="label-text">Vaccine / Brand</span></label>
         <div class="relative">
           <input
+            id="brand-input"
             type="text"
             class="input input-bordered w-full"
             placeholder="Search or type brand name"
@@ -123,9 +127,10 @@
       {/if}
 
       <div class="form-control">
-        <label class="label"><span class="label-text">Add disease</span></label>
+        <label class="label" for="disease-query"><span class="label-text">Add disease</span></label>
         <div class="relative">
           <input
+            id="disease-query"
             type="text"
             class="input input-bordered w-full"
             placeholder="Search disease…"
@@ -144,18 +149,18 @@
       </div>
 
       <div class="form-control">
-        <label class="label"><span class="label-text">Date</span></label>
-        <input type="date" class="input input-bordered w-full" max={today} bind:value={date} />
+        <label class="label" for="record-date"><span class="label-text">Date</span></label>
+        <input id="record-date" type="date" class="input input-bordered w-full" max={today} bind:value={date} />
       </div>
 
       <div class="form-control">
-        <label class="label"><span class="label-text">Serial / Lot number (optional)</span></label>
-        <input type="text" class="input input-bordered w-full" placeholder="e.g. A12345B" bind:value={serial} />
+        <label class="label" for="record-serial"><span class="label-text">Serial / Lot number (optional)</span></label>
+        <input id="record-serial" type="text" class="input input-bordered w-full" placeholder="e.g. A12345B" bind:value={serial} />
       </div>
 
       <div class="form-control">
-        <label class="label"><span class="label-text">Notes (optional)</span></label>
-        <input type="text" class="input input-bordered w-full" placeholder="Doctor name, clinic, etc." bind:value={notes} />
+        <label class="label" for="record-notes"><span class="label-text">Notes (optional)</span></label>
+        <input id="record-notes" type="text" class="input input-bordered w-full" placeholder="Doctor name, clinic, etc." bind:value={notes} />
       </div>
     </div>
 

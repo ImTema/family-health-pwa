@@ -46,6 +46,6 @@
         <button class="btn btn-error" onclick={doDelete}>Delete</button>
       </div>
     </div>
-    <div class="modal-backdrop" onclick={() => confirmDelete = false}></div>
+    <button type="button" class="modal-backdrop" aria-label="Close" onclick={() => confirmDelete = false}></button>
   </div>
 {/if}
