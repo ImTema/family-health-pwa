@@ -4,7 +4,7 @@
   import { goto } from '$app/navigation'
   import { db } from '$lib/db'
   import { computeSchedule } from '$lib/schedule'
-  import { formatDate, childAge, swipeTabs } from '$lib/utils'
+  import { formatDate, childAge } from '$lib/utils'
   import { fade } from 'svelte/transition'
   import { COUNTRY_LABELS, type Child, type VaccinationRecord } from '$lib/types'
   import RecordsTab from '$lib/components/RecordsTab.svelte'
@@ -27,7 +27,7 @@
 </script>
 
 {#if child}
-<div class="min-h-full bg-base-100" use:swipeTabs={{ values: ['records', 'schedule', 'timeline'], get: () => tab, set: v => tab = v }}>
+<div class="min-h-full bg-base-100">
   <div class="sticky top-0 z-20 bg-base-200 shadow-sm print:hidden">
     <div class="max-w-2xl mx-auto p-4 pb-0">
       <a href="/" class="btn btn-ghost btn-xs mb-2">← All children</a>

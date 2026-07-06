@@ -65,42 +65,46 @@ describe('swipeTabs', () => {
   let node: HTMLElement
   let current: typeof values[number]
   let set: ReturnType<typeof vi.fn<(v: typeof values[number]) => void>>
+  let destroy: () => void
 
   beforeEach(() => {
     node = document.createElement('div')
     current = 'b'
     set = vi.fn((v: typeof values[number]) => { current = v })
+    destroy = () => {}
   })
 
+  afterEach(() => destroy())
+
   const touch = (type: string, x: number, y: number) =>
-    node.dispatchEvent(Object.assign(new Event(type), {
+    window.dispatchEvent(Object.assign(new Event(type), {
       touches: [{ clientX: x, clientY: y }],
       changedTouches: [{ clientX: x, clientY: y }]
     }))
 
   it('advances to the next tab on a leftward swipe', () => {
-    swipeTabs(node, { values, get: () => current, set })
+    ;({ destroy } = swipeTabs(node, { values, get: () => current, set }))
     touch('touchstart', 100, 0)
     touch('touchend', 30, 0)
     expect(set).toHaveBeenCalledWith('c')
   })
 
   it('goes to the previous tab on a rightward swipe', () => {
-    swipeTabs(node, { values, get: () => current, set })
+    ;({ destroy } = swipeTabs(node, { values, get: () => current, set }))
     touch('touchstart', 30, 0)
     touch('touchend', 100, 0)
     expect(set).toHaveBeenCalledWith('a')
   })
 
   it('ignores swipes shorter than the threshold', () => {
-    swipeTabs(node, { values, get: () => current, set })
+    ;({ destroy } = swipeTabs(node, { values, get: () => current, set }))
     touch('touchstart', 100, 0)
     touch('touchend', 80, 0)
     expect(set).not.toHaveBeenCalled()
   })
 
   it('ignores swipes that are more vertical than horizontal', () => {
-    swipeTabs(node, { values, get: () => current, set })
+    ;({ destroy } = swipeTabs(node, { values, get: () => current, set }))
     touch('touchstart', 100, 0)
     touch('touchend', 40, 100)
     expect(set).not.toHaveBeenCalled()
@@ -108,7 +112,7 @@ describe('swipeTabs', () => {
 
   it('does not advance past the last value', () => {
     current = 'c'
-    swipeTabs(node, { values, get: () => current, set })
+    ;({ destroy } = swipeTabs(node, { values, get: () => current, set }))
     touch('touchstart', 100, 0)
     touch('touchend', 30, 0)
     expect(set).not.toHaveBeenCalled()
@@ -116,14 +120,14 @@ describe('swipeTabs', () => {
 
   it('does not go before the first value', () => {
     current = 'a'
-    swipeTabs(node, { values, get: () => current, set })
+    ;({ destroy } = swipeTabs(node, { values, get: () => current, set }))
     touch('touchstart', 30, 0)
     touch('touchend', 100, 0)
     expect(set).not.toHaveBeenCalled()
   })
 
   it('destroy() removes the touch listeners', () => {
-    const { destroy } = swipeTabs(node, { values, get: () => current, set })
+    ;({ destroy } = swipeTabs(node, { values, get: () => current, set }))
     destroy()
     touch('touchstart', 100, 0)
     touch('touchend', 30, 0)

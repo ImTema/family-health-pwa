@@ -36,9 +36,10 @@ export function swipeTabs<T extends string>(node: HTMLElement, opts: { values: r
     const i = values.indexOf(get()) + (dx < 0 ? 1 : -1)
     if (i >= 0 && i < values.length) set(values[i])
   }
-  node.addEventListener('touchstart', onStart, { passive: true })
-  node.addEventListener('touchend', onEnd, { passive: true })
-  return { destroy() { node.removeEventListener('touchstart', onStart); node.removeEventListener('touchend', onEnd) } }
+  // ponytail: listen on window (not node) so swipe still registers over short content / the footer strip
+  window.addEventListener('touchstart', onStart, { passive: true })
+  window.addEventListener('touchend', onEnd, { passive: true })
+  return { destroy() { window.removeEventListener('touchstart', onStart); window.removeEventListener('touchend', onEnd) } }
 }
 
 export function todayISO(): string {

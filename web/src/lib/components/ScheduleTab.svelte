@@ -13,7 +13,7 @@
   <span>✓ Done &nbsp; ! Overdue &nbsp; · Upcoming</span>
   <span class="ml-auto">Age: {childAgeWeeks(child.birthDate)}w</span>
 </div>
-<div class="text-xs text-base-content/40 mb-2">Dim = optional vaccine</div>
+<div class="text-xs text-base-content/40 mb-2">○ = optional vaccine</div>
 <div class="overflow-x-auto">
   <table class="table table-xs table-pin-rows">
     <thead>
@@ -39,6 +39,9 @@
                   result.status === 'HIGHLIGHTED' ? ['!', 'text-warning font-bold'] :
                                                     ['·', 'text-base-content/20']}
                 <span class={cls}>{icon}</span>
+                {#if result.entry.necessity === 'OPTIONAL'}
+                  <sup class="text-info">○</sup>
+                {/if}
               {/if}
             </td>
           {/each}

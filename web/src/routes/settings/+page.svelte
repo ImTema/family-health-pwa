@@ -7,6 +7,7 @@
 
   let theme = $state('light')
   let importError = $state<string | null>(null)
+  let importSummary = $state<string | null>(null)
   let exportDone = $state(false)
   let importInput: HTMLInputElement
 
@@ -64,11 +65,15 @@
     try {
       const backup = fromBackup(json)
       await db.deleteAll()
+      let recordCount = 0
       for (const { records, ...child } of backup.children) {
         await db.saveChild(child)
         for (const r of records) await db.saveRecord(r)
+        recordCount += records.length
       }
       localStorage.removeItem('activeChildId')
+      importSummary = `Imported ${backup.children.length} ${backup.children.length === 1 ? 'child' : 'children'}, ${recordCount} ${recordCount === 1 ? 'record' : 'records'}`
+      setTimeout(() => importSummary = null, 3000)
     } catch (e) {
       importError = `Import failed: ${e instanceof Error ? e.message : 'Invalid file'}`
     }
@@ -133,6 +138,14 @@
   <div class="toast toast-top toast-center z-50">
     <div class="alert alert-success">
       <span>Backup exported</span>
+    </div>
+  </div>
+{/if}
+
+{#if importSummary}
+  <div class="toast toast-top toast-center z-50">
+    <div class="alert alert-success">
+      <span>{importSummary}</span>
     </div>
   </div>
 {/if}
