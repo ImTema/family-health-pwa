@@ -37,7 +37,7 @@
   <table class="table table-xs table-pin-rows">
     <thead>
       <tr>
-        <th class="bg-base-100 text-xs whitespace-nowrap">Disease</th>
+        <th class="sticky left-0 z-20 bg-base-100 text-xs whitespace-nowrap">Disease</th>
         {#each milestones as w, i}
           <th class="text-center text-xs {i === todayCol ? 'bg-primary/15 text-primary' : ''}">
             {weeksToLabel(w)}
@@ -48,7 +48,7 @@
     <tbody>
       {#each diseases as disease}
         <tr>
-          <td class="text-xs whitespace-nowrap font-medium">{disease.name}</td>
+          <td class="sticky left-0 z-10 bg-base-100 text-xs whitespace-nowrap font-medium">{disease.name}</td>
           {#each milestones as w, i}
             {@const result = schedule.find(r => r.entry.diseaseId === disease.id && r.entry.ageWeeks === w)}
             <td class="text-center {i === todayCol ? 'bg-primary/10' : ''}">
