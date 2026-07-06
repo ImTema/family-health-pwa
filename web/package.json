@@ -11,8 +11,8 @@
     "start": "node index.js"
   },
   "devDependencies": {
-    "@sveltejs/adapter-static": "^3.0.0",
-    "@sveltejs/kit": "^2.0.0",
+    "@sveltejs/adapter-static": "^0.0.17",
+    "@sveltejs/kit": "^0.0.30",
     "@tailwindcss/vite": "^4.0.0",
     "daisyui": "^5.0.0",
     "fake-indexeddb": "^6.2.5",
