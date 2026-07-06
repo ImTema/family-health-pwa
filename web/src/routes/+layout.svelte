@@ -5,6 +5,10 @@
   let { children } = $props()
 
   onMount(() => {
+    if (import.meta.env.DEV) {
+      const link = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
+      if (link) link.href = '/icon-dev.svg'
+    }
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js')
     }
