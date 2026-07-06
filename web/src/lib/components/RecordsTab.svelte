@@ -25,22 +25,22 @@
 
 </script>
 
-<div class="print:hidden">
-  <div class="flex items-center gap-3 mb-3">
-    <select class="select select-ghost select-sm w-auto font-medium focus:outline-none" bind:value={sortBy}>
-      <option value="date">Sort by date</option>
-      <option value="brand">Sort by brand</option>
-    </select>
-    <div class="ml-auto flex gap-2">
-      <button
-        class="btn btn-ghost btn-sm {groupByDisease ? 'btn-active' : ''}"
-        title="Group by disease"
-        onclick={() => groupByDisease = !groupByDisease}
-      ><Icon name="virus" size={20} strokeWidth={1.5} /></button>
-      <PrintExport {child} {groupByDisease} {sortedRecords} {groupedRecords} />
-    </div>
+<div class="flex items-center gap-3 mb-3">
+  <select class="select select-ghost select-sm w-auto font-medium focus:outline-none print:hidden" bind:value={sortBy}>
+    <option value="date">Sort by date</option>
+    <option value="brand">Sort by brand</option>
+  </select>
+  <div class="ml-auto flex gap-2">
+    <button
+      class="btn btn-ghost btn-sm print:hidden {groupByDisease ? 'btn-active' : ''}"
+      title="Group by disease"
+      onclick={() => groupByDisease = !groupByDisease}
+    ><Icon name="virus" size={20} strokeWidth={1.5} /></button>
+    <PrintExport {child} {groupByDisease} {sortedRecords} {groupedRecords} />
   </div>
+</div>
 
+<div class="print:hidden">
   {#if records.length === 0}
     <div class="text-center py-12 text-base-content/60">
       <p>No vaccination records yet. Tap "+ Record" to add one.</p>

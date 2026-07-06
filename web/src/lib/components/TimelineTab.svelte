@@ -38,7 +38,7 @@
 </script>
 
 <div class="form-control mb-3">
-  <select class="select select-bordered select-sm w-fit focus:outline-none" bind:value={child.country} onchange={onCountryChange}>
+  <select class="select select-ghost select-sm w-auto font-medium focus:outline-none" bind:value={child.country} onchange={onCountryChange}>
     {#each Object.entries(COUNTRY_LABELS) as [value, label]}
       <option {value}>{label}</option>
     {/each}

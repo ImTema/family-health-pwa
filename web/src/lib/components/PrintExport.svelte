@@ -1,7 +1,7 @@
 <script lang="ts">
   import { brandNameFor, diseaseNamesFor } from '../schedule'
   import { formatDate, childAge, todayISO } from '../utils'
-  import { COUNTRY_LABELS, type Child, type VaccinationRecord } from '../types'
+  import type { Child, VaccinationRecord } from '../types'
   import Icon from './Icon.svelte'
 
   let {
@@ -38,7 +38,7 @@
 <div class="hidden print:block">
   <div class="mb-4">
     <h1 class="text-2xl font-bold">{child.name}</h1>
-    <p class="text-xs">{formatDate(child.birthDate)} · {childAge(child.birthDate)} · {COUNTRY_LABELS[child.country]}</p>
+    <p class="text-xs">{formatDate(child.birthDate)} · {childAge(child.birthDate)}</p>
   </div>
   {#if groupByDisease}
     {#each groupedRecords() as [disease, recs]}

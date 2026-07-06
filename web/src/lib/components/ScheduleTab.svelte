@@ -18,7 +18,7 @@
 </script>
 
 <div class="form-control mb-3">
-  <select class="select select-bordered select-sm w-fit focus:outline-none" bind:value={child.country} onchange={onCountryChange}>
+  <select class="select select-ghost select-sm w-auto font-medium focus:outline-none" bind:value={child.country} onchange={onCountryChange}>
     {#each Object.entries(COUNTRY_LABELS) as [value, label]}
       <option {value}>{label}</option>
     {/each}
@@ -29,7 +29,9 @@
   <span>✓ Done &nbsp; ! Overdue &nbsp; · Upcoming</span>
   <span class="ml-auto">Age: {childAgeWeeks(child.birthDate)}w</span>
 </div>
-<div class="text-xs text-base-content/40 mb-2">○ = optional vaccine</div>
+<div class="flex items-center gap-1 text-xs text-base-content/40 mb-2">
+  <span class="inline-block w-1 h-1 rounded-full ring-1 ring-blue-500"></span> = optional vaccine
+</div>
 <div class="overflow-x-auto">
   <table class="table table-xs table-pin-rows">
     <thead>
@@ -48,7 +50,7 @@
           <td class="text-xs whitespace-nowrap font-medium">{disease.name}</td>
           {#each milestones as w, i}
             {@const result = schedule.find(r => r.entry.diseaseId === disease.id && r.entry.ageWeeks === w)}
-            <td class="text-center {i === todayCol ? 'bg-primary/10' : ''} {result?.entry.necessity === 'OPTIONAL' ? 'opacity-40' : ''}">
+            <td class="text-center {i === todayCol ? 'bg-primary/10' : ''}">
               {#if result}
                 {@const [icon, cls] =
                   result.status === 'DONE'        ? ['✓', 'text-success font-bold'] :
@@ -56,7 +58,7 @@
                                                     ['·', 'text-base-content/20']}
                 <span class={cls}>{icon}</span>
                 {#if result.entry.necessity === 'OPTIONAL'}
-                  <sup class="text-info">○</sup>
+                  <span class="inline-block w-1 h-1 rounded-full ring-1 ring-blue-500 align-super ml-0.5"></span>
                 {/if}
               {/if}
             </td>
@@ -74,7 +76,7 @@
       <li class="flex justify-between items-center py-1.5">
         <span>
           {r.disease.name}
-          {#if r.entry.necessity === 'OPTIONAL'}<sup class="text-info">○</sup>{/if}
+          {#if r.entry.necessity === 'OPTIONAL'}<span class="inline-block w-1 h-1 rounded-full ring-1 ring-blue-500 align-super ml-0.5"></span>{/if}
         </span>
         <span class="text-base-content/60 text-xs">
           {r.count > 0 ? `${r.count}× · last ${formatDate(r.lastDate!)}` : 'none yet'}
