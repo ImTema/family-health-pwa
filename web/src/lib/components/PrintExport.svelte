@@ -9,11 +9,13 @@
     groupByDisease,
     sortedRecords,
     groupedRecords,
+    illnessRecords,
   }: {
     child: Child
     groupByDisease: boolean
     sortedRecords: () => VaccinationRecord[]
     groupedRecords: () => Map<string, VaccinationRecord[]>
+    illnessRecords: () => VaccinationRecord[]
   } = $props()
 
   let hasNotes = $derived(sortedRecords().some((r) => r.notes))
@@ -59,6 +61,23 @@
         </tbody>
       </table>
     {/each}
+    {#if illnessRecords().length > 0}
+      <h2 class="text-lg font-semibold mt-4 mb-1">Illnesses</h2>
+      <table class="w-full border-collapse text-xs mb-4">
+        <thead>
+          <tr>{#each (hasNotes ? ['Date', 'Vaccine / Brand', 'Notes'] : ['Date', 'Vaccine / Brand']) as h}<th class="border border-gray-400 p-2 text-left bg-gray-100">{h}</th>{/each}</tr>
+        </thead>
+        <tbody>
+          {#each illnessRecords() as r}
+            <tr>
+              <td class="border border-gray-400 p-2">{formatDate(r.date)}</td>
+              <td class="border border-gray-400 p-2">{brandNameFor(r)}</td>
+              {#if hasNotes}<td class="border border-gray-400 p-2">{r.notes ?? ''}</td>{/if}
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {/if}
   {:else}
     <table class="w-full border-collapse text-xs">
       <thead>

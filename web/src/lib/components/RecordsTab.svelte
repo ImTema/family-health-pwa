@@ -19,7 +19,11 @@
   }
 
   function groupedRecords(): Map<string, VaccinationRecord[]> {
-    return groupRecordsByDisease(sortedRecords())
+    return groupRecordsByDisease(sortedRecords().filter(r => r.kind === 'vaccine'))
+  }
+
+  function illnessRecords(): VaccinationRecord[] {
+    return sortedRecords().filter(r => r.kind === 'illness')
   }
 
 
@@ -36,7 +40,7 @@
       title="Group by disease"
       onclick={() => groupByDisease = !groupByDisease}
     ><Icon name="virus" size={20} strokeWidth={1.5} /></button>
-    <PrintExport {child} {groupByDisease} {sortedRecords} {groupedRecords} />
+    <PrintExport {child} {groupByDisease} {sortedRecords} {groupedRecords} {illnessRecords} />
   </div>
 </div>
 
@@ -54,16 +58,19 @@
             <tr>{#each ['Date', 'Vaccine / Brand', 'Serial / Lot', 'Notes', ''] as h}<th class="text-[10px] font-bold text-base-content">{h}</th>{/each}</tr>
           </thead>
           <tbody>
-            {#each recs.filter(r => r.kind === 'vaccine') as record}
-              {@render recordRow(record)}
-            {/each}
-            {#each recs.filter(r => r.kind === 'illness') as record}
+            {#each recs as record}
               {@render recordRow(record)}
             {/each}
           </tbody>
         </table>
       </div>
     {/each}
+    {#if illnessRecords().length > 0}
+      <h2 class="text-sm font-bold bg-base-200 px-3 py-1.5 mt-6 mb-2 rounded">Illnesses</h2>
+      {#each illnessRecords() as record}
+        {@render recordCard(record)}
+      {/each}
+    {/if}
   {:else}
     {#each sortedRecords() as record}
       {@render recordCard(record)}
