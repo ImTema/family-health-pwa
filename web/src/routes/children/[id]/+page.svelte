@@ -65,7 +65,7 @@
     </div>
   </div>
 
-  <div class="max-w-2xl mx-auto p-4">
+  <div class="max-w-2xl mx-auto p-4 print:max-w-none print:mx-0 print:p-0">
     {#key tab}
     <div in:fade={{ duration: 150, delay: 100 }} out:fade={{ duration: 100 }}>
       {#if tab === 'records'}

@@ -29,12 +29,12 @@
 
 </script>
 
-<div class="flex items-center gap-3 mb-3">
+<div class="flex items-center gap-3 mb-3 print:contents">
   <select class="select select-ghost select-sm w-auto text-sm font-normal focus:outline-none print:hidden" bind:value={sortBy}>
     <option value="date">Sort by date</option>
     <option value="brand">Sort by brand</option>
   </select>
-  <div class="ml-auto flex gap-2">
+  <div class="ml-auto flex gap-2 print:contents">
     <button
       class="btn btn-ghost btn-sm print:hidden {groupByDisease ? 'btn-active' : ''}"
       title="Group by disease"
