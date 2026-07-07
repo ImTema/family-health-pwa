@@ -74,11 +74,14 @@
     </thead>
     <tbody>
       {#each diseases as disease}
+        {@const diseaseNotes = [...new Set(schedule.filter(r => r.entry.diseaseId === disease.id && r.entry.note).map(r => r.entry.note))]}
         <tr>
           <td class="sticky left-0 z-10 bg-base-100 text-xs font-medium">
-            <div class="group relative">
-              <span class="block max-w-24 overflow-hidden text-ellipsis whitespace-nowrap">{disease.name}</span>
-              <div class="hidden group-hover:block absolute z-40 bottom-full left-0 mb-1 whitespace-nowrap rounded bg-neutral text-neutral-content text-xs px-2 py-1">
+            <div class="group relative" tabindex="0">
+              <span class="block max-w-24 overflow-hidden text-ellipsis whitespace-nowrap">
+                {disease.name}{#each diseaseNotes as note}<sup class="text-[9px] text-base-content/50">{footnotes.get(note)}</sup>{/each}
+              </span>
+              <div class="hidden group-hover:block group-focus:block absolute z-40 bottom-full left-0 mb-1 whitespace-nowrap rounded bg-neutral text-neutral-content text-xs px-2 py-1">
                 {disease.name}
               </div>
             </div>
@@ -98,9 +101,6 @@
                 {/if}
                 {#if result.entry.necessity === 'OPTIONAL' && result.coveredByRecord?.kind !== 'illness'}
                   <span class="inline-block w-1 h-1 rounded-full ring-1 ring-blue-500 align-super ml-0.5"></span>
-                {/if}
-                {#if result.entry.note}
-                  <sup class="text-[9px] text-base-content/50">{footnotes.get(result.entry.note)}</sup>
                 {/if}
               {/if}
             </td>
