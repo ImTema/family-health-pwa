@@ -43,7 +43,14 @@
     <tbody>
       {#each timelineData as r}
         <tr class="{r.entry.necessity === 'OPTIONAL' ? 'opacity-50' : ''}">
-          <td class="text-xs whitespace-nowrap">{r.disease.name}</td>
+          <td class="text-xs">
+            <div class="group relative" tabindex="0">
+              <span class="block max-sm:max-w-24 max-sm:overflow-hidden max-sm:text-ellipsis whitespace-nowrap">{r.disease.name}</span>
+              <div class="hidden max-sm:group-hover:block max-sm:group-focus:block absolute z-40 top-full left-0 mt-1 whitespace-nowrap rounded bg-neutral text-neutral-content text-xs px-2 py-1">
+                {r.disease.name}
+              </div>
+            </div>
+          </td>
           <td class="text-xs text-center">{r.entry.doseNumber}</td>
           <td class="text-xs text-center">{weeksToLabel(r.entry.ageWeeks)}</td>
           <td class="text-xs text-center">

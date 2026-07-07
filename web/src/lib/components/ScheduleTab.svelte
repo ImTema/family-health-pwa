@@ -78,10 +78,10 @@
         <tr>
           <td class="sticky left-0 z-10 bg-base-100 text-xs font-medium">
             <div class="group relative" tabindex="0">
-              <span class="block max-w-24 overflow-hidden text-ellipsis whitespace-nowrap">
+              <span class="block max-sm:max-w-24 max-sm:overflow-hidden max-sm:text-ellipsis whitespace-nowrap">
                 {#each diseaseNotes as note}<sup class="text-[9px] text-base-content/50">{footnotes.get(note)}</sup>{/each}{disease.name}
               </span>
-              <div class="hidden group-hover:block group-focus:block absolute z-40 bottom-full left-0 mb-1 whitespace-nowrap rounded bg-neutral text-neutral-content text-xs px-2 py-1">
+              <div class="hidden max-sm:group-hover:block max-sm:group-focus:block absolute z-40 bottom-full left-0 mb-1 whitespace-nowrap rounded bg-neutral text-neutral-content text-xs px-2 py-1">
                 {disease.name}
               </div>
             </div>
