@@ -154,16 +154,6 @@
       </div>
 
       <div class="card bg-base-200">
-        <div class="card-body gap-3">
-          <h2 class="card-title text-base">Danger zone</h2>
-          <p class="text-sm text-base-content/60">Permanently delete all family members and records from this device.</p>
-          <div>
-            <button class="btn btn-error btn-sm" onclick={doCleanData}>Clean all data</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card bg-base-200">
         <div class="card-body">
           <h2 class="card-title text-base">Appearance</h2>
           <div class="flex items-center justify-between">
@@ -194,6 +184,16 @@
             <li>All your data stays on your device</li>
           </ul>
           <p class="text-sm text-base-content/60">Privacy: all your data is stored only on this device. Nothing is uploaded, nothing is shared.</p>
+        </div>
+      </div>
+
+      <div class="card bg-base-200">
+        <div class="card-body gap-3">
+          <h2 class="card-title text-base">Danger zone</h2>
+          <p class="text-sm text-base-content/60">Permanently delete all family members and records from this device.</p>
+          <div>
+            <button class="btn btn-error btn-sm" onclick={doCleanData}>Clean all data</button>
+          </div>
         </div>
       </div>
     </div>
