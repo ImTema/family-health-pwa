@@ -5,16 +5,26 @@
   import { todayISO } from '$lib/utils'
   import { toBackup, fromBackup } from '$lib/backup'
   import Icon from '$lib/components/Icon.svelte'
+  import type { Child } from '$lib/types'
 
   let theme = $state('light')
   let importError = $state<string | null>(null)
   let importSummary = $state<string | null>(null)
   let exportDone = $state(false)
+  let cleanDone = $state(false)
   let importInput: HTMLInputElement
+  let children = $state<Child[]>([])
+  let selectedIds = $state<Set<string>>(new Set())
 
-  onMount(() => {
+  onMount(async () => {
     theme = localStorage.getItem('theme') ?? 'light'
+    await refreshChildren()
   })
+
+  async function refreshChildren() {
+    children = await db.getChildren()
+    selectedIds = new Set(children.map(c => c.id))
+  }
 
   function setTheme(t: string) {
     theme = t
@@ -24,7 +34,7 @@
 
   async function doExport() {
     const today = todayISO()
-    const chs = await db.getChildren()
+    const chs = children.filter(c => selectedIds.has(c.id))
     const backup = toBackup(await Promise.all(chs.map(async c => ({ ...c, records: await db.getRecords(c.id) }))), today)
     const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -43,7 +53,7 @@
 
   async function doExportCsv() {
     const today = todayISO()
-    const chs = await db.getChildren()
+    const chs = children.filter(c => selectedIds.has(c.id))
     const rows = [['Name', 'Date', 'Vaccine / Brand', 'Diseases', 'Serial / Lot', 'Notes']]
     for (const c of chs) {
       const records = await db.getRecords(c.id)
@@ -62,22 +72,30 @@
   }
 
   async function doImport(json: string) {
-    if (!confirm('This will replace all existing data with the backup. Continue?')) return
+    if (!confirm('This will merge the backup into your existing data (family members/records with matching IDs will be overwritten, everything else stays). Continue?')) return
     try {
       const backup = fromBackup(json)
-      await db.deleteAll()
       let recordCount = 0
       for (const { records, ...child } of backup.children) {
         await db.saveChild(child)
         for (const r of records) await db.saveRecord(r)
         recordCount += records.length
       }
-      localStorage.removeItem('activeChildId')
+      await refreshChildren()
       importSummary = `Imported ${backup.children.length} ${backup.children.length === 1 ? 'family member' : 'family members'}, ${recordCount} ${recordCount === 1 ? 'record' : 'records'}`
       setTimeout(() => importSummary = null, 3000)
     } catch (e) {
       importError = `Import failed: ${e instanceof Error ? e.message : 'Invalid file'}`
     }
+  }
+
+  async function doCleanData() {
+    if (!confirm('This will permanently delete ALL family members and records from this device. This cannot be undone. Continue?')) return
+    await db.deleteAll()
+    localStorage.removeItem('activeChildId')
+    await refreshChildren()
+    cleanDone = true
+    setTimeout(() => cleanDone = false, 3000)
   }
 </script>
 
@@ -106,11 +124,41 @@
       <div class="card bg-base-200">
         <div class="card-body gap-3">
           <h2 class="card-title text-base">Backup</h2>
-          <p class="text-sm text-base-content/60">Export all family members, records, and photos to a JSON file. Import restores from a previous export.</p>
+          <p class="text-sm text-base-content/60">Export the selected family members' records and photos to a JSON file. Import merges a backup into your existing data (matching IDs are overwritten, everything else is kept).</p>
+          {#if children.length > 1}
+            <div class="flex flex-col gap-1">
+              {#each children as c (c.id)}
+                <label class="label cursor-pointer justify-start gap-2 py-0">
+                  <input
+                    type="checkbox"
+                    class="checkbox checkbox-sm"
+                    checked={selectedIds.has(c.id)}
+                    onchange={e => {
+                      const next = new Set(selectedIds)
+                      if ((e.target as HTMLInputElement).checked) next.add(c.id)
+                      else next.delete(c.id)
+                      selectedIds = next
+                    }}
+                  />
+                  <span class="label-text text-sm">{c.name}</span>
+                </label>
+              {/each}
+            </div>
+          {/if}
           <div class="flex gap-2 flex-wrap">
-            <button class="btn btn-outline btn-sm" onclick={doExport}>Export backup</button>
+            <button class="btn btn-outline btn-sm" disabled={selectedIds.size === 0} onclick={doExport}>Export backup</button>
             <button class="btn btn-outline btn-sm" onclick={() => importInput.click()}>Import backup</button>
-            <button class="btn btn-outline btn-sm" onclick={doExportCsv}>Export CSV</button>
+            <button class="btn btn-outline btn-sm" disabled={selectedIds.size === 0} onclick={doExportCsv}>Export CSV</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card bg-base-200">
+        <div class="card-body gap-3">
+          <h2 class="card-title text-base">Danger zone</h2>
+          <p class="text-sm text-base-content/60">Permanently delete all family members and records from this device.</p>
+          <div>
+            <button class="btn btn-error btn-sm" onclick={doCleanData}>Clean all data</button>
           </div>
         </div>
       </div>
@@ -156,6 +204,14 @@
   <div class="toast toast-top toast-center z-50">
     <div class="alert alert-success">
       <span>Backup exported</span>
+    </div>
+  </div>
+{/if}
+
+{#if cleanDone}
+  <div class="toast toast-top toast-center z-50">
+    <div class="alert alert-success">
+      <span>All data cleared</span>
     </div>
   </div>
 {/if}
