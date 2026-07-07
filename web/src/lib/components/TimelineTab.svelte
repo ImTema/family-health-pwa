@@ -29,8 +29,8 @@
   </select>
 </div>
 
-<div class="overflow-x-auto">
-  <table class="table table-xs w-full">
+<div class="overflow-auto max-h-[70dvh]">
+  <table class="table table-xs table-pin-rows w-full">
     <thead>
       <tr>
         <th>Disease</th>
