@@ -104,6 +104,18 @@
 
     <div class="flex flex-col gap-6">
       <div class="card bg-base-200">
+        <div class="card-body gap-3">
+          <h2 class="card-title text-base">Backup</h2>
+          <p class="text-sm text-base-content/60">Export all family members, records, and photos to a JSON file. Import restores from a previous export.</p>
+          <div class="flex gap-2 flex-wrap">
+            <button class="btn btn-outline btn-sm" onclick={doExport}>Export backup</button>
+            <button class="btn btn-outline btn-sm" onclick={() => importInput.click()}>Import backup</button>
+            <button class="btn btn-outline btn-sm" onclick={doExportCsv}>Export CSV</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card bg-base-200">
         <div class="card-body">
           <h2 class="card-title text-base">Appearance</h2>
           <div class="flex items-center justify-between">
@@ -125,7 +137,7 @@
       <div class="card bg-base-200">
         <div class="card-body gap-3">
           <h2 class="card-title text-base"><Icon name="info" size={18} /> About VaxTrack</h2>
-          <p class="text-sm">VaxTrack helps you keep track of your children's vaccinations wherever you move. See what's done, what's overdue, and what's coming next — compared against your country's official schedule. Export a clean summary for doctors and schools any time.</p>
+          <p class="text-sm">VaxTrack helps you keep track of your family member's vaccinations wherever you move. See what's done, what's overdue, and what's coming next — compared against your country's official schedule. Export a clean summary for doctors and schools any time.</p>
           <ul class="text-sm list-disc list-inside text-base-content/80">
             <li>Log a vaccination in seconds</li>
             <li>Compare against country schedules</li>
@@ -134,18 +146,6 @@
             <li>All your data stays on your device</li>
           </ul>
           <p class="text-sm text-base-content/60">Privacy: all your data is stored only on this device. Nothing is uploaded, nothing is shared.</p>
-        </div>
-      </div>
-
-      <div class="card bg-base-200">
-        <div class="card-body gap-3">
-          <h2 class="card-title text-base">Backup</h2>
-          <p class="text-sm text-base-content/60">Export all family members, records, and photos to a JSON file. Import restores from a previous export.</p>
-          <div class="flex gap-2 flex-wrap">
-            <button class="btn btn-outline btn-sm" onclick={doExport}>Export backup</button>
-            <button class="btn btn-outline btn-sm" onclick={() => importInput.click()}>Import backup</button>
-            <button class="btn btn-outline btn-sm" onclick={doExportCsv}>Export CSV</button>
-          </div>
         </div>
       </div>
     </div>
