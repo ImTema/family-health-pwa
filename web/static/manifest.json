@@ -1,7 +1,7 @@
 {
   "name": "VaxTrack",
   "short_name": "VaxTrack",
-  "description": "Family vaccination tracker for families relocating between countries",
+  "description": "Free vaccination tracker for your family. 100% private, no account needed - your data stays on your device.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
