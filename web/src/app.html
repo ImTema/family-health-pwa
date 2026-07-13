@@ -9,6 +9,9 @@
     <meta name="theme-color" content="#4F46E5" />
     <meta name="description" content="Free vaccination tracker for your family. 100% private, no account needed - your data stays on your device." />
     <title>VaxTrack</title>
+    <script>
+      if (location.hostname === 'www.vaxtrack.net') location.replace('https://vaxtrack.net' + location.pathname + location.search);
+    </script>
     %sveltekit.head%
   </head>
   <body data-sveltekit-preload-data="hover">

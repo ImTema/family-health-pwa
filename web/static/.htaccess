@@ -1,3 +1,0 @@
-RewriteEngine On
-RewriteCond %{HTTP_HOST} ^www\.vaxtrack\.net [NC]
-RewriteRule ^(.*)$ https://vaxtrack.net/$1 [L,R=301]
